@@ -3,42 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>TPV Club Ultra-Compact</title>
+    <title>TPV Club Original Optimized</title>
     <style>
-        :root { --primary: #2c3e50; --success: #27ae60; --accent: #3498db; --bg: #f4f7f6; --danger: #e74c3c; --white: #ffffff; }
+        :root { 
+            --primary: #2c3e50; --success: #27ae60; --accent: #3498db; 
+            --bg: #f4f7f6; --danger: #e74c3c; --warning: #f39c12; --white: #ffffff; 
+        }
+
+        /* RESET PARA CERO SCROLL */
+        html, body { 
+            margin: 0; padding: 0; width: 100vw; height: 100vh; 
+            overflow: hidden; background: var(--bg); font-family: 'Segoe UI', sans-serif;
+        }
+
+        /* PANTALLA SELECCIÓN SOCIOS */
+        #pantalla-socios { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); 
+            gap: 10px; padding: 15px; height: 100vh; box-sizing: border-box; 
+            align-content: start; overflow-y: auto;
+        }
+
+        .btn-socio { 
+            background: var(--white); border: 2px solid var(--primary); border-radius: 12px; 
+            padding: 20px 5px; font-weight: bold; font-size: 1.1em; cursor: pointer; text-align: center; 
+            position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+        }
+
+        .nav-reponedor { 
+            background: var(--warning); color: var(--primary); padding: 15px; border-radius: 10px; 
+            text-align: center; font-weight: bold; cursor: pointer; width: 100%; border: 2px solid var(--primary); 
+            box-sizing: border-box; grid-column: 1 / -1; margin-bottom: 5px;
+        }
+
+        /* INTERFAZ TPV (ZONA FIJA) */
+        #interfaz-tpv { 
+            display: none; 
+            grid-template-columns: 1fr 280px; /* Tiquet más estrecho */
+            height: 100vh; width: 100vw; overflow: hidden;
+        }
+
+        .zona-productos {
+            display: flex; flex-direction: column; height: 100vh; padding: 8px; box-sizing: border-box;
+        }
+
+        #tab-container { display: flex; gap: 4px; margin-bottom: 8px; }
+        .tab-btn { 
+            flex: 1; padding: 12px 2px; border: none; border-radius: 6px; 
+            font-weight: bold; font-size: 0.8em; cursor: pointer; background: #cbd5e0;
+        }
+        .tab-btn.active { background: var(--accent); color: white; }
+
+        #grid-prods { 
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); 
+            gap: 8px; overflow-y: auto; flex-grow: 1; align-content: start;
+        }
+
+        /* CARDS COMPACTAS */
+        .card { 
+            background: var(--white); border-radius: 10px; padding: 8px; text-align: center; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); cursor: pointer; height: 130px; 
+            display: flex; flex-direction: column; justify-content: space-between; border: 1px solid #eee; 
+        }
+        .card img { height: 55px; width: auto; max-width: 90%; object-fit: contain; margin: 0 auto; }
+        .card b { font-size: 0.85em; line-height: 1.2; }
+
+        /* SIDEBAR TIQUET */
+        .sidebar { 
+            background: var(--primary); color: var(--white); 
+            display: flex; flex-direction: column; padding: 10px; height: 100vh; box-sizing: border-box;
+        }
+        .lista { flex: 1; overflow-y: auto; margin: 5px 0; font-size: 0.9em; }
+        .item-tiquet { 
+            display: flex; justify-content: space-between; padding: 8px; background: rgba(255,255,255,0.1); 
+            margin-bottom: 4px; border-radius: 6px; cursor: pointer;
+        }
+        .total { font-size: 2.2em; font-weight: bold; text-align: center; padding: 5px 0; color: #fff; border-top: 1px solid rgba(255,255,255,0.2); }
         
-        html, body { margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden; background: var(--bg); font-family: sans-serif; }
+        /* BOTONES ACCIÓN */
+        .btn-accion { padding: 15px; border: none; border-radius: 10px; color: white; font-weight: bold; font-size: 1em; cursor: pointer; width: 100%; }
 
-        /* SOCIOS */
-        #pantalla-socios { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; padding: 15px; height: 100vh; box-sizing: border-box; overflow-y: auto; }
-        .btn-socio { background: var(--white); border: 2px solid var(--primary); border-radius: 12px; padding: 25px 5px; font-weight: bold; font-size: 1.2em; text-align: center; cursor: pointer; position: relative; }
-        .nav-reponedor { background: var(--primary); color: white; padding: 15px; border-radius: 10px; text-align: center; font-weight: bold; grid-column: 1 / -1; cursor: pointer; }
-
-        /* ESTRUCTURA TPV */
-        #interfaz-tpv { display: none; grid-template-columns: 1fr 280px; height: 100vh; width: 100vw; }
-
-        /* ZONA PRODUCTOS (MÁS ANCHA) */
-        .zona-productos { display: flex; flex-direction: column; height: 100vh; padding: 8px; box-sizing: border-box; overflow: hidden; }
-        #tab-container { display: flex; gap: 5px; margin-bottom: 8px; }
-        .tab-btn { flex: 1; padding: 10px 2px; border: none; border-radius: 8px; font-weight: bold; font-size: 0.8em; cursor: pointer; }
+        /* MODALES (OPTIMIZADOS AL ALTO) */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: var(--white); padding: 15px; border-radius: 15px; width: 95%; max-width: 700px; max-height: 95vh; overflow-y: auto; }
         
-        #grid-prods { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; overflow-y: auto; align-content: start; }
-        .card { background: var(--white); border-radius: 10px; padding: 8px; text-align: center; border: 1px solid #ddd; height: 130px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; }
-        .card img { height: 50px; object-fit: contain; }
-        .card b { font-size: 0.85em; display: block; height: 2.4em; overflow: hidden; }
-
-        /* SIDEBAR (MÁS ESTRECHO) */
-        .sidebar { background: var(--primary); color: white; display: flex; flex-direction: column; padding: 10px; box-sizing: border-box; height: 100vh; }
-        .lista { flex: 1; overflow-y: auto; font-size: 0.9em; margin: 5px 0; }
-        .item-tiquet { display: flex; justify-content: space-between; padding: 8px; background: rgba(255,255,255,0.1); margin-bottom: 4px; border-radius: 5px; }
-        .total { font-size: 2.5em; font-weight: bold; text-align: center; padding: 5px 0; color: #fff; }
-        .btn-main { width: 100%; padding: 15px 5px; border: none; border-radius: 10px; font-weight: bold; font-size: 1.1em; cursor: pointer; }
-
-        /* MODALES */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 15px; border-radius: 15px; width: 90%; max-width: 450px; text-align: center; color: #333; }
-        .grid-teclado { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
-        .tecla { background: #eee; border: none; padding: 15px; font-size: 1.5em; border-radius: 8px; font-weight: bold; }
+        .grid-teclado { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        .tecla { background: #edf2f7; border: none; padding: 15px; font-size: 1.4em; border-radius: 10px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -51,51 +101,79 @@
         <div id="grid-prods"></div>
     </div>
     <div class="sidebar">
-        <h2 id="nombre-socio" style="margin:0; font-size:1.4em;">-</h2>
+        <h2 id="nombre-socio" style="margin:0; font-size:1.4em; text-align:center;">-</h2>
         <div class="lista" id="ticket-lista"></div>
-        <button class="btn-main" style="background:var(--accent); color:white; margin-bottom:5px;" onclick="abrirModalReparto()">🍽️ COMIDA</button>
+        <button onclick="abrirModalReparto()" class="btn-accion" style="background:var(--accent); margin-bottom:5px;">🍽️ GESTIÓN COMIDA</button>
         <div class="total" id="total-txt">0.00€</div>
-        <button class="btn-main" style="background:var(--success); color:white; padding:20px;" onclick="cerrarVenta()">✅ COBRAR</button>
-        <button onclick="location.reload()" style="background:none; border:none; color:white; margin-top:10px; opacity:0.7;">❌ Cancelar</button>
+        <button class="btn-accion" style="background:var(--success); padding:20px; font-size:1.4em;" onclick="cerrarVenta()">✅ COBRAR</button>
+        <button onclick="location.reload()" style="margin-top:10px; background:none; border:none; color:white; opacity:0.6; font-size:0.8em;">🔙 VOLVER</button>
+    </div>
+</div>
+
+<div id="modal-teclado-texto" class="modal">
+    <div class="modal-content" style="max-width: 800px;">
+        <h3 id="titulo-teclado">Nombre Invitado</h3>
+        <div id="display-texto" style="font-size:2em; font-weight:bold; background:#f8fafc; padding:10px; border-radius:10px; margin-bottom:10px; border:2px solid #ccc; min-height: 1.2em;"></div>
+        <div id="grid-teclado-texto" style="display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px;"></div>
+        <div style="display:flex; gap:10px; margin-top:15px;">
+            <button class="btn-accion" style="background:var(--success);" onclick="confirmarTexto()">ACEPTAR</button>
+            <button class="btn-accion" style="background:var(--danger);" onclick="cerrarModales()">CANCELAR</button>
+        </div>
     </div>
 </div>
 
 <div id="modal-cantidad" class="modal">
-    <div class="modal-content">
-        <h3 id="titulo-modal" style="margin:0">Cantidad</h3>
-        <div id="display-num" style="font-size:4em; font-weight:bold; color:var(--accent);">0</div>
-        <div class="grid-teclado" id="teclado-base"></div>
-        <button onclick="cerrarModales()" style="width:100%; margin-top:10px; padding:10px; border:none; border-radius:8px;">VOLVER</button>
+    <div class="modal-content" style="max-width: 350px;">
+        <h3 id="titulo-prod-modal" style="margin:0"></h3>
+        <div id="input-cantidad" style="font-size:4em; font-weight:bold; margin:10px 0; color: var(--accent);">0</div>
+        <div class="grid-teclado" id="teclado-nums"></div>
+        <button class="btn-accion" style="background:var(--danger); margin-top:10px;" onclick="cerrarModales()">CANCELAR</button>
+    </div>
+</div>
+
+<div id="modal-edit" class="modal">
+    <div class="modal-content" style="max-width: 400px;">
+        <h3 id="edit-nombre"></h3>
+        <p id="txt-actual" style="margin:0; font-size:0.9em;"></p>
+        <div id="edit-input-display" style="font-size:3.5em; font-weight:bold; color:var(--accent);">0</div>
+        <div style="display:flex; gap:10px; margin-bottom:10px;">
+            <button class="btn-accion" style="background:var(--danger); padding:10px;" onclick="aplicarEdicion(-1)">- RESTAR</button>
+            <button class="btn-accion" style="background:var(--success); padding:10px;" onclick="aplicarEdicion(1)">+ SUMAR</button>
+        </div>
+        <div class="grid-teclado" id="teclado-edit"></div>
+        <button id="btn-eliminar-fila" style="width:100%; padding:12px; background:var(--danger); color:white; border:none; border-radius:8px; margin-top:10px;" onclick="eliminarFilaEdicion()">ELIMINAR LÍNEA</button>
+        <button class="btn-accion" style="background:#ccc; color:#333; margin-top:10px; padding:10px;" onclick="cerrarModales()">VOLVER</button>
     </div>
 </div>
 
 <div id="modal-reparto" class="modal">
-    <div class="modal-content" style="max-width: 600px;">
-        <h3>Reparto Gastos</h3>
-        <div id="invitados-cont" style="max-height: 250px; overflow-y: auto;"></div>
-        <button onclick="addInv()" style="width:100%; padding:10px; margin: 10px 0;">+ Añadir Invitado</button>
-        <div id="resumen-reparto" style="background:#f0f0f0; padding:10px; border-radius:8px; display:none; font-size:0.9em;"></div>
-        <div style="display:flex; gap:5px; margin-top:10px;">
-            <button class="btn-main" style="background:var(--accent); color:white;" onclick="calcularCuentas()">CALCULAR</button>
-            <button class="btn-main" style="background:var(--primary); color:white;" onclick="cerrarModales()">OK</button>
+    <div class="modal-content">
+        <h3>Reparto Gastos Comida</h3>
+        <div id="invitados-cont"></div>
+        <button onclick="addInv()" style="width:100%; padding:12px; margin: 8px 0; background:#f0f0f0; border:2px dashed #ccc; border-radius:8px; font-weight:bold;">+ Añadir Comensal</button>
+        <div id="resumen-reparto" style="text-align:left; background:#eef2f7; padding:12px; border-radius:8px; display:none; font-size:0.85em;"></div>
+        <div style="display:flex; gap:8px; margin-top:10px;">
+            <button class="btn-accion" style="background:var(--accent);" onclick="calcularCuentas()">CALCULAR</button>
+            <button class="btn-accion" style="background:var(--primary);" onclick="cerrarModales()">GUARDAR</button>
+            <button class="btn-accion" style="background:var(--danger);" onclick="resetearComida()">BORRAR</button>
         </div>
     </div>
 </div>
 
 <script>
+// --- TU LÓGICA ORIGINAL COMPLETA ---
 const PRECIOS = { "MAHOU 25cl.": 0.90, "ALHAMBRA 33cl.": 1.50, "BUDWEISSER 33cl.": 1.50, "MAHOU SIN 25cl.": 0.90, "COCA COLA": 1.00, "COCA COLA ZERO": 1.00, "FANTA NARANJA": 1.00, "FANTA LIMÓN": 1.00, "SPRITE": 1.00, "ACUARIUS NARANJA": 1.00, "ACUARIUS LIMÓN": 1.00, "NESTEÁ LIMÓN": 1.00, "TÓNICA SCHWEPPES": 1.00, "TÓNICA SCHWEPPES ZERO": 1.00, "CASERA BLANCA 0,5L": 0.50, "AGUA": 0.50, "VIÑAS DEL VERO": 9.00, "BERONIA CRIANZA": 9.00, "BERONIA RESERVA": 16.00, "TIO PEPE 50cl.": 6.00, "MANZANILLA 50CL.": 6.00, "TINTO BÁSICO 70cl.": 2.00, "CROFT TWIST": 6.00, "DESCORCHE VINO": 2.00, "BARCELÓ": 2.00, "WHITE LABEL": 2.00, "RIVES": 2.00, "PINK RIVES": 2.00, "RIVES EXÓTICA": 2.00, "DESCORCHE COPA": 3.00, "ATÚN ENCEBOLLADO": 8.00, "ATÚN FRITADA": 8.00, "PATATAS FRITAS": 0.60 };
 const CATEGORIAS = { "CERVEZAS": ["MAHOU 25cl.", "ALHAMBRA 33cl.", "BUDWEISSER 33cl.", "MAHOU SIN 25cl."], "REFRESCOS": ["COCA COLA", "COCA COLA ZERO", "FANTA NARANJA", "FANTA LIMÓN", "SPRITE", "ACUARIUS NARANJA", "ACUARIUS LIMÓN", "NESTEÁ LIMÓN", "TÓNICA SCHWEPPES", "TÓNICA SCHWEPPES ZERO", "CASERA BLANCA 0,5L", "AGUA"], "VINOS": ["VIÑAS DEL VERO", "BERONIA CRIANZA", "BERONIA RESERVA", "TIO PEPE 50cl.", "MANZANILLA 50CL.", "TINTO BÁSICO 70cl.", "CROFT TWIST", "DESCORCHE VINO"], "ESPIRITUOSOS": ["BARCELÓ", "WHITE LABEL", "RIVES", "PINK RIVES", "RIVES EXÓTICA", "DESCORCHE COPA"], "OTROS": ["ATÚN ENCEBOLLADO", "ATÚN FRITADA", "PATATAS FRITAS"] };
 
-let stockActual = JSON.parse(localStorage.getItem('v32_stock')) || {};
-let tickets = JSON.parse(localStorage.getItem('v32_tickets')) || {};
-let socioActivo = "", carrito = [], catActiva = "CERVEZAS", prodTemp = null, inputVal = "", listInv = [], editingIdx = -1, tipoTeclado = "";
+let tickets = JSON.parse(localStorage.getItem('v35_tickets')) || {};
+let socioActivo = "", carrito = [], catActiva = "CERVEZAS", listInv = [], inputVal = "", prodTemp = null, modoTeclado = "", editingInvIdx = -1, subTipoNum = "";
 
 function renderSocios() {
     const cont = document.getElementById('pantalla-socios');
-    cont.innerHTML = '<div class="nav-reponedor">GESTIÓN DE STOCK</div>';
+    cont.innerHTML = '<div class="nav-reponedor" onclick="alert(\'Gestión de Stock\')">🛠️ MODO REPOSICIÓN / STOCK</div>';
     ["FRAN", "SANTI", "SANTOS", "JESÚS", "MANU", "JR", "MIGUEL", "NUÑEZ", "SILVA", "LUIS", "ROSADO"].forEach(s => {
         const cant = (tickets[s] || []).filter(i => i.n).reduce((acc, i) => acc + i.cant, 0);
-        cont.innerHTML += `<div class="btn-socio" onclick="abrirTPV('${s}')">${s} ${cant > 0 ? `<span style="position:absolute;top:2px;right:2px;background:red;color:white;border-radius:50%;width:25px;height:25px;font-size:14px;display:flex;align-items:center;justify-content:center;">${cant}</span>` : ''}</div>`;
+        cont.innerHTML += `<div class="btn-socio" onclick="abrirTPV('${s}')">${s} ${cant > 0 ? `<span style="position:absolute;top:-5px;right:-5px;background:red;color:white;border-radius:50%;width:28px;height:28px;font-size:14px;display:flex;align-items:center;justify-content:center;border:2px solid white;">${cant}</span>` : ''}</div>`;
     });
 }
 
@@ -111,13 +189,13 @@ function abrirTPV(n) {
 
 function renderTabs() {
     document.getElementById('tab-container').innerHTML = Object.keys(CATEGORIAS).map(c => 
-        `<button class="tab-btn" style="background:${c===catActiva?'var(--accent)':'#ccc'};color:${c===catActiva?'white':'black'}" onclick="catActiva='${c}';renderTabs();renderProds()">${c}</button>`).join('');
+        `<button class="tab-btn ${c===catActiva?'active':''}" onclick="catActiva='${c}';renderTabs();renderProds()">${c}</button>`).join('');
 }
 
 function renderProds() {
     document.getElementById('grid-prods').innerHTML = CATEGORIAS[catActiva].map(n => `
-        <div class="card" onclick="prepararTeclado('${n}', 'nuevo')">
-            <img src="img/${n.replace(/ /g,'_').toUpperCase()}.jpg" onerror="this.style.opacity='0.1'">
+        <div class="card" onclick="abrirTecladoCantidad('${n}')">
+            <img src="img/${n.replace(/ /g,'_').toUpperCase()}.jpg" onerror="this.style.opacity='0.2'">
             <b>${n}</b>
             <span style="color:var(--success);font-weight:bold;">${PRECIOS[n].toFixed(2)}€</span>
         </div>`).join('');
@@ -125,78 +203,163 @@ function renderProds() {
 
 function actualizarTicket() {
     let t = 0;
-    document.getElementById('ticket-lista').innerHTML = carrito.map((i, idx) => {
-        t += i.p * i.cant;
-        return `<div class="item-tiquet" onclick="prepararTeclado(${idx}, 'edit')"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}€</span></div>`;
+    document.getElementById('ticket-lista').innerHTML = carrito.map((item, idx) => {
+        t += item.p * item.cant;
+        return `<div class="item-tiquet" onclick="abrirEdicionTicket('${item.n}')"><span>${item.cant}x ${item.n}</span><span>${(item.p*item.cant).toFixed(2)}€</span></div>`;
     }).join('');
     const canon = listInv.reduce((acc, i) => acc + (parseInt(i.a)||0), 0);
-    if(canon > 0) document.getElementById('ticket-lista').innerHTML += `<div class="item-tiquet"><span>Cánones Comida</span><span>${canon.toFixed(2)}€</span></div>`;
+    if(canon > 0) document.getElementById('ticket-lista').innerHTML += `<div class="item-tiquet" style="border:1px dashed white"><span>Cánones Comida</span><span>${canon.toFixed(2)}€</span></div>`;
     document.getElementById('total-txt').innerText = (t + canon).toFixed(2) + "€";
 }
 
-function prepararTeclado(ref, tipo) {
-    tipoTeclado = tipo; prodTemp = ref; inputVal = "";
-    document.getElementById('display-num').innerText = (tipo === 'nuevo' ? "1" : "0");
-    document.getElementById('titulo-modal').innerText = (tipo === 'nuevo' ? ref : "Ajustar Cantidad");
+// --- TECLADOS (LÓGICA ORIGINAL) ---
+function abrirTecladoCantidad(n) {
+    prodTemp = n; inputVal = ""; modoTeclado = "NUEVO";
+    document.getElementById('titulo-prod-modal').innerText = n;
+    document.getElementById('input-cantidad').innerText = "1";
     document.getElementById('modal-cantidad').style.display = 'flex';
 }
 
-function numPress(v) {
-    if(v === 'C') inputVal = ""; else inputVal += v;
-    document.getElementById('display-num').innerText = inputVal || "0";
+function abrirEdicionTicket(n) {
+    prodTemp = n; inputVal = ""; modoTeclado = "EDITAR";
+    const item = carrito.find(i => i.n === n);
+    document.getElementById('edit-nombre').innerText = n;
+    document.getElementById('txt-actual').innerText = "Actual: " + item.cant;
+    document.getElementById('edit-input-display').innerText = "0";
+    document.getElementById('modal-edit').style.display = 'flex';
 }
 
-function confirmar() {
-    let v = parseFloat(inputVal) || (tipoTeclado === 'nuevo' ? 1 : 0);
-    if(tipoTeclado === 'nuevo') {
-        let ex = carrito.find(i => i.n === prodTemp);
-        if(ex) ex.cant += v; else carrito.push({n: prodTemp, cant: v, p: PRECIOS[prodTemp]});
-    } else {
-        if(v === 0) carrito.splice(prodTemp, 1); else carrito[prodTemp].cant = v;
-    }
+function pressNum(v) {
+    if(v === 'C') inputVal = ""; else if(v === '.' && inputVal.includes('.')) return; else inputVal += v;
+    const disp = (modoTeclado === "EDITAR") ? 'edit-input-display' : 'input-cantidad';
+    document.getElementById(disp).innerText = inputVal || "0";
+}
+
+function confirmarCantidad() {
+    let v = parseFloat(inputVal) || 1;
+    let ex = carrito.find(i => i.n === prodTemp);
+    if(ex) ex.cant += v; else carrito.push({n: prodTemp, cant: v, p: PRECIOS[prodTemp]});
     guardar(); cerrarModales();
 }
 
-function guardar() {
-    let d = [...carrito]; if(listInv.length > 0) d.push({esComida:true, datos:listInv});
-    tickets[socioActivo] = d; localStorage.setItem('v32_tickets', JSON.stringify(tickets));
-    actualizarTicket();
+function aplicarEdicion(signo) {
+    let v = parseFloat(inputVal) || 0;
+    let item = carrito.find(i => i.n === prodTemp);
+    if(item) { item.cant += (v * signo); if(item.cant <= 0) eliminarFilaEdicion(); }
+    guardar(); cerrarModales();
 }
 
-function cerrarVenta() { if(confirm("¿Cobrar?")) { delete tickets[socioActivo]; localStorage.setItem('v32_tickets', JSON.stringify(tickets)); location.reload(); } }
+function eliminarFilaEdicion() {
+    carrito = carrito.filter(i => i.n !== prodTemp);
+    guardar(); cerrarModales();
+}
 
-function cerrarModales() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
+// --- COMENSALES (LÓGICA ORIGINAL) ---
+function abrirModalReparto() { 
+    if(listInv.length === 0) listInv = [{n:socioActivo, a:1, k:0, g:0}];
+    renderInv(); document.getElementById('modal-reparto').style.display = 'flex'; 
+}
 
-// Teclado Base
-const tCont = document.getElementById('teclado-base');
-for(let i=1; i<=9; i++) tCont.innerHTML += `<button class="tecla" onclick="numPress('${i}')">${i}</button>`;
-tCont.innerHTML += `<button class="tecla" onclick="numPress('C')">C</button><button class="tecla" onclick="numPress('0')">0</button><button class="tecla" onclick="numPress('.')">.</button>`;
-tCont.innerHTML += `<button class="tecla" style="grid-column:span 3; background:var(--success); color:white;" onclick="confirmar()">ACEPTAR</button>`;
+function addInv() { listInv.push({n:"", a:0, k:0, g:0}); renderInv(); }
 
-renderSocios();
-
-// Lógica mínima comida para no perder funciones
-function abrirModalReparto() { renderInv(); document.getElementById('modal-reparto').style.display = 'flex'; }
-function addInv() { listInv.push({n:"", a:1, k:0, g:0}); renderInv(); }
 function renderInv() {
     const cont = document.getElementById('invitados-cont');
-    cont.innerHTML = listInv.map((inv, i) => `
-        <div style="display:grid; grid-template-columns: 1fr 50px 70px 30px; gap:5px; margin-bottom:5px;">
-            <input type="text" value="${inv.n}" placeholder="Nombre" onchange="listInv[${i}].n=this.value;guardar()" style="padding:5px;">
-            <input type="number" value="${inv.a}" onchange="listInv[${i}].a=this.value;guardar();actualizarTicket()" style="padding:5px;">
-            <input type="number" value="${inv.g}" placeholder="€" onchange="listInv[${i}].g=this.value;guardar()" style="padding:5px;">
-            <button onclick="listInv.splice(${i},1);renderInv();guardar();actualizarTicket()" style="color:red">X</button>
-        </div>`).join('');
+    cont.innerHTML = `<div style="display:grid; grid-template-columns: 1fr 50px 50px 70px 30px; gap:5px; font-weight:bold; font-size:0.75em; margin-bottom:5px; color:#666;"><span>NOMBRE</span><span>ADU.</span><span>NIÑO</span><span>APORTÓ</span><span></span></div>`;
+    listInv.forEach((inv, i) => {
+        cont.innerHTML += `<div style="display:grid; grid-template-columns: 1fr 50px 50px 70px 30px; gap:5px; margin-bottom:5px;">
+            <div onclick="abrirTecladoTexto(${i})" style="background:#eee; padding:10px; border-radius:5px; overflow:hidden; font-size:0.8em; font-weight:bold;">${inv.n || '...'}</div>
+            <div onclick="abrirNumComida(${i},'a')" style="background:#eee; padding:10px; border-radius:5px; text-align:center; font-weight:bold;">${inv.a}</div>
+            <div onclick="abrirNumComida(${i},'k')" style="background:#eee; padding:10px; border-radius:5px; text-align:center; font-weight:bold;">${inv.k}</div>
+            <div onclick="abrirNumComida(${i},'g')" style="background:#eee; padding:10px; border-radius:5px; text-align:center; font-weight:bold;">${inv.g}€</div>
+            <button onclick="listInv.splice(${i},1);renderInv();guardar();" style="color:red; border:none; background:none; font-size:1.5em;">×</button>
+        </div>`;
+    });
 }
+
+function abrirNumComida(idx, tipo) {
+    editingInvIdx = idx; subTipoNum = tipo; inputVal = ""; modoTeclado = "COMIDA";
+    document.getElementById('titulo-prod-modal').innerText = "Valor";
+    document.getElementById('input-cantidad').innerText = "0";
+    document.getElementById('modal-cantidad').style.display = 'flex';
+}
+
+function abrirTecladoTexto(idx) {
+    editingInvIdx = idx; inputVal = listInv[idx].n;
+    document.getElementById('display-texto').innerText = inputVal;
+    document.getElementById('modal-teclado-texto').style.display = 'flex';
+    renderTecladoTexto();
+}
+
+function renderTecladoTexto() {
+    const cont = document.getElementById('grid-teclado-texto');
+    cont.innerHTML = "QWERTYUIOPASDFGHJKLÑZXCVBNM ".split("").map(l => 
+        `<button class="tecla" style="padding:10px 0; font-size:1.1em;" onclick="addLetra('${l}')">${l===' '?'___':l}</button>`).join('');
+    cont.innerHTML += `<button class="tecla" style="grid-column:span 2; background:var(--warning);" onclick="addLetra('DEL')">DEL</button>`;
+}
+
+function addLetra(l) {
+    if(l === 'DEL') inputVal = inputVal.slice(0, -1);
+    else if(inputVal.length < 12) inputVal += l;
+    document.getElementById('display-texto').innerText = inputVal;
+}
+
+function confirmarTexto() {
+    listInv[editingInvIdx].n = inputVal.toUpperCase();
+    renderInv(); cerrarModales();
+}
+
 function calcularCuentas() {
     const totalBar = carrito.reduce((acc, i) => acc + (i.p * i.cant), 0);
     const totalG = listInv.reduce((acc, i) => acc + (parseFloat(i.g)||0), 0);
     const coef = listInv.reduce((acc, i) => acc + (parseInt(i.a)||0) + ((parseFloat(i.k)||0)*0.5), 0);
     if(coef === 0) return;
     const precioU = (totalBar + totalG) / coef;
+    let h = `<b>Precio ración: ${precioU.toFixed(2)}€</b><br>`;
+    listInv.forEach(inv => {
+        const p = (inv.a * 1) + (inv.k * 0.5);
+        const bal = (p * precioU) + (inv.a * 1) - inv.g;
+        h += `${inv.n || '?'}: ${bal > 0 ? `<span style="color:red">+${bal.toFixed(2)}€</span>` : `<span style="color:green">${bal.toFixed(2)}€</span>`}, `;
+    });
+    document.getElementById('resumen-reparto').innerHTML = h;
     document.getElementById('resumen-reparto').style.display = 'block';
-    document.getElementById('resumen-reparto').innerHTML = "Precio por ración: " + precioU.toFixed(2) + "€";
 }
+
+function guardar() {
+    let d = [...carrito]; if(listInv.length > 0) d.push({esComida:true, datos:listInv});
+    tickets[socioActivo] = d; localStorage.setItem('v35_tickets', JSON.stringify(tickets));
+    actualizarTicket();
+}
+
+function cerrarVenta() { if(confirm("¿Cobrar venta?")) { delete tickets[socioActivo]; localStorage.setItem('v35_tickets', JSON.stringify(tickets)); location.reload(); } }
+function cerrarModales() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
+function resetearComida() { if(confirm("¿Borrar comida?")) { listInv = []; guardar(); renderInv(); } }
+
+// --- INIT TECLADOS ---
+function initTeclados() {
+    const nC = document.getElementById('teclado-nums');
+    const eC = document.getElementById('teclado-edit');
+    [nC, eC].forEach(cont => {
+        for(let i=1; i<=9; i++) cont.innerHTML += `<button class="tecla" onclick="pressNum('${i}')">${i}</button>`;
+        cont.innerHTML += `<button class="tecla" onclick="pressNum('C')">C</button><button class="tecla" onclick="pressNum('0')">0</button><button class="tecla" onclick="pressNum('.')">.</button>`;
+    });
+    nC.innerHTML += `<button class="tecla" style="grid-column:span 3; background:var(--success); color:white;" onclick="${modoTeclado === 'COMIDA' ? 'confirmarComidaNum()' : 'confirmarCantidad()'}">ACEPTAR</button>`;
+}
+
+function confirmarComidaNum() {
+    listInv[editingInvIdx][subTipoNum] = parseFloat(inputVal) || 0;
+    guardar(); renderInv(); cerrarModales();
+}
+
+// Sobreescribo la función de aceptar del teclado numérico para que sea dinámica
+document.querySelector('#teclado-nums').addEventListener('click', function(e) {
+    if(e.target.innerText === 'ACEPTAR') {
+        if(modoTeclado === "COMIDA") confirmarComidaNum();
+        else confirmarCantidad();
+    }
+});
+
+initTeclados();
+renderSocios();
 </script>
 </body>
 </html>
