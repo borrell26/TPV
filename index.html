@@ -3,223 +3,461 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TPV ORIGINAL - OPTIMIZADO TCL</title>
+    <title>TPV Club Pro - Tablet 11"</title>
     <style>
-        :root { --primary: #2c3e50; --success: #27ae60; --accent: #3498db; --warning: #f39c12; --danger: #e74c3c; }
+        :root { --primary: #2c3e50; --success: #27ae60; --accent: #3498db; --bg: #f4f7f6; --danger: #e74c3c; --warning: #f39c12; --white: #ffffff; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); height: 100vh; overflow: hidden; }
         
-        /* AJUSTE PARA PANTALLA TCL: CERO SCROLL */
-        html, body { margin: 0; padding: 0; width: 100vw; height: 100vh; overflow: hidden; background: #f4f7f6; font-family: sans-serif; }
+        /* OPTIMIZACIÓN GRID SOCIOS: Más columnas para 11" */
+        #pantalla-socios { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); 
+            gap: 20px; 
+            padding: 30px; 
+            overflow-y: auto; 
+            height: 100vh; 
+            box-sizing: border-box; 
+            align-content: start; 
+        }
 
-        /* PANTALLA SELECCIÓN */
-        #pantalla-socios { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; padding: 15px; height: 100vh; box-sizing: border-box; }
-        .btn-socio { background: white; border: 2px solid var(--primary); border-radius: 12px; padding: 25px 10px; font-weight: bold; font-size: 1.2em; text-align: center; cursor: pointer; }
-        .nav-reponedor { background: var(--warning); padding: 15px; border-radius: 10px; text-align: center; font-weight: bold; grid-column: 1 / -1; cursor: pointer; border: 2px solid var(--primary); margin-bottom: 5px; }
+        /* INTERFAZ TPV: Sidebar un poco más ancha para tickets largos */
+        #interfaz-tpv { display: none; grid-template-columns: 1fr 400px; height: 100vh; }
+        
+        #pantalla-reposicion { display: none; flex-direction: column; gap: 20px; padding: 30px; height: 100vh; box-sizing: border-box; overflow-y: auto; }
 
-        /* INTERFAZ PRINCIPAL */
-        #interfaz-tpv { display: none; grid-template-columns: 1fr 300px; height: 100vh; }
-        .zona-prods { display: flex; flex-direction: column; padding: 8px; overflow: hidden; }
-        #grid-prods { display: grid; grid-template-columns: repeat(auto-fill, minmax(115px, 1fr)); gap: 8px; overflow-y: auto; }
-        
-        /* TARJETAS COMPACTAS */
-        .card { background: white; border-radius: 10px; padding: 8px; text-align: center; border: 1px solid #ddd; height: 125px; display: flex; flex-direction: column; justify-content: space-between; }
-        .card img { height: 55px; object-fit: contain; }
-        
-        /* LATERAL (TIQUET) */
-        .sidebar { background: var(--primary); color: white; display: flex; flex-direction: column; padding: 10px; }
-        #ticket-lista { flex: 1; overflow-y: auto; font-size: 0.9em; margin: 10px 0; }
-        .total-box { font-size: 2.2em; font-weight: bold; text-align: center; padding: 10px 0; border-top: 2px solid white; }
+        /* BOTONES SOCIO: Más altos para facilitar el toque */
+        .btn-socio { background: var(--white); border: 2px solid var(--primary); border-radius: 20px; padding: 45px 15px; font-weight: bold; font-size: 1.6em; cursor: pointer; text-align: center; position: relative; box-shadow: 0 6px 15px rgba(0,0,0,0.1); transition: transform 0.1s; }
+        .btn-socio:active { transform: scale(0.98); }
 
-        /* MODALES Y CAPAS (Z-INDEX) */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); align-items: center; justify-content: center; }
+        .nav-reponedor { background: var(--warning); color: var(--primary); padding: 25px; border-radius: 20px; text-align: center; font-weight: bold; cursor: pointer; width: 100%; border: 2px solid var(--primary); box-sizing: border-box; grid-column: 1 / -1; font-size: 1.5em; margin-bottom: 15px; }
+
+        /* CUADRÍCULA PRODUCTOS: Tamaño optimizado para visibilidad clara */
+        .card { background: var(--white); border-radius: 18px; padding: 15px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.08); cursor: pointer; height: 210px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; border: 1px solid #e2e8f0; }
+        .card img { height: 100px; width: auto; max-width: 95%; object-fit: contain; }
+        .card b { font-size: 1.1em; }
         
-        /* IMPORTANTE: Los teclados siempre por encima de la comida */
-        #modal-reparto { z-index: 1000; } 
+        .sidebar { background: var(--primary); color: var(--white); display: flex; flex-direction: column; padding: 20px; }
+        .lista { flex: 1; overflow-y: auto; margin: 15px 0; }
+        .item-tiquet { display: flex; justify-content: space-between; padding: 18px; background: rgba(255,255,255,0.1); margin-bottom: 8px; border-radius: 12px; cursor: pointer; font-size: 1.1em; }
+        
+        /* TOTAL: Gigante para evitar errores de cobro */
+        .total { font-size: 3.5em; font-weight: bold; text-align: center; padding: 10px 0; border-top: 2px solid rgba(255,255,255,0.2); color: #fff; }
+        
+        /* MODALES: Forzar que el teclado esté SIEMPRE encima */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; }
         #modal-cantidad, #modal-teclado-texto { z-index: 2000 !important; }
-
-        .modal-content { background: white; padding: 20px; border-radius: 15px; width: 95%; max-width: 700px; color: #333; max-height: 95vh; overflow-y: auto; }
         
-        .grid-tec { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-        .tecla { background: #eee; border: none; padding: 15px; font-size: 1.4em; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .modal-content { background: var(--white); padding: 30px; border-radius: 30px; width: 90%; max-width: 700px; text-align: center; color: #333; max-height: 95vh; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.3); }
+        
+        /* FILA COMIDA: Más espaciada */
+        .fila-inv { display: grid; grid-template-columns: 1fr 80px 80px 100px 50px; gap: 10px; margin-bottom: 12px; }
+        .fila-inv div { background: #f8fafc; border: 1px solid #cbd5e0; border-radius: 10px; padding: 15px 5px; text-align: center; font-size: 1.2em; font-weight: bold; }
+
+        /* TECLADOS: Botones más grandes para dedos */
+        .grid-teclado { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 15px; }
+        .tecla { background: #edf2f7; border: none; padding: 25px; font-size: 1.8em; border-radius: 15px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+        .tecla:active { background: #cbd5e0; }
+
+        .btn-accion { padding: 20px; border: none; border-radius: 15px; color: white; font-weight: bold; font-size: 1.3em; cursor: pointer; flex: 1; }
+        .btn-cancelar { background: #cbd5e0; color: #2d3748; padding: 15px; border-radius: 15px; border: none; font-weight: bold; margin-top: 15px; width: 100%; cursor: pointer; font-size: 1.2em; }
+
+        .teclado-texto { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; margin-top: 15px; }
+        .tecla-t { background: #edf2f7; border: none; padding: 18px 2px; font-size: 1.2em; border-radius: 8px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div id="pantalla-socios">
-    <div class="nav-reponedor" onclick="activarModoReponedor()">🛠️ MODO REPONEDOR / GESTIÓN STOCK</div>
+<div id="pantalla-socios"></div>
+
+<div id="pantalla-reposicion">
+    <div style="width:100%; display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h2 style="font-size:2em; margin:0;">Reposición</h2>
+        <div style="display:flex; gap:10px;">
+            <button onclick="generarListaCompra()" style="background:var(--accent); color:white; padding:20px; border-radius:15px; border:none; font-weight:bold; font-size:1.1em;">🛒 LISTA COMPRA</button>
+            <button onclick="location.reload()" style="background:var(--success); color:white; padding:20px; border-radius:15px; border:none; font-weight:bold; font-size:1.1em;">💾 SALIR</button>
+        </div>
+    </div>
+    <div id="repo-menu-cats" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap:20px;"></div>
+    <div id="repo-menu-items" style="display:none; width: 100%;">
+        <button onclick="mostrarMenuCats()" style="margin-bottom:20px; padding:20px 40px; background:#4a5568; color:white; border:none; border-radius:15px; font-size:1.3em; font-weight:bold;">⬅️ VOLVER</button>
+        <div id="repo-grid-productos" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px, 1fr)); gap:20px;"></div>
+    </div>
 </div>
 
 <div id="interfaz-tpv">
-    <div class="zona-prods">
-        <div id="grid-prods"></div>
+    <div style="padding:15px; display:flex; flex-direction:column; overflow:hidden;">
+        <div class="tabs" id="tab-container" style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;"></div>
+        <div id="grid-prods" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(190px, 1fr)); gap:20px; overflow-y:auto;"></div>
     </div>
     <div class="sidebar">
-        <h2 id="nom-socio" style="text-align:center; margin:0;">-</h2>
-        <div id="ticket-lista"></div>
-        <button onclick="abrirReparto()" style="background:var(--accent); color:white; padding:12px; border:none; border-radius:8px; font-weight:bold; margin-bottom:5px;">🍽️ GESTIÓN COMIDA</button>
-        <div class="total-box" id="total-txt">0.00€</div>
-        <button onclick="cobrar()" style="background:var(--success); color:white; padding:18px; border:none; border-radius:8px; font-weight:bold; font-size:1.3em;">✅ COBRAR</button>
-        <button onclick="location.reload()" style="background:none; border:none; color:white; margin-top:10px; opacity:0.5;">🔙 VOLVER</button>
-    </div>
-</div>
-
-<div id="modal-cantidad" class="modal">
-    <div class="modal-content" style="max-width: 350px;">
-        <h3 id="tit-prod">-</h3>
-        <div id="disp-num" style="font-size:4em; font-weight:bold; text-align:center; color:var(--accent); margin: 10px 0;">0</div>
-        <div id="teclado-num-cont" class="grid-tec"></div>
-        <button onclick="cerrarTeclados()" style="width:100%; margin-top:15px; padding:12px; background:#ddd; border:none; border-radius:8px;">CANCELAR</button>
+        <h2 id="nombre-socio" style="margin:0; font-size:2.4em;">Socio</h2>
+        <div class="lista" id="ticket-lista"></div>
+        <button onclick="abrirModalReparto()" style="background:var(--accent); color:white; border:none; padding:20px; border-radius:15px; font-size:1.2em; font-weight:bold; margin-bottom:12px; cursor:pointer;">🍽️ COMIDA / REPARTO</button>
+        <div class="total" id="total-txt">0.00€</div>
+        <button style="background:var(--success); color:white; border:none; padding:30px; border-radius:20px; font-size:1.8em; font-weight:bold; cursor:pointer;" onclick="cerrarVenta()">✅ FINALIZAR COBRO</button>
+        <button onclick="location.reload()" style="margin-top:15px; background:none; border:none; color:white; cursor:pointer; opacity:0.6; font-size:1.2em;">🔙 Volver Atrás</button>
     </div>
 </div>
 
 <div id="modal-teclado-texto" class="modal">
-    <div class="modal-content">
-        <div id="disp-texto" style="font-size:2em; font-weight:bold; background:#eee; padding:15px; margin-bottom:15px; text-align:center; min-height:1.2em; border-radius:10px;"></div>
-        <div id="teclado-texto-cont" style="display:grid; grid-template-columns: repeat(10, 1fr); gap:5px;"></div>
-        <div style="display:flex; gap:10px; margin-top:20px;">
-            <button onclick="confirmarTexto()" style="flex:1; padding:20px; background:var(--success); color:white; border:none; border-radius:10px; font-weight:bold;">ACEPTAR</button>
-            <button onclick="cerrarTeclados()" style="flex:1; padding:20px; background:var(--danger); color:white; border:none; border-radius:10px; font-weight:bold;">CANCELAR</button>
+    <div class="modal-content" style="width: 95%; max-width: 1000px;">
+        <h3 id="titulo-teclado" style="font-size: 1.8em;">Nombre del Comensal</h3>
+        <div id="display-texto" style="font-size:3em; font-weight:bold; background:#f8fafc; padding:20px; border-radius:20px; margin-bottom:10px; min-height:1.2em; border:3px solid #ccc; color: var(--primary);"></div>
+        <div class="teclado-texto" id="grid-teclado-texto"></div>
+        <div style="display:flex; gap:15px; margin-top:25px;">
+            <button class="btn-accion" style="background:var(--success);" onclick="confirmarTexto()">ACEPTAR</button>
+            <button class="btn-accion" style="background:var(--danger);" onclick="document.getElementById('modal-teclado-texto').style.display='none'">CANCELAR</button>
         </div>
+    </div>
+</div>
+
+<div id="modal-cantidad" class="modal">
+    <div class="modal-content" style="width: 500px;">
+        <h3 id="titulo-prod-modal" style="font-size: 1.6em;"></h3>
+        <div id="input-cantidad" style="font-size:5em; font-weight:bold; margin-bottom:15px; color: var(--accent);">0</div>
+        <div class="grid-teclado" id="teclado-nums"></div>
+        <button class="btn-cancelar" onclick="document.getElementById('modal-cantidad').style.display='none'">CANCELAR</button>
+    </div>
+</div>
+
+<div id="modal-edit" class="modal">
+    <div class="modal-content">
+        <h3 id="edit-nombre" style="font-size: 1.6em;"></h3>
+        <p id="txt-actual" style="font-size: 1.1em;"></p>
+        <div id="edit-input-display" style="font-size:5em; font-weight:bold; color:var(--accent); margin:15px 0;">0</div>
+        <div style="display:flex; gap:15px;">
+            <button class="btn-accion" style="background:var(--danger);" onclick="aplicarEdicion(-1)">- RESTAR</button>
+            <button class="btn-accion" style="background:var(--success);" onclick="aplicarEdicion(1)">+ SUMAR</button>
+        </div>
+        <div class="grid-teclado" id="teclado-edit"></div>
+        <button id="btn-eliminar-fila" style="width:100%; padding:20px; background:var(--danger); color:white; border:none; border-radius:20px; margin-top:20px; font-size:1.2em;" onclick="eliminarFilaEdicion()">ELIMINAR LÍNEA DEL TICKET</button>
+        <button class="btn-cancelar" onclick="document.getElementById('modal-edit').style.display='none'">↩️ VOLVER</button>
     </div>
 </div>
 
 <div id="modal-reparto" class="modal">
-    <div class="modal-content">
-        <h3>Reparto Gastos Comida</h3>
+    <div class="modal-content" style="width: 95%; max-width: 850px;">
+        <h2 style="font-size: 2em;">Gestión de Comida</h2>
         <div id="invitados-cont"></div>
-        <button onclick="addInvitado()" style="width:100%; padding:15px; margin:15px 0; border:2px dashed #ccc; background:none; font-weight:bold;">+ AÑADIR COMENSAL</button>
-        <div id="resumen-calculo" style="background:#eef2f7; padding:15px; border-radius:10px; display:none; margin-bottom:15px;"></div>
-        <div style="display:flex; gap:10px;">
-            <button onclick="calcularTodo()" style="flex:1; padding:15px; background:var(--accent); color:white; border:none; border-radius:8px; font-weight:bold;">CALCULAR</button>
-            <button onclick="document.getElementById('modal-reparto').style.display='none'" style="flex:1; padding:15px; background:var(--primary); color:white; border:none; border-radius:8px; font-weight:bold;">GUARDAR</button>
+        <button onclick="addInv()" style="width:100%; padding:20px; margin: 10px 0; background:#f0f0f0; border:3px dashed #ccc; border-radius:20px; font-weight:bold; font-size: 1.3em;">+ Añadir Comensal</button>
+        <div id="resumen-reparto" style="text-align:left; background:#eef2f7; padding:25px; border-radius:20px; margin-top:15px; display:none; font-size: 1.2em;"></div>
+        <div style="display:flex; flex-direction:column; gap:12px; margin-top:20px;">
+            <div style="display:flex; gap:15px;">
+                <button class="btn-accion" style="background:var(--accent);" onclick="calcularCuentas()">CALCULAR Y GUARDAR</button>
+                <button class="btn-accion" style="background:var(--primary);" onclick="cerrarTPVCompletamente()">CERRAR VENTANA</button>
+            </div>
+            <button class="btn-cancelar" style="background:var(--danger); color:white; border: 2px solid #000; font-size: 1.3em; padding: 20px;" onclick="resetearComida()">❌ RESETEAR COMIDA</button>
         </div>
     </div>
 </div>
 
+<div id="modal-compra" class="modal"><div class="modal-content"><h3>🛒 Faltas en Stock</h3><div id="cuerpo-compra" style="text-align:left; max-height:500px; overflow-y:auto; font-size:1.3em;"></div><button style="width:100%; padding:25px; margin-top:20px; font-size:1.3em; font-weight:bold;" onclick="cerrarModales()">CERRAR LISTA</button></div></div>
+
 <script>
-// --- TU LÓGICA ORIGINAL ---
-const PRECIOS = { "MAHOU 25cl.": 0.90, "ALHAMBRA 33cl.": 1.50, "COCA COLA": 1.00, "AGUA": 0.50, "BARCELÓ": 2.00, "PATATAS": 0.60 };
-let stock = JSON.parse(localStorage.getItem('club_stock')) || {};
-let tickets = JSON.parse(localStorage.getItem('club_tickets')) || {};
+/* MANTENGO TODA TU LÓGICA ORIGINAL AQUÍ ABAJO */
+const ML_COPA = 30;
+const PRECIOS = { "MAHOU 25cl.": 0.90, "ALHAMBRA 33cl.": 1.50, "BUDWEISSER 33cl.": 1.50, "MAHOU SIN 25cl.": 0.90, "COCA COLA": 1.00, "COCA COLA ZERO": 1.00, "FANTA NARANJA": 1.00, "FANTA LIMÓN": 1.00, "SPRITE": 1.00, "ACUARIUS NARANJA": 1.00, "ACUARIUS LIMÓN": 1.00, "NESTEÁ LIMÓN": 1.00, "TÓNICA SCHWEPPES": 1.00, "TÓNICA SCHWEPPES ZERO": 1.00, "CASERA BLANCA 0,5L": 0.50, "AGUA": 0.50, "VIÑAS DEL VERO": 9.00, "BERONIA CRIANZA": 9.00, "BERONIA RESERVA": 16.00, "TIO PEPE 50cl.": 6.00, "MANZANILLA 50CL.": 6.00, "TINTO BÁSICO 70cl.": 2.00, "CROFT TWIST": 6.00, "DESCORCHE VINO": 2.00, "BARCELÓ": 2.00, "WHITE LABEL": 2.00, "RIVES": 2.00, "PINK RIVES": 2.00, "RIVES EXÓTICA": 2.00, "DESCORCHE COPA": 3.00, "ATÚN ENCEBOLLADO": 8.00, "ATÚN FRITADA": 8.00, "PATATAS FRITAS": 0.60 };
+const CATEGORIAS = { "CERVEZAS": ["MAHOU 25cl.", "ALHAMBRA 33cl.", "BUDWEISSER 33cl.", "MAHOU SIN 25cl."], "REFRESCOS": ["COCA COLA", "COCA COLA ZERO", "FANTA NARANJA", "FANTA LIMÓN", "SPRITE", "ACUARIUS NARANJA", "ACUARIUS LIMÓN", "NESTEÁ LIMÓN", "TÓNICA SCHWEPPES", "TÓNICA SCHWEPPES ZERO", "CASERA BLANCA 0,5L", "AGUA"], "VINOS": ["VIÑAS DEL VERO", "BERONIA CRIANZA", "BERONIA RESERVA", "TIO PEPE 50cl.", "MANZANILLA 50CL.", "TINTO BÁSICO 70cl.", "CROFT TWIST", "DESCORCHE VINO"], "ESPIRITUOSOS": ["BARCELÓ", "WHITE LABEL", "RIVES", "PINK RIVES", "RIVES EXÓTICA", "DESCORCHE COPA"], "OTROS": ["ATÚN ENCEBOLLADO", "ATÚN FRITADA", "PATATAS FRITAS"] };
+const STOCK_IDEAL = { "MAHOU 25cl.": 180, "ALHAMBRA 33cl.": 12, "BUDWEISSER 33cl.": 12, "MAHOU SIN 25cl.": 60, "COCA COLA": 60, "COCA COLA ZERO": 60, "FANTA NARANJA": 60, "FANTA LIMÓN": 60, "SPRITE": 60, "ACUARIUS NARANJA": 60, "ACUARIUS LIMÓN": 60, "NESTEÁ LIMÓN": 60, "TÓNICA SCHWEPPES": 60, "TÓNICA SCHWEPPES ZERO": 60, "CASERA BLANCA 0,5L": 60, "AGUA": 60, "VIÑAS DEL VERO": 6, "BERONIA CRIANZA": 6, "BERONIA RESERVA": 6, "TIO PEPE 50cl.": 6, "MANZANILLA 50CL.": 6, "TINTO BÁSICO 70cl.": 6, "CROFT TWIST": 6, "BARCELÓ": 3000, "WHITE LABEL": 3000, "RIVES": 3000, "PINK RIVES": 3000, "RIVES EXÓTICA": 3000, "ATÚN ENCEBOLLADO": 8, "ATÚN FRITADA": 8, "PATATAS FRITAS": 20 };
 
-// Inicializar stock
-Object.keys(PRECIOS).forEach(p => { if(stock[p] === undefined) stock[p] = 24; });
+let stockActual = JSON.parse(localStorage.getItem('v29_stock')) || {...STOCK_IDEAL};
+let tickets = JSON.parse(localStorage.getItem('v29_tickets')) || {};
+let socioActivo = ""; let carrito = []; let catActiva = "CERVEZAS";
+let prodTemp = null; let inputVal = "";
+let listInv = []; let modoRepoActivo = false;
+let editingInvIdx = -1; let currentTexto = "";
+let currentEditType = "";
 
-let socioActivo = "", carrito = [], listaInv = [], inputVal = "", prodTemp = "", modo = "", editIdx = -1, subTipo = "", esReponedor = false;
+function getImg(n) { return `img/${n.replace(/ /g, '_').toUpperCase()}.jpg`; }
 
 function renderSocios() {
+    modoRepoActivo = false;
     const cont = document.getElementById('pantalla-socios');
-    const nav = cont.querySelector('.nav-reponedor');
-    cont.innerHTML = ""; cont.appendChild(nav);
-    ["FRAN", "SANTI", "SANTOS", "JESÚS", "MANU", "MIGUEL", "JR", "NUÑEZ"].forEach(s => {
-        const cant = (tickets[s] || []).filter(i => i.n).reduce((a, b) => a + b.cant, 0);
-        cont.innerHTML += `<div class="btn-socio" onclick="abrirTPV('${s}')">${s} ${cant > 0 ? `(${cant})` : ''}</div>`;
+    cont.innerHTML = '<div class="nav-reponedor" onclick="abrirReposicion()">🛠️ MODO REPONEDOR</div>';
+    ["FRAN", "SANTI", "SANTOS", "JESÚS", "MANU", "JR", "MIGUEL", "NUÑEZ", "SILVA", "LUIS", "ROSADO"].forEach(s => {
+        const data = tickets[s] || [];
+        const cant = data.filter(i => i.n).reduce((acc, i) => acc + i.cant, 0);
+        cont.innerHTML += `<div class="btn-socio" onclick="abrirTPV('${s}')">${s} ${cant > 0 ? `<span style="position:absolute; top:-10px; right:-10px; background:var(--danger); color:white; border-radius:50%; width:40px; height:40px; display:flex; align-items:center; justify-content:center; border:3px solid white; font-size:18px;">${cant}</span>` : ''}</div>`;
     });
 }
 
-function abrirTPV(s) {
-    socioActivo = s; esReponedor = false;
-    let d = tickets[s] || [];
-    carrito = d.filter(i => i.n);
-    listaInv = (d.find(i => i.esComida) || {datos:[]}).datos;
+function abrirReposicion() {
+    modoRepoActivo = true;
     document.getElementById('pantalla-socios').style.display = 'none';
-    document.getElementById('interfaz-tpv').style.display = 'grid';
-    document.getElementById('nom-socio').innerText = s;
-    renderProds(); actualizarTicket();
+    document.getElementById('pantalla-reposicion').style.display = 'flex';
+    mostrarMenuCats();
 }
 
-function activarModoReponedor() {
-    esReponedor = true;
-    document.getElementById('pantalla-socios').style.display = 'none';
-    document.getElementById('interfaz-tpv').style.display = 'grid';
-    document.getElementById('nom-socio').innerText = "MODO STOCK";
-    renderProds();
+function mostrarMenuCats() {
+    document.getElementById('repo-menu-cats').style.display = 'grid';
+    document.getElementById('repo-menu-items').style.display = 'none';
+    document.getElementById('repo-menu-cats').innerHTML = Object.keys(CATEGORIAS).map(cat => `<button style="background:var(--primary); color:white; padding:45px 15px; border-radius:20px; border:none; font-size:1.6em; font-weight:bold;" onclick="mostrarProductosRepo('${cat}')">${cat}</button>`).join('');
 }
+
+function mostrarProductosRepo(cat) {
+    catActiva = cat;
+    document.getElementById('repo-menu-cats').style.display = 'none';
+    document.getElementById('repo-menu-items').style.display = 'block';
+    const cont = document.getElementById('repo-grid-productos');
+    cont.innerHTML = CATEGORIAS[cat].filter(n => STOCK_IDEAL[n]).map(n => {
+        const esE = (cat === "ESPIRITUOSOS");
+        return `<div class="card" onclick="abrirEdicionRepo('${n}')">
+            <img src="${getImg(n)}" onerror="this.style.opacity='0.1'">
+            <b>${n}</b><div style="font-weight:bold; color:var(--primary)">${esE ? (stockActual[n]/700).toFixed(1)+' Bot.' : stockActual[n]+' uds'}</div>
+        </div>`;
+    }).join('');
+}
+
+function abrirEdicionRepo(n) {
+    prodTemp = n; inputVal = "";
+    document.getElementById('edit-nombre').innerText = n;
+    document.getElementById('txt-actual').innerText = "Stock actual: " + stockActual[n];
+    document.getElementById('edit-input-display').innerText = "0";
+    document.getElementById('btn-eliminar-fila').style.display = 'none';
+    document.getElementById('modal-edit').style.display = 'flex';
+}
+
+function abrirTPV(n) { 
+    socioActivo = n; 
+    let data = tickets[n] || [];
+    carrito = data.filter(i => i.n);
+    let comidaG = data.find(i => i.esComida);
+    listInv = comidaG ? comidaG.datos : []; 
+    document.getElementById('pantalla-socios').style.display = 'none'; 
+    document.getElementById('interfaz-tpv').style.display = 'grid'; 
+    document.getElementById('nombre-socio').innerText = n; 
+    renderTabs(); renderProds(); actualizarTicket(); 
+}
+
+function renderTabs() { const cont = document.getElementById('tab-container'); cont.innerHTML = Object.keys(CATEGORIAS).map(c => `<button style="padding:18px; flex:1; border:none; border-radius:15px; font-weight:bold; font-size:1em; background:${c===catActiva?'var(--accent)':'#cbd5e0'}; color:${c===catActiva?'white':'black'}" onclick="catActiva='${c}'; renderTabs(); renderProds()">${c}</button>`).join(''); }
 
 function renderProds() {
-    document.getElementById('grid-prods').innerHTML = Object.keys(PRECIOS).map(n => `
-        <div class="card" onclick="lanzarNum('${n}', '${esReponedor ? 'STOCK' : 'VENTA'}')">
+    document.getElementById('grid-prods').innerHTML = CATEGORIAS[catActiva].map(n => {
+        const esE = (catActiva === "ESPIRITUOSOS");
+        const stockTxt = esE ? (stockActual[n]/700).toFixed(1)+' Bot.' : stockActual[n]+' uds';
+        return `<div class="card" onclick="abrirTecladoProd('${n}')">
+            <img src="${getImg(n)}" onerror="this.style.opacity='0.1'">
             <b>${n}</b>
-            <div style="font-size:0.75em; color:#666;">Stock: ${stock[n]}</div>
-            <span style="color:var(--success); font-weight:bold;">${PRECIOS[n].toFixed(2)}€</span>
-        </div>`).join('');
+            <span style="color:var(--success); font-weight:bold; font-size:1.2em;">${PRECIOS[n].toFixed(2)}€</span>
+            <small style="color:#666; font-size:0.8em;">Stock: ${stockTxt}</small>
+        </div>`;
+    }).join('');
 }
 
-// --- TECLADOS (TU LÓGICA DE SIEMPRE) ---
-function lanzarNum(p, m, st = "") {
-    prodTemp = p; modo = m; subTipo = st; inputVal = "";
-    document.getElementById('tit-prod').innerText = p;
-    document.getElementById('disp-num').innerText = (m === 'VENTA' ? "1" : "0");
-    document.getElementById('modal-cantidad').style.display = 'flex';
+function abrirModalReparto() { 
+    if (listInv.length === 0) listInv = [{n: socioActivo, a: 1, k: 0, g: 0}];
+    renderInv(); 
+    document.getElementById('modal-reparto').style.display = 'flex'; 
 }
 
-function confirmarNum() {
-    let v = parseFloat(inputVal) || (modo === 'VENTA' ? 1 : 0);
-    if(modo === 'VENTA') {
-        if(stock[prodTemp] < v) { alert("Stock insuficiente"); return; }
-        stock[prodTemp] -= v;
-        let ex = carrito.find(i => i.n === prodTemp);
-        if(ex) ex.cant += v; else carrito.push({n: prodTemp, cant: v, p: PRECIOS[prodTemp]});
-    } else if(modo === 'STOCK') {
-        stock[prodTemp] = v;
-    } else if(modo === 'COMIDA') {
-        listaInv[editIdx][subTipo] = v; renderInvitados();
-    }
-    guardar(); renderProds(); actualizarTicket(); cerrarTeclados();
-}
+function addInv() { listInv.push({n: "", a: 0, k: 0, g: 0}); renderInv(); }
 
-function abrirReparto() {
-    if(listaInv.length === 0) listaInv = [{n: socioActivo, a:1, k:0, g:0}];
-    renderInvitados();
-    document.getElementById('modal-reparto').style.display = 'flex';
-}
-
-function addInvitado() { listaInv.push({n:"", a:0, k:0, g:0}); renderInvitados(); }
-
-function renderInvitados() {
+function renderInv() {
     const cont = document.getElementById('invitados-cont');
-    cont.innerHTML = `<div style="display:grid; grid-template-columns: 1fr 50px 50px 70px 30px; gap:5px; font-weight:bold; font-size:0.8em; margin-bottom:5px;"><span>NOMBRE</span><span>ADU</span><span>NIÑO</span><span>APORTÓ</span><span></span></div>`;
-    listaInv.forEach((inv, i) => {
-        cont.innerHTML += `<div style="display:grid; grid-template-columns: 1fr 50px 50px 70px 30px; gap:5px; margin-bottom:8px;">
-            <div onclick="abrirTexto(${i})" style="background:#eee; padding:10px; border-radius:5px; font-size:0.8em; overflow:hidden;">${inv.n || '...'}</div>
-            <div onclick="lanzarNum('${inv.n}', 'COMIDA', 'a'); editIdx=${i};" style="background:#eee; padding:10px; text-align:center;">${inv.a}</div>
-            <div onclick="lanzarNum('${inv.n}', 'COMIDA', 'k'); editIdx=${i};" style="background:#eee; padding:10px; text-align:center;">${inv.k}</div>
-            <div onclick="lanzarNum('${inv.n}', 'COMIDA', 'g'); editIdx=${i};" style="background:#eee; padding:10px; text-align:center;">${inv.g}€</div>
-            <button onclick="listaInv.splice(${i},1);renderInvitados();" style="color:red; border:none; background:none; font-size:1.5em;">×</button>
+    cont.innerHTML = `<div style="display:grid; grid-template-columns: 1fr 80px 80px 100px 50px; gap:10px; font-weight:bold; font-size:0.85em; margin-bottom:10px; color:#555;"><span>Nombre</span><span>>13a</span><span><13a</span><span>Gasto€</span><span></span></div>`;
+    listInv.forEach((inv, i) => {
+        cont.innerHTML += `<div class="fila-inv">
+            <div onclick="abrirTecladoTexto(${i})" style="text-align:left;">${inv.n || 'Nombre...'}</div>
+            <div onclick="abrirTecladoNumComida(${i}, 'adulto')">${inv.a}</div>
+            <div onclick="abrirTecladoNumComida(${i}, 'nino')">${inv.k}</div>
+            <div onclick="abrirTecladoNumComida(${i}, 'gasto')">${inv.g.toFixed(2)}€</div>
+            <button onclick="listInv.splice(${i},1); renderInv(); guardarTicketParcial();" style="color:red; border:none; background:none; font-size:2em; line-height:1;">×</button>
         </div>`;
     });
 }
 
-function calcularTodo() {
-    const tBar = carrito.reduce((a, b) => a + (b.p * b.cant), 0);
-    const tGast = listaInv.reduce((a, b) => a + b.g, 0);
-    const coef = listaInv.reduce((a, b) => a + b.a + (b.k * 0.5), 0);
-    if(coef === 0) return;
-    const precioR = (tBar + tGast) / coef;
-    let h = `<b>Ración: ${precioR.toFixed(2)}€</b><br><br>`;
-    listaInv.forEach(inv => {
-        const bal = ((inv.a + (inv.k*0.5)) * precioR) + (inv.a * 1) - inv.g;
-        h += `${inv.n || '?'}: ${bal > 0 ? `<span style="color:red">Paga ${bal.toFixed(2)}€</span>` : `<span style="color:green">Recibe ${Math.abs(bal).toFixed(2)}€</span>`}<br>`;
-    });
-    document.getElementById('resumen-calculo').innerHTML = h;
-    document.getElementById('resumen-calculo').style.display = 'block';
+function abrirTecladoNumComida(idx, tipo) {
+    editingInvIdx = idx;
+    currentEditType = tipo;
+    inputVal = "";
+    const titulos = { 'adulto': 'Adultos (>13 años)', 'nino': 'Niños (<13 años)', 'gasto': 'Gasto Aportado (€)' };
+    document.getElementById('titulo-prod-modal').innerText = titulos[tipo];
+    document.getElementById('input-cantidad').innerText = "0";
+    document.getElementById('modal-cantidad').style.display = 'flex';
 }
 
-function abrirTexto(i) { editIdx = i; inputVal = listaInv[i].n; document.getElementById('disp-texto').innerText = inputVal; document.getElementById('modal-teclado-texto').style.display = 'flex'; }
-function confirmarTexto() { listaInv[editIdx].n = inputVal.toUpperCase(); renderInvitados(); cerrarTeclados(); }
-function cerrarTeclados() { document.getElementById('modal-cantidad').style.display = 'none'; document.getElementById('modal-teclado-texto').style.display = 'none'; }
-function guardar() { if(!esReponedor) { let d = [...carrito]; if(listaInv.length > 0) d.push({esComida:true, datos:listaInv}); tickets[socioActivo] = d; localStorage.setItem('club_tickets', JSON.stringify(tickets)); } localStorage.setItem('club_stock', JSON.stringify(stock)); }
-function actualizarTicket() { let t = 0; document.getElementById('ticket-lista').innerHTML = carrito.map(i => { t += i.p * i.cant; return `<div style="display:flex;justify-content:space-between;padding:4px;border-bottom:1px solid rgba(255,255,255,0.1);"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}€</span></div>`; }).join(''); const canon = listaInv.reduce((a,b)=>a+b.a,0); document.getElementById('total-txt').innerText = (t + canon).toFixed(2) + "€"; }
-function cobrar() { if(confirm("¿Cobrar?")) { delete tickets[socioActivo]; guardar(); location.reload(); } }
+function abrirTecladoTexto(idx) {
+    editingInvIdx = idx;
+    currentTexto = listInv[idx].n;
+    document.getElementById('display-texto').innerText = currentTexto;
+    document.getElementById('modal-teclado-texto').style.display = 'flex';
+    renderTecladoTexto();
+}
 
-// Init Teclados
-const nCont = document.getElementById('teclado-num-cont');
-for(let i=1; i<=9; i++) nCont.innerHTML += `<button class="tecla" onclick="inputVal+='${i}'; document.getElementById('disp-num').innerText=inputVal;">${i}</button>`;
-nCont.innerHTML += `<button class="tecla" onclick="inputVal=''">C</button><button class="tecla" onclick="inputVal+='0'; document.getElementById('disp-num').innerText=inputVal;">0</button><button class="tecla" style="background:var(--success); color:white;" onclick="confirmarNum()">OK</button>`;
+function renderTecladoTexto() {
+    const cont = document.getElementById('grid-teclado-texto');
+    const teclas = "1234567890QWERTYUIOPASDFGHJKLÑZXCVBNM ".split("");
+    cont.innerHTML = teclas.map(l => `<button class="tecla-t ${l===' '?'tecla-wide':''}" onclick="addLetra('${l}')">${l===' '?'ESPACIO':l}</button>`).join('');
+    cont.innerHTML += `<button class="tecla-t tecla-wide" style="background:var(--warning);" onclick="addLetra('BACK')">← BORRAR</button>`;
+}
 
-const tCont = document.getElementById('teclado-texto-cont');
-"QWERTYUIOPASDFGHJKLÑZXCVBNM ".split("").forEach(l => { tCont.innerHTML += `<button class="tecla" style="padding:10px 0; font-size:1.1em;" onclick="inputVal+='${l}'; document.getElementById('disp-texto').innerText=inputVal;">${l===' '?'_':l}</button>`; });
-tCont.innerHTML += `<button class="tecla" style="grid-column:span 2; background:var(--danger); color:white;" onclick="inputVal=inputVal.slice(0,-1); document.getElementById('disp-texto').innerText=inputVal;">DEL</button>`;
+function addLetra(l) {
+    if(l === 'BACK') currentTexto = currentTexto.slice(0, -1);
+    else if(currentTexto.length < 15) currentTexto += l;
+    document.getElementById('display-texto').innerText = currentTexto;
+}
 
+function confirmarTexto() {
+    listInv[editingInvIdx].n = currentTexto;
+    document.getElementById('modal-teclado-texto').style.display = 'none';
+    renderInv();
+}
+
+function calcularCuentas() {
+    const totalBar = carrito.reduce((acc, i) => acc + (i.p * i.cant), 0);
+    const totalExterno = listInv.reduce((acc, i) => acc + i.g, 0);
+    const totalCoeficientes = listInv.reduce((acc, i) => acc + (i.a * 1) + (i.k * 0.5), 0);
+    
+    if (totalCoeficientes === 0) return;
+    
+    const precioPorUnidad = (totalBar + totalExterno) / totalCoeficientes;
+    let h = `<h3>Cuentas Reparto (Bar + Comida):</h3>`;
+    
+    listInv.forEach(inv => {
+        const p = (inv.a * 1) + (inv.k * 0.5);
+        const deb = (p * precioPorUnidad) + (inv.a * 1); 
+        const bal = deb - inv.g;
+        h += `<div style="margin-bottom:10px; border-bottom:1px solid #ddd; padding-bottom:5px;"><b>${inv.n || 'Invitado'}:</b> ${bal > 0 ? `<span style="color:var(--danger)">DEBE ${bal.toFixed(2)}€</span>` : `<span style="color:var(--success)">RECIBE ${Math.abs(bal).toFixed(2)}€</span>`}</div>`;
+    });
+    document.getElementById('resumen-reparto').innerHTML = h;
+    document.getElementById('resumen-reparto').style.display = 'block';
+    guardarTicketParcial();
+}
+
+function resetearComida() {
+    if(confirm("¿Seguro que quieres borrar la comida?")) {
+        listInv = [];
+        document.getElementById('resumen-reparto').style.display = 'none';
+        guardarTicketParcial();
+        cerrarTPVCompletamente();
+    }
+}
+
+function abrirTecladoProd(n) { 
+    prodTemp = n; 
+    currentEditType = 'prod';
+    inputVal = ""; 
+    document.getElementById('titulo-prod-modal').innerText = n; 
+    document.getElementById('input-cantidad').innerText = "1"; 
+    document.getElementById('modal-cantidad').style.display = 'flex'; 
+}
+
+function presionarNum(v) { 
+    if(v === '.' && inputVal.includes('.')) return;
+    inputVal += v; 
+    document.getElementById('input-cantidad').innerText = inputVal || "0"; 
+}
+
+function confirmar() {
+    const valStr = document.getElementById('input-cantidad').innerText;
+    const valorNum = parseFloat(valStr) || 0;
+
+    if (currentEditType === 'prod') {
+        const c = parseFloat(valStr) || 1;
+        const ex = carrito.find(i => i.n === prodTemp);
+        if(ex) ex.cant += c; else carrito.push({n: prodTemp, cant: c, p: PRECIOS[prodTemp], esLicor: CATEGORIAS["ESPIRITUOSOS"].includes(prodTemp)});
+    } 
+    else if (currentEditType === 'adulto') { listInv[editingInvIdx].a = parseInt(valorNum) || 0; renderInv(); }
+    else if (currentEditType === 'nino') { listInv[editingInvIdx].k = valorNum || 0; renderInv(); }
+    else if (currentEditType === 'gasto') { listInv[editingInvIdx].g = valorNum || 0; renderInv(); }
+    
+    guardarTicketParcial();
+    document.getElementById('modal-cantidad').style.display = 'none'; 
+}
+
+function guardarTicketParcial() {
+    let d = carrito.filter(i => i.n); 
+    if(listInv.length > 0) d.push({ esComida: true, datos: listInv });
+    tickets[socioActivo] = d; 
+    localStorage.setItem('v29_tickets', JSON.stringify(tickets)); 
+    actualizarTicket();
+}
+
+function actualizarTicket() {
+    let tS = 0;
+    document.getElementById('ticket-lista').innerHTML = carrito.map(i => {
+        tS += i.p * i.cant;
+        return `<div class="item-tiquet" onclick="abrirEdicionTicket('${i.n}')"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}€</span></div>`;
+    }).join('');
+    
+    const canonTotal = listInv.reduce((acc, i) => acc + (i.a * 1), 0);
+    if(canonTotal > 0) {
+        document.getElementById('ticket-lista').innerHTML += `<div class="item-tiquet" style="border:2px dashed #fff; background: rgba(255,255,255,0.15);"><span>Canon Comida (${canonTotal} pers)</span><span>${canonTotal.toFixed(2)}€</span></div>`;
+    }
+    
+    document.getElementById('total-txt').innerText = (tS + canonTotal).toFixed(2) + "€";
+}
+
+function abrirEdicionTicket(n) {
+    prodTemp = n; inputVal = ""; const item = carrito.find(i => i.n === n);
+    document.getElementById('edit-nombre').innerText = n;
+    document.getElementById('txt-actual').innerText = "Cantidad actual: " + item.cant;
+    document.getElementById('edit-input-display').innerText = "0";
+    document.getElementById('btn-eliminar-fila').style.display = 'block';
+    document.getElementById('modal-edit').style.display = 'flex';
+}
+
+function presionarNumEdit(v) { 
+    if(v === '.' && inputVal.includes('.')) return;
+    inputVal += v; 
+    document.getElementById('edit-input-display').innerText = inputVal; 
+}
+
+function aplicarEdicion(signo) {
+    const val = parseFloat(inputVal) || 0;
+    if (modoRepoActivo) {
+        const esE = CATEGORIAS["ESPIRITUOSOS"].includes(prodTemp);
+        stockActual[prodTemp] += ((esE ? val * 700 : val) * signo);
+        localStorage.setItem('v29_stock', JSON.stringify(stockActual));
+        mostrarProductosRepo(catActiva);
+    } else {
+        const item = carrito.find(i => i.n === prodTemp);
+        if (item) {
+            item.cant += (val * signo); 
+            if (item.cant <= 0) carrito = carrito.filter(i => i.n !== prodTemp);
+        }
+    }
+    guardarTicketParcial();
+    document.getElementById('modal-edit').style.display = 'none';
+}
+
+function eliminarFilaEdicion() { 
+    carrito = carrito.filter(i => i.n !== prodTemp); 
+    guardarTicketParcial();
+    document.getElementById('modal-edit').style.display = 'none';
+}
+
+function cerrarVenta() {
+    carrito.forEach(i => { if(!i.n.includes("DESCORCHE")) stockActual[i.n] -= (i.esLicor ? i.cant*ML_COPA : i.cant); });
+    localStorage.setItem('v29_stock', JSON.stringify(stockActual));
+    delete tickets[socioActivo]; 
+    localStorage.setItem('v29_tickets', JSON.stringify(tickets)); 
+    location.reload();
+}
+
+function generarListaCompra() {
+    let h = "";
+    Object.keys(STOCK_IDEAL).forEach(n => {
+        const f = STOCK_IDEAL[n] - stockActual[n];
+        if(f > 0) h += `<div style="padding:15px; border-bottom:1px solid #eee;"><span>${n}: </span><b>${STOCK_IDEAL[n]>1000 ? (f/1000).toFixed(1)+'L' : f+' uds'}</b></div>`;
+    });
+    document.getElementById('cuerpo-compra').innerHTML = h || "Todo lleno";
+    document.getElementById('modal-compra').style.display = 'flex';
+}
+
+function cerrarTPVCompletamente() { document.getElementById('modal-reparto').style.display = 'none'; }
+function cerrarModales() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
+
+function crearTeclado(id, func) {
+    const cont = document.getElementById(id); cont.innerHTML = "";
+    for(let i=1; i<=9; i++) cont.innerHTML += `<button class="tecla" onclick="${func}('${i}')">${i}</button>`;
+    cont.innerHTML += `<button class="tecla" onclick="${func}('.')">.</button>`;
+    cont.innerHTML += `<button class="tecla" onclick="${func}('0')">0</button>`;
+    cont.innerHTML += `<button class="tecla" style="background:#ccc;" onclick="inputVal=''; document.getElementById('${id==='teclado-nums'?'input-cantidad':'edit-input-display'}').innerText='0'">C</button>`;
+    if (id === 'teclado-nums') cont.innerHTML += `<button class="tecla" style="background:var(--success);color:white; grid-column: span 3; padding: 35px;" onclick="confirmar()">CONFIRMAR CANTIDAD</button>`;
+}
+crearTeclado('teclado-nums', 'presionarNum');
+crearTeclado('teclado-edit', 'presionarNumEdit');
 renderSocios();
 </script>
 </body>
