@@ -82,8 +82,10 @@
         <div class="lista" id="ticket-lista"></div>
         <button onclick="abrirModalReparto()" style="background:var(--accent); color:white; border:none; padding:15px; border-radius:12px; font-weight:bold; margin-bottom:10px; cursor:pointer;">🍽️ COMIDA / REPARTO</button>
         <div class="total" id="total-txt">0.00€</div>
-        <button style="background:var(--success); color:white; border:none; padding:20px; border-radius:15px; font-size:1.5em; font-weight:bold; cursor:pointer;" onclick="cerrarVenta()">✅ COBRAR</button>
-        <button onclick="location.reload()" style="margin-top:10px; background:none; border:none; color:white; cursor:pointer; opacity:0.6;">🔙 Atrás</button>
+        <div style="display: flex; gap: 10px;">
+            <button style="flex: 1; background:var(--success); color:white; border:none; padding:20px 5px; border-radius:15px; font-size:1.2em; font-weight:bold; cursor:pointer;" onclick="cerrarVenta()">✅ CERRAR TIQUE</button>
+            <button style="flex: 1; background:#4a5568; color:white; border:none; padding:20px 5px; border-radius:15px; font-size:1.2em; font-weight:bold; cursor:pointer;" onclick="location.reload()">🔙 ATRÁS</button>
+        </div>
     </div>
 </div>
 
@@ -116,7 +118,6 @@ function renderSocios() {
     ["FRAN", "SANTI", "SANTOS", "JESÚS", "MANU", "JR", "MIGUEL", "NUÑEZ", "SILVA", "LUIS", "ROSADO"].forEach(s => {
         const data = tickets[s] || [];
         const cant = data.filter(i => i.n).reduce((acc, i) => acc + i.cant, 0);
-        // CONDICIÓN PARA CAMBIAR EL COLOR: Si tiene productos, añadimos la clase 'activo'
         const claseActivo = cant > 0 ? "activo" : "";
         cont.innerHTML += `<div class="btn-socio ${claseActivo}" onclick="abrirTPV('${s}')">${s} ${cant > 0 ? `<span style="position:absolute; top:-8px; right:-8px; background:var(--danger); color:white; border-radius:50%; width:30px; height:30px; display:flex; align-items:center; justify-content:center; border:2px solid white; font-size:14px;">${cant}</span>` : ''}</div>`;
     });
