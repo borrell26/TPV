@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TPV Shoko - P1</title>
+    <title>TPV Shoko - P1 Correcto</title>
     <style>
         :root { --primary: #2c3e50; --success: #27ae60; --accent: #3498db; --bg: #f4f7f6; --danger: #e74c3c; --warning: #f39c12; --white: #ffffff; --gray: #95a5a6; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); height: 100vh; overflow: hidden; }
@@ -107,6 +107,15 @@
         <button class="btn-cancelar" style="background:var(--primary); color:white; padding:15px;" onclick="document.getElementById('modal-tiquet-final').style.display='none'">VOLVER AL TPV</button>
     </div>
 </div>
+
+<div id="modal-compra" class="modal">
+    <div class="modal-content" style="max-width: 400px;">
+        <h3>🛒 LISTA DE COMPRA</h3>
+        <div id="cuerpo-compra" style="text-align: left; max-height: 400px; overflow-y: auto; margin: 15px 0; border: 1px solid #eee; padding: 10px; border-radius: 10px;"></div>
+        <button class="btn-side" style="background:var(--success); width: 100%; padding: 15px;" onclick="document.getElementById('modal-compra').style.display='none'">CERRAR</button>
+    </div>
+</div>
+
 <div id="modal-teclado-texto" class="modal"><div class="modal-content" style="width: 95%; max-width: 900px;"><h3 id="titulo-teclado">Nombre</h3><div id="display-texto" style="font-size:2.5em; font-weight:bold; background:#f8fafc; padding:15px; border-radius:15px; margin-bottom:10px; min-height:1.2em; border:2px solid #ccc;"></div><div class="teclado-texto" id="grid-teclado-texto"></div><div style="display:flex; gap:10px; margin-top:20px;"><button class="btn-accion" style="background:var(--success);" onclick="confirmarTexto()">ACEPTAR</button><button class="btn-accion" style="background:var(--danger);" onclick="document.getElementById('modal-teclado-texto').style.display='none'">CANCELAR</button></div></div></div>
 <div id="modal-cantidad" class="modal"><div class="modal-content" style="width: 400px;"><h3 id="titulo-prod-modal"></h3><div id="input-cantidad" style="font-size:4em; font-weight:bold; margin-bottom:10px; color: var(--accent);">0</div><div class="grid-teclado" id="teclado-nums"></div><button class="btn-cancelar" onclick="document.getElementById('modal-cantidad').style.display='none'">CANCELAR</button></div></div>
 <div id="modal-edit" class="modal"><div class="modal-content"><h3 id="edit-nombre"></h3><p id="txt-actual"></p><div id="edit-input-display" style="font-size:4em; font-weight:bold; color:var(--accent); margin:10px 0;">0</div><div style="display:flex; gap:10px;"><button class="btn-accion" style="background:var(--danger);" onclick="aplicarEdicion(-1)">-</button><button class="btn-accion" style="background:var(--success);" onclick="aplicarEdicion(1)">+</button></div><div class="grid-teclado" id="teclado-edit"></div><button id="btn-eliminar-fila" style="width:100%; padding:15px; background:var(--danger); color:white; border:none; border-radius:12px; margin-top:15px;" onclick="eliminarFilaEdicion()">ELIMINAR LÍNEA</button><button class="btn-cancelar" onclick="document.getElementById('modal-edit').style.display='none'">VOLVER</button></div></div>
@@ -314,7 +323,21 @@ function abrirEdicionTicket(n) { prodTemp = n; inputVal = ""; const item = carri
 function presionarNumEdit(v) { if(v === '.' && inputVal.includes('.')) return; inputVal += v; document.getElementById('edit-input-display').innerText = inputVal; }
 function aplicarEdicion(signo) { const val = parseFloat(inputVal) || 0; if (modoRepoActivo) { const esE = CATEGORIAS["ESPIRITUOSOS"].includes(prodTemp); stockActual[prodTemp] += ((esE ? val * 700 : val) * signo); localStorage.setItem('v29_stock', JSON.stringify(stockActual)); mostrarProductosRepo(catActiva); } else { const item = carrito.find(i => i.n === prodTemp); if (item) { item.cant += (val * signo); if (item.cant <= 0) carrito = carrito.filter(i => i.n !== prodTemp); } } guardarTicketParcial(); document.getElementById('modal-edit').style.display = 'none'; }
 function eliminarFilaEdicion() { carrito = carrito.filter(i => i.n !== prodTemp); guardarTicketParcial(); document.getElementById('modal-edit').style.display = 'none'; }
-function generarListaCompra() { let h = ""; Object.keys(STOCK_IDEAL).forEach(n => { const f = STOCK_IDEAL[n] - stockActual[n]; if(f > 0) h += `<div style="padding:10px; border-bottom:1px solid #eee;"><span>${n}: </span><b>${STOCK_IDEAL[n]>1000 ? (f/1000).toFixed(1)+'L' : f+' uds'}</b></div>`; }); document.getElementById('cuerpo-compra').innerHTML = h || "Todo lleno"; document.getElementById('modal-compra').style.display = 'flex'; }
+
+function generarListaCompra() { 
+    let h = ""; 
+    Object.keys(STOCK_IDEAL).forEach(n => { 
+        const f = STOCK_IDEAL[n] - stockActual[n]; 
+        if(f > 0) {
+            const esE = CATEGORIAS["ESPIRITUOSOS"].includes(n);
+            const cantidadTxt = esE ? (f/700).toFixed(1) + ' Bot.' : f + ' uds';
+            h += `<div style="padding:10px; border-bottom:1px solid #eee; display:flex; justify-content:space-between;"><span>${n}</span><b style="color:var(--danger);">${cantidadTxt}</b></div>`; 
+        }
+    }); 
+    document.getElementById('cuerpo-compra').innerHTML = h || "<p style='text-align:center;'>✅ Stock completo</p>"; 
+    document.getElementById('modal-compra').style.display = 'flex'; 
+}
+
 function cerrarTPVCompletamente() { document.getElementById('modal-reparto').style.display = 'none'; }
 
 function crearTeclado(id, func) { 
