@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TPV Shoko - T3 Actualizado</title>
+    <title>TPV Shoko - T4 Actualizado</title>
     <style>
         :root { --primary: #2c3e50; --success: #27ae60; --accent: #3498db; --bg: #f4f7f6; --danger: #e74c3c; --warning: #f39c12; --white: #ffffff; --gray: #95a5a6; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); height: 100vh; overflow: hidden; }
@@ -24,13 +24,13 @@
         .item-tiquet { display: flex; justify-content: space-between; padding: 6px 10px; background: rgba(255,255,255,0.1); margin-bottom: 3px; border-radius: 6px; cursor: pointer; font-size: 0.9em; }
         .item-historial { background: rgba(255,255,255,0.05); color: #bdc3c7; font-size: 0.8em; cursor: default; }
         
-        /* Ajuste tamaño Total igual a Etiqueta */
         .total-container { border-top: 2px solid rgba(255,255,255,0.2); padding: 10px 0; display: flex; justify-content: space-between; align-items: center; }
         .tiquet-label, .total { font-size: 1.1em; font-weight: bold; }
         
         .botonera-inferior { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
         .fila-botones { display: flex; gap: 8px; }
         .btn-side { border: none; border-radius: 12px; font-weight: bold; cursor: pointer; padding: 15px; color: white; flex: 1; font-size: 0.9em; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(0.5); }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: var(--white); padding: 20px; border-radius: 20px; width: 90%; max-width: 650px; text-align: center; color: #333; max-height: 98vh; overflow-y: auto; }
@@ -38,13 +38,16 @@
         .tiquet-linea { display: flex; justify-content: space-between; margin-bottom: 3px; border-bottom: 1px dotted #ccc; }
         .btn-cancelar { background: #cbd5e0; color: #2d3748; padding: 12px; border-radius: 12px; border: none; font-weight: bold; margin-top: 10px; width: 100%; cursor: pointer; }
         
-        /* Otros estilos auxiliares se mantienen igual que T3 */
         .grid-teclado { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
         .tecla { background: #edf2f7; border: none; padding: 20px; font-size: 1.5em; border-radius: 12px; font-weight: bold; cursor: pointer; }
         .btn-accion { padding: 18px; border: none; border-radius: 12px; color: white; font-weight: bold; font-size: 1.2em; cursor: pointer; flex: 1; }
         .seccion-comensales { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; padding: 10px; background: #e2e8f0; border-radius: 12px; align-items: center; }
         .btn-comensal { padding: 10px 15px; border-radius: 10px; border: 2px solid var(--primary); background: white; font-weight: bold; cursor: pointer; }
         .btn-comensal.sel { background: var(--accent); color: white; border-color: var(--accent); }
+        .tecla-t { background: #edf2f7; border: none; padding: 15px 2px; font-size: 1.1em; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .teclado-texto { display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; margin-top: 10px; }
+        .fila-inv { display: grid; grid-template-columns: 1fr 60px 60px 80px 40px; gap: 8px; margin-bottom: 10px; }
+        .fila-inv div { background: #f8fafc; border: 1px solid #cbd5e0; border-radius: 8px; padding: 12px 2px; text-align: center; font-size: 1.1em; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -77,7 +80,7 @@
         <div class="lista" id="ticket-lista"></div>
         
         <div class="total-container">
-            <span class="tiquet-label">TIQUET SHOKO</span>
+            <span class="tiquet-label">TIQUE SHOKO</span>
             <div class="total" id="total-txt">0.00€</div>
         </div>
 
@@ -111,7 +114,6 @@
 <div id="modal-reparto" class="modal"><div class="modal-content" style="width: 95%; max-width: 750px;"><h2>Gestión Comida</h2><div id="invitados-cont"></div><button id="btn-add-inv" onclick="addInv()" style="width:100%; padding:15px; margin: 10px 0; background:#f0f0f0; border:2px dashed #ccc; border-radius:12px; font-weight:bold;">+ Añadir Comensal</button><div style="display:flex; flex-direction:column; gap:10px; margin-top:15px;"><button class="btn-accion" style="background:var(--primary);" onclick="cerrarTPVCompletamente()">VOLVER AL TICKET</button><button class="btn-cancelar" style="background:var(--danger); color:white;" onclick="resetearComida()" id="btn-reset-comida">BORRAR TODO</button></div></div></div>
 
 <script>
-// El JS se mantiene idéntico a la versión T3 para conservar la lógica
 const ML_COPA = 30;
 const PRECIOS = { "MAHOU 25cl.": 0.90, "ALHAMBRA 33cl.": 1.50, "BUDWEISSER 33cl.": 1.50, "MAHOU SIN 25cl.": 0.90, "COCA COLA": 1.00, "COCA COLA ZERO": 1.00, "FANTA NARANJA": 1.00, "FANTA LIMÓN": 1.00, "SPRITE": 1.00, "ACUARIUS NARANJA": 1.00, "ACUARIUS LIMÓN": 1.00, "NESTEÁ LIMÓN": 1.00, "TÓNICA SCHWEPPES": 1.00, "TÓNICA SCHWEPPES ZERO": 1.00, "CASERA BLANCA 0,5L": 0.50, "AGUA": 0.50, "VIÑAS DEL VERO": 9.00, "BERONIA CRIANZA": 9.00, "BERONIA RESERVA": 16.00, "TIO PEPE 50cl.": 6.00, "MANZANILLA 50CL.": 6.00, "TINTO BÁSICO 70cl.": 2.00, "CROFT TWIST": 6.00, "DESCORCHE VINO": 2.00, "BARCELÓ": 2.00, "WHITE LABEL": 2.00, "RIVES": 2.00, "PINK RIVES": 2.00, "RIVES EXÓTICA": 2.00, "DESCORCHE COPA": 3.00, "ATÚN ENCEBOLLADO": 8.00, "ATÚN FRITADA": 8.00, "PATATAS FRITAS": 0.60 };
 const CATEGORIAS = { "CERVEZAS": ["MAHOU 25cl.", "ALHAMBRA 33cl.", "BUDWEISSER 33cl.", "MAHOU SIN 25cl."], "REFRESCOS": ["COCA COLA", "COCA COLA ZERO", "FANTA NARANJA", "FANTA LIMÓN", "SPRITE", "ACUARIUS NARANJA", "ACUARIUS LIMÓN", "NESTEÁ LIMÓN", "TÓNICA SCHWEPPES", "TÓNICA SCHWEPPES ZERO", "CASERA BLANCA 0,5L", "AGUA"], "VINOS": ["VIÑAS DEL VERO", "BERONIA CRIANZA", "BERONIA RESERVA", "TIO PEPE 50cl.", "MANZANILLA 50CL.", "TINTO BÁSICO 70cl.", "CROFT TWIST", "DESCORCHE VINO"], "ESPIRITUOSOS": ["BARCELÓ", "WHITE LABEL", "RIVES", "PINK RIVES", "RIVES EXÓTICA", "DESCORCHE COPA"], "OTROS": ["ATÚN ENCEBOLLADO", "ATÚN FRITADA", "PATATAS FRITAS"] };
@@ -198,7 +200,36 @@ function addInv() { if(historial.length > 0) return; listInv.push({n: "", a: 0, 
 function renderInv() { const cont = document.getElementById('invitados-cont'); const bloq = historial.length > 0; cont.innerHTML = `<div style="display:grid; grid-template-columns: 1fr 60px 60px 80px 40px; gap:8px; font-weight:bold; font-size:0.8em; margin-bottom:8px; color:#555;"><span>Nombre</span><span>>13</span><span><13</span><span>Gasto</span><span></span></div>`; listInv.forEach((inv, i) => { cont.innerHTML += `<div class="fila-inv"><div onclick="${bloq ? '' : `abrirTecladoTexto(${i})`}" style="text-align:left; overflow:hidden; opacity:${bloq?0.6:1}">${inv.n || '...'}</div><div onclick="${bloq ? '' : `abrirTecladoNumComida(${i}, 'adulto')`}" style="opacity:${bloq?0.6:1}">${inv.a}</div><div onclick="${bloq ? '' : `abrirTecladoNumComida(${i}, 'nino')`}" style="opacity:${bloq?0.6:1}">${inv.k}</div><div onclick="${bloq ? '' : `abrirTecladoNumComida(${i}, 'gasto')`}" style="opacity:${bloq?0.6:1}">${inv.g.toFixed(2)}€</div><button onclick="${bloq ? '' : `listInv.splice(${i},1); renderInv(); guardarTicketParcial();`}" style="color:red; border:none; background:none; font-size:1.8em; display:${bloq?'none':'block'}">×</button></div>`; }); }
 function cierreParcial() { if(carrito.length === 0 && historial.length === 0) { if(listInv.length > 0) historial.push({n: "SESIÓN ACTIVA", cant: 0, p: 0, esHistorial: true}); else return; } carrito.forEach(i => { const exH = historial.find(h => h.n === i.n); if(exH) exH.cant += i.cant; else historial.push({...i, esHistorial: true}); }); carrito = []; guardarTicketParcial(); actualizarSelectorComensales(); actualizarTicket(); }
 function guardarTicketParcial() { let d = [...carrito, ...historial]; if(listInv.length > 0) d.push({ esComida: true, datos: listInv }); tickets[socioActivo] = d; localStorage.setItem('v29_tickets', JSON.stringify(tickets)); actualizarTicket(); }
-function actualizarTicket() { let tS = 0; let html = ""; carrito.forEach(i => { tS += i.p * i.cant; html += `<div class="item-tiquet" onclick="abrirEdicionTicket('${i.n}')"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}€</span></div>`; }); historial.forEach(i => { if(i.p > 0) { tS += i.p * i.cant; html += `<div class="item-tiquet item-historial"><span>(Hist) ${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}€</span></div>`; } }); const canonTotal = listInv.reduce((acc, i) => acc + (i.a * 1), 0); if(canonTotal > 0) html += `<div class="item-tiquet" style="border:1px dashed #fff;"><span>Canon Comida (${canonTotal})</span><span>${canonTotal.toFixed(2)}€</span></div>`; document.getElementById('ticket-lista').innerHTML = html; document.getElementById('total-txt').innerText = (tS + canonTotal).toFixed(2) + "€"; document.getElementById('btn-cierre-parcial').disabled = (historial.length > 0); }
+
+function actualizarTicket() { 
+    let tS = 0; 
+    let html = ""; 
+    carrito.forEach(i => { 
+        tS += i.p * i.cant; 
+        html += `<div class="item-tiquet" onclick="abrirEdicionTicket('${i.n}')"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}€</span></div>`; 
+    }); 
+    historial.forEach(i => { 
+        if(i.p > 0) { 
+            tS += i.p * i.cant; 
+            html += `<div class="item-tiquet item-historial"><span>(Hist) ${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}€</span></div>`; 
+        } 
+    }); 
+
+    const canonTotal = listInv.reduce((acc, i) => acc + (i.a * 1), 0); 
+    if(canonTotal > 0) html += `<div class="item-tiquet" style="border:1px dashed #fff;"><span>Canon Comida (${canonTotal})</span><span>${canonTotal.toFixed(2)}€</span></div>`; 
+    
+    document.getElementById('ticket-lista').innerHTML = html; 
+    document.getElementById('total-txt').innerText = (tS + canonTotal).toFixed(2) + "€"; 
+
+    // BLOQUEO CIERRE PARCIAL SI HAY HISTORIAL
+    const btnCierre = document.getElementById('btn-cierre-parcial');
+    if (historial.length > 0) {
+        btnCierre.disabled = true;
+    } else {
+        btnCierre.disabled = false;
+    }
+}
+
 function confirmar() { const valStr = document.getElementById('input-cantidad').innerText; const valorNum = parseFloat(valStr) || 0; if (currentEditType === 'prod') { const c = parseFloat(valStr) || 1; const nFinal = comensalSel ? `${prodTemp} (${comensalSel})` : prodTemp; const ex = carrito.find(i => i.n === nFinal); if(ex) ex.cant += c; else carrito.push({n: nFinal, cant: c, p: PRECIOS[prodTemp], esLicor: CATEGORIAS["ESPIRITUOSOS"].includes(prodTemp)}); } else if (currentEditType === 'adulto') { listInv[editingInvIdx].a = parseInt(valorNum) || 0; renderInv(); } else if (currentEditType === 'nino') { listInv[editingInvIdx].k = valorNum || 0; renderInv(); } else if (currentEditType === 'gasto') { listInv[editingInvIdx].g = valorNum || 0; renderInv(); } guardarTicketParcial(); document.getElementById('modal-cantidad').style.display = 'none'; }
 function cerrarVenta() { if(!confirm("¿CERRAR TICKET TOTAL?")) return; [...carrito, ...historial].forEach(i => { if(i.n && !i.n.includes("DESCORCHE") && i.p > 0) { const base = i.n.split(" (")[0]; stockActual[base] -= (i.esLicor ? i.cant*ML_COPA : i.cant); } }); localStorage.setItem('v29_stock', JSON.stringify(stockActual)); delete tickets[socioActivo]; localStorage.setItem('v29_tickets', JSON.stringify(tickets)); location.reload(); }
 function abrirReposicion() { modoRepoActivo = true; document.getElementById('pantalla-socios').style.display = 'none'; document.getElementById('pantalla-reposicion').style.display = 'flex'; mostrarMenuCats(); }
