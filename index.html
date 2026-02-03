@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TPV Club Pro - V9 Shoko</title>
+    <title>TPV Shoko - T1 Actualizado</title>
     <style>
         :root { --primary: #2c3e50; --success: #27ae60; --accent: #3498db; --bg: #f4f7f6; --danger: #e74c3c; --warning: #f39c12; --white: #ffffff; --gray: #95a5a6; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); height: 100vh; overflow: hidden; }
@@ -24,14 +24,11 @@
         .item-tiquet { display: flex; justify-content: space-between; padding: 6px 10px; background: rgba(255,255,255,0.1); margin-bottom: 3px; border-radius: 6px; cursor: pointer; font-size: 0.9em; }
         .item-historial { background: rgba(255,255,255,0.05); color: #bdc3c7; font-size: 0.8em; cursor: default; }
         
-        /* CAMBIO: Contenedor para TIQUET SHOKO + Total más pequeño */
         .total-container { border-top: 2px solid rgba(255,255,255,0.2); padding: 5px 0; display: flex; justify-content: space-between; align-items: center; }
         .tiquet-label { font-size: 0.9em; font-weight: bold; opacity: 0.8; }
         .total { font-size: 2.2em; font-weight: bold; color: #fff; }
         
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; }
-        #modal-cantidad, #modal-teclado-texto, #modal-edit, #modal-tiquet-final { z-index: 3000 !important; }
-        #modal-reparto { z-index: 2000; }
         .modal-content { background: var(--white); padding: 20px; border-radius: 20px; width: 90%; max-width: 650px; text-align: center; color: #333; max-height: 98vh; overflow-y: auto; }
         
         .fila-inv { display: grid; grid-template-columns: 1fr 60px 60px 80px 40px; gap: 8px; margin-bottom: 10px; }
@@ -103,7 +100,6 @@
 <div id="modal-edit" class="modal"><div class="modal-content"><h3 id="edit-nombre"></h3><p id="txt-actual"></p><div id="edit-input-display" style="font-size:4em; font-weight:bold; color:var(--accent); margin:10px 0;">0</div><div style="display:flex; gap:10px;"><button class="btn-accion" style="background:var(--danger);" onclick="aplicarEdicion(-1)">-</button><button class="btn-accion" style="background:var(--success);" onclick="aplicarEdicion(1)">+</button></div><div class="grid-teclado" id="teclado-edit"></div><button id="btn-eliminar-fila" style="width:100%; padding:15px; background:var(--danger); color:white; border:none; border-radius:12px; margin-top:15px;" onclick="eliminarFilaEdicion()">ELIMINAR LÍNEA</button><button class="btn-cancelar" onclick="document.getElementById('modal-edit').style.display='none'">VOLVER</button></div></div>
 <div id="modal-reparto" class="modal"><div class="modal-content" style="width: 95%; max-width: 750px;"><h2>Gestión Comida</h2><div id="invitados-cont"></div><button id="btn-add-inv" onclick="addInv()" style="width:100%; padding:15px; margin: 10px 0; background:#f0f0f0; border:2px dashed #ccc; border-radius:12px; font-weight:bold;">+ Añadir Comensal</button><div style="display:flex; flex-direction:column; gap:10px; margin-top:15px;"><button class="btn-accion" style="background:var(--primary);" onclick="cerrarTPVCompletamente()">VOLVER AL TICKET</button><button class="btn-cancelar" style="background:var(--danger); color:white;" onclick="resetearComida()" id="btn-reset-comida">BORRAR TODO</button></div></div></div>
 <div id="modal-tiquet-final" class="modal"><div class="modal-content" style="max-width: 450px;"><h3>DESGLOSE DE CUENTA</h3><div id="cont-tiquet-papel" class="tiquet-papel"></div><button class="btn-cancelar" style="background:var(--primary); color:white; padding:20px;" onclick="document.getElementById('modal-tiquet-final').style.display='none'">CERRAR DESGLOSE</button></div></div>
-<div id="modal-compra" class="modal"><div class="modal-content"><h3>🛒 Faltas</h3><div id="cuerpo-compra" style="text-align:left; max-height:400px; overflow-y:auto;"></div><button style="width:100%; padding:20px; margin-top:15px; font-weight:bold;" onclick="cerrarModales()">CERRAR</button></div></div>
 
 <script>
 const ML_COPA = 30;
@@ -147,26 +143,23 @@ function verTiquetDetallado() {
     const baseRepartoHistorial = totalBarHist + totalExterno;
     const totalCoef = listInv.reduce((acc, i) => acc + (i.a * 1) + (i.k * 0.5), 0);
     const precioU = totalCoef > 0 ? baseRepartoHistorial / totalCoef : 0;
-    
-    // CAMBIO: Fecha actual
     const hoy = new Date().toLocaleDateString();
 
-    // CAMBIO: Nuevos textos Shoko y Cuota mayores 13
-    let h = `<div style="text-align:center; font-weight:bold; border-bottom:2px solid #000; margin-bottom:10px;">TIQUET SHOKO - ${socioActivo} - ${hoy}</div>`;
+    let h = `<div style="text-align:center; font-weight:bold; border-bottom:2px solid #000; margin-bottom:10px;">TIQUE SHOKO - ${socioActivo} - ${hoy}</div>`;
     h += `<b>--- CONSUMO PRODUCTOS SHOKO (SEGUNDA CUENTA) ---</b><br>`;
     carrito.forEach(i => h += `<div class="tiquet-linea"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}</span></div>`);
+    
     h += `<br><b>--- CONSUMO PRODUCTOS SHOKO (PRIMERA CUENTA) ---</b><br>`;
-    historial.forEach(i => h += `<div class="tiquet-linea"><span style="color:#555;">(H) ${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}</span></div>`);
+    historial.forEach(i => h += `<div class="tiquet-linea"><span style="color:#555;">${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}</span></div>`);
     
     h += `<br><b>--- COSTES FIJOS ---</b><br>`;
     h += `<div class="tiquet-linea"><span>Cuota mayores de 13 años</span><span>${canonTotal.toFixed(2)}</span></div>`;
     
-    // CAMBIO: Gastos comida separado
     h += `<br><b>--- GASTOS COMIDA ---</b><br>`;
-    h += `<div class="tiquet-linea"><span>Gasto Externo</span><span>${totalExterno.toFixed(2)}</span></div>`;
+    h += `<div class="tiquet-linea"><span>Total gastos en ingredientes</span><span>${totalExterno.toFixed(2)}</span></div>`;
     
     const totalCuentaSocio = carrito.reduce((acc, i)=>acc+(i.p*i.cant),0) + totalBarHist + canonTotal;
-    h += `<br><div class="tiquet-linea" style="font-weight:bold; font-size:1.2em;"><span>TOTAL TIQUET SHOKO</span><span>${totalCuentaSocio.toFixed(2)}€</span></div><br>`;
+    h += `<br><div class="tiquet-linea" style="font-weight:bold; font-size:1.2em;"><span>TOTAL TIQUE SHOKO</span><span>${totalCuentaSocio.toFixed(2)}€</span></div><br>`;
     
     h += `<b>--- DESGLOSE REPARTO ---</b><br>`;
     listInv.forEach(inv => {
@@ -176,11 +169,23 @@ function verTiquetDetallado() {
         const consumoIndividualActual = carrito.filter(item => item.n.includes(`(${nombreLimpio})`)).reduce((acc, item) => acc + (item.p * item.cant), 0);
         const totalDebe = parteHistorial + consumoIndividualActual;
         const bal = totalDebe - inv.g;
+
+        let leyendaEstado = "";
+        if (nombreLimpio === socioActivo) {
+            leyendaEstado = `PAGAR A SHOKO: ${totalCuentaSocio.toFixed(2)}€`;
+        } else {
+            if (bal > 0) {
+                leyendaEstado = `PAGAR A ${socioActivo}: ${bal.toFixed(2)}€`;
+            } else {
+                leyendaEstado = `RECIBIR DE ${socioActivo}: ${Math.abs(bal).toFixed(2)}€`;
+            }
+        }
+
         h += `<div style="border-bottom:1px solid #eee; margin-bottom:5px; padding-bottom:2px;">
                 <div class="tiquet-linea"><b>${nombreLimpio}</b> <span>${totalDebe.toFixed(2)}€</span></div>
                 <div style="font-size:0.7em; color:#666; display:flex; justify-content:space-between;">
-                    <span>Hist: ${parteHistorial.toFixed(2)} + Act: ${consumoIndividualActual.toFixed(2)}</span>
-                    <span style="color:${bal>0?'red':'green'}">${bal > 0 ? 'DEBE' : 'COBRA'} ${Math.abs(bal).toFixed(2)}€</span>
+                    <span>1ª cta: ${parteHistorial.toFixed(2)} + 2ª cta: ${consumoIndividualActual.toFixed(2)}</span>
+                    <span style="color:${(nombreLimpio === socioActivo || bal > 0) ? 'red' : 'green'}; font-weight:bold;">${leyendaEstado}</span>
                 </div>
               </div>`;
     });
@@ -188,7 +193,6 @@ function verTiquetDetallado() {
     document.getElementById('modal-tiquet-final').style.display = 'flex';
 }
 
-// RESTO DE FUNCIONES (Iguales a V9)
 function abrirModalReparto() { if (listInv.length === 0) listInv = [{n: socioActivo, a: 1, k: 0, g: 0}]; renderInv(); document.getElementById('modal-reparto').style.display = 'flex'; }
 function addInv() { if(historial.length > 0) return; listInv.push({n: "", a: 0, k: 0, g: 0}); renderInv(); }
 function renderInv() { const cont = document.getElementById('invitados-cont'); const bloq = historial.length > 0; cont.innerHTML = `<div style="display:grid; grid-template-columns: 1fr 60px 60px 80px 40px; gap:8px; font-weight:bold; font-size:0.8em; margin-bottom:8px; color:#555;"><span>Nombre</span><span>>13</span><span><13</span><span>Gasto</span><span></span></div>`; listInv.forEach((inv, i) => { cont.innerHTML += `<div class="fila-inv"><div onclick="${bloq ? '' : `abrirTecladoTexto(${i})`}" style="text-align:left; overflow:hidden; opacity:${bloq?0.6:1}">${inv.n || '...'}</div><div onclick="${bloq ? '' : `abrirTecladoNumComida(${i}, 'adulto')`}" style="opacity:${bloq?0.6:1}">${inv.a}</div><div onclick="${bloq ? '' : `abrirTecladoNumComida(${i}, 'nino')`}" style="opacity:${bloq?0.6:1}">${inv.k}</div><div onclick="${bloq ? '' : `abrirTecladoNumComida(${i}, 'gasto')`}" style="opacity:${bloq?0.6:1}">${inv.g.toFixed(2)}€</div><button onclick="${bloq ? '' : `listInv.splice(${i},1); renderInv(); guardarTicketParcial();`}" style="color:red; border:none; background:none; font-size:1.8em; display:${bloq?'none':'block'}">×</button></div>`; }); }
