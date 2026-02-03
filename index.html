@@ -33,7 +33,6 @@
         button:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(0.5); }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; }
-        /* Cambio estrictamente necesario para la visibilidad del teclado */
         #modal-teclado-texto { z-index: 1100; }
 
         .modal-content { background: var(--white); padding: 20px; border-radius: 20px; width: 90%; max-width: 650px; text-align: center; color: #333; max-height: 98vh; overflow-y: auto; }
@@ -44,9 +43,7 @@
         .grid-teclado { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
         .tecla { background: #edf2f7; border: none; padding: 20px; font-size: 1.5em; border-radius: 12px; font-weight: bold; cursor: pointer; }
         .btn-accion { padding: 18px; border: none; border-radius: 12px; color: white; font-weight: bold; font-size: 1.2em; cursor: pointer; flex: 1; }
-        .seccion-comensales { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; padding: 10px; background: #e2e8f0; border-radius: 12px; align-items: center; }
-        .btn-comensal { padding: 10px 15px; border-radius: 10px; border: 2px solid var(--primary); background: white; font-weight: bold; cursor: pointer; }
-        .btn-comensal.sel { background: var(--accent); color: white; border-color: var(--accent); }
+        .btn-comensal-modal { padding: 20px; border-radius: 12px; border: 2px solid var(--primary); background: white; font-weight: bold; cursor: pointer; font-size: 1.2em; }
         .tecla-t { background: #edf2f7; border: none; padding: 15px 2px; font-size: 1.1em; border-radius: 6px; font-weight: bold; cursor: pointer; }
         .teclado-texto { display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; margin-top: 10px; }
         .fila-inv { display: grid; grid-template-columns: 1fr 60px 60px 80px 40px; gap: 8px; margin-bottom: 10px; }
@@ -74,7 +71,6 @@
 
 <div id="interfaz-tpv">
     <div style="padding:10px; display:flex; flex-direction:column; overflow:hidden;">
-        <div id="selector-comensales" class="seccion-comensales" style="display:none;"></div>
         <div class="tabs" id="tab-container" style="display:flex; gap:8px; margin-bottom:15px; flex-wrap:wrap;"></div>
         <div id="grid-prods" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(145px, 1fr)); gap:12px; overflow-y:auto;"></div>
     </div>
@@ -115,6 +111,7 @@
 <div id="modal-cantidad" class="modal"><div class="modal-content" style="width: 400px;"><h3 id="titulo-prod-modal"></h3><div id="input-cantidad" style="font-size:4em; font-weight:bold; margin-bottom:10px; color: var(--accent);">0</div><div class="grid-teclado" id="teclado-nums"></div><button class="btn-cancelar" onclick="document.getElementById('modal-cantidad').style.display='none'">CANCELAR</button></div></div>
 <div id="modal-edit" class="modal"><div class="modal-content"><h3 id="edit-nombre"></h3><p id="txt-actual"></p><div id="edit-input-display" style="font-size:4em; font-weight:bold; color:var(--accent); margin:10px 0;">0</div><div style="display:flex; gap:10px;"><button class="btn-accion" style="background:var(--danger);" onclick="aplicarEdicion(-1)">-</button><button class="btn-accion" style="background:var(--success);" onclick="aplicarEdicion(1)">+</button></div><div class="grid-teclado" id="teclado-edit"></div><button id="btn-eliminar-fila" style="width:100%; padding:15px; background:var(--danger); color:white; border:none; border-radius:12px; margin-top:15px;" onclick="eliminarFilaEdicion()">ELIMINAR LÍNEA</button><button class="btn-cancelar" onclick="document.getElementById('modal-edit').style.display='none'">VOLVER</button></div></div>
 <div id="modal-reparto" class="modal"><div class="modal-content" style="width: 95%; max-width: 750px;"><h2>Gestión Comida</h2><div id="invitados-cont"></div><button id="btn-add-inv" onclick="addInv()" style="width:100%; padding:15px; margin: 10px 0; background:#f0f0f0; border:2px dashed #ccc; border-radius:12px; font-weight:bold;">+ Añadir Comensal</button><div style="display:flex; flex-direction:column; gap:10px; margin-top:15px;"><button class="btn-accion" style="background:var(--primary);" onclick="cerrarTPVCompletamente()">VOLVER AL TICKET</button><button class="btn-cancelar" style="background:var(--danger); color:white;" onclick="resetearComida()" id="btn-reset-comida">BORRAR TODO</button></div></div></div>
+<div id="modal-asignar-comensal" class="modal"><div class="modal-content"><h3>¿A quién asignar consumición?</h3><div id="grid-comensales-modal" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:15px;"></div><button class="btn-cancelar" onclick="document.getElementById('modal-asignar-comensal').style.display='none'">CANCELAR</button></div></div>
 
 <script>
 const ML_COPA = 30;
@@ -130,6 +127,7 @@ let listInv = []; let modoRepoActivo = false;
 let editingInvIdx = -1; let currentTexto = "";
 let currentEditType = "";
 let comensalSel = "";
+let cantTemp = 1;
 
 function getImg(n) { return `img/${n.replace(/ /g, '_').toUpperCase()}.jpg`; }
 
@@ -145,8 +143,7 @@ function renderSocios() {
     });
 }
 
-function abrirTPV(n) { socioActivo = n; let data = tickets[n] || []; carrito = data.filter(i => i.n && !i.esHistorial); historial = data.filter(i => i.esHistorial); let comidaG = data.find(i => i.esComida); listInv = comidaG ? comidaG.datos : []; comensalSel = ""; document.getElementById('pantalla-socios').style.display = 'none'; document.getElementById('interfaz-tpv').style.display = 'grid'; document.getElementById('nombre-socio').innerText = n; actualizarSelectorComensales(); renderTabs(); renderProds(); actualizarTicket(); }
-function actualizarSelectorComensales() { const cont = document.getElementById('selector-comensales'); const bloq = historial.length > 0; if (listInv.length > 0) { cont.style.display = 'flex'; cont.innerHTML = '<span style="color:#2c3e50; font-weight:bold; margin-right:10px;">Para:</span>'; listInv.forEach(inv => { const nombre = inv.n || "Socio"; cont.innerHTML += `<button class="btn-comensal ${comensalSel === nombre ? 'sel' : ''}" onclick="comensalSel='${nombre}'; actualizarSelectorComensales()">${nombre}</button>`; }); document.getElementById('btn-add-inv').style.display = 'none'; if(bloq) document.getElementById('btn-reset-comida').style.display = 'none'; } else { cont.style.display = 'none'; document.getElementById('btn-add-inv').style.display = 'block'; document.getElementById('btn-reset-comida').style.display = 'block'; } }
+function abrirTPV(n) { socioActivo = n; let data = tickets[n] || []; carrito = data.filter(i => i.n && !i.esHistorial); historial = data.filter(i => i.esHistorial); let comidaG = data.find(i => i.esComida); listInv = comidaG ? comidaG.datos : []; comensalSel = ""; document.getElementById('pantalla-socios').style.display = 'none'; document.getElementById('interfaz-tpv').style.display = 'grid'; document.getElementById('nombre-socio').innerText = n; renderTabs(); renderProds(); actualizarTicket(); }
 function renderTabs() { const cont = document.getElementById('tab-container'); cont.innerHTML = Object.keys(CATEGORIAS).map(c => `<button style="padding:12px; flex:1; border:none; border-radius:10px; font-weight:bold; font-size:0.85em; background:${c===catActiva?'var(--accent)':'#cbd5e0'}; color:${c===catActiva?'white':'black'}" onclick="catActiva='${c}'; renderTabs(); renderProds()">${c}</button>`).join(''); }
 function renderProds() { document.getElementById('grid-prods').innerHTML = CATEGORIAS[catActiva].map(n => { const esE = (catActiva === "ESPIRITUOSOS"); const stockTxt = esE ? (stockActual[n]/700).toFixed(1)+' Bot.' : stockActual[n]+' uds'; return `<div class="card" onclick="abrirTecladoProd('${n}')"><img src="${getImg(n)}" onerror="this.style.opacity='0.1'"><b>${n}</b><span style="color:var(--success); font-weight:bold; font-size:1em;">${PRECIOS[n].toFixed(2)}€</span><small style="color:#666; font-size:0.7em;">Stk: ${stockTxt}</small></div>`; }).join(''); }
 
@@ -215,7 +212,7 @@ function verTiquetDetallado() {
 function abrirModalReparto() { if (listInv.length === 0) listInv = [{n: socioActivo, a: 1, k: 0, g: 0}]; renderInv(); document.getElementById('modal-reparto').style.display = 'flex'; }
 function addInv() { if(historial.length > 0) return; listInv.push({n: "", a: 0, k: 0, g: 0}); renderInv(); }
 function renderInv() { const cont = document.getElementById('invitados-cont'); const bloq = historial.length > 0; cont.innerHTML = `<div style="display:grid; grid-template-columns: 1fr 60px 60px 80px 40px; gap:8px; font-weight:bold; font-size:0.8em; margin-bottom:8px; color:#555;"><span>Nombre</span><span>>13</span><span><13</span><span>Gasto</span><span></span></div>`; listInv.forEach((inv, i) => { cont.innerHTML += `<div class="fila-inv"><div onclick="${bloq ? '' : `abrirTecladoTexto(${i})`}" style="text-align:left; overflow:hidden; opacity:${bloq?0.6:1}">${inv.n || '...'}</div><div onclick="${bloq ? '' : `abrirTecladoNumComida(${i}, 'adulto')`}" style="opacity:${bloq?0.6:1}">${inv.a}</div><div onclick="${bloq ? '' : `abrirTecladoNumComida(${i}, 'nino')`}" style="opacity:${bloq?0.6:1}">${inv.k}</div><div onclick="${bloq ? '' : `abrirTecladoNumComida(${i}, 'gasto')`}" style="opacity:${bloq?0.6:1}">${inv.g.toFixed(2)}€</div><button onclick="${bloq ? '' : `listInv.splice(${i},1); renderInv(); guardarTicketParcial();`}" style="color:red; border:none; background:none; font-size:1.8em; display:${bloq?'none':'block'}">×</button></div>`; }); }
-function cierreParcial() { if(carrito.length === 0 && historial.length === 0) { if(listInv.length > 0) historial.push({n: "SESIÓN ACTIVA", cant: 0, p: 0, esHistorial: true}); else return; } carrito.forEach(i => { const exH = historial.find(h => h.n === i.n); if(exH) exH.cant += i.cant; else historial.push({...i, esHistorial: true}); }); carrito = []; guardarTicketParcial(); actualizarSelectorComensales(); actualizarTicket(); }
+function cierreParcial() { if(carrito.length === 0 && historial.length === 0) { if(listInv.length > 0) historial.push({n: "SESIÓN ACTIVA", cant: 0, p: 0, esHistorial: true}); else return; } carrito.forEach(i => { const exH = historial.find(h => h.n === i.n); if(exH) exH.cant += i.cant; else historial.push({...i, esHistorial: true}); }); carrito = []; guardarTicketParcial(); actualizarTicket(); }
 function guardarTicketParcial() { let d = [...carrito, ...historial]; if(listInv.length > 0) d.push({ esComida: true, datos: listInv }); tickets[socioActivo] = d; localStorage.setItem('v29_tickets', JSON.stringify(tickets)); actualizarTicket(); }
 
 function actualizarTicket() { 
@@ -240,7 +237,47 @@ function actualizarTicket() {
     btnCierre.disabled = (historial.length > 0);
 }
 
-function confirmar() { const valStr = document.getElementById('input-cantidad').innerText; const valorNum = parseFloat(valStr) || 0; if (currentEditType === 'prod') { const c = parseFloat(valStr) || 1; const nFinal = comensalSel ? `${prodTemp} (${comensalSel})` : prodTemp; const ex = carrito.find(i => i.n === nFinal); if(ex) ex.cant += c; else carrito.push({n: nFinal, cant: c, p: PRECIOS[prodTemp], esLicor: CATEGORIAS["ESPIRITUOSOS"].includes(prodTemp)}); } else if (currentEditType === 'adulto') { listInv[editingInvIdx].a = parseInt(valorNum) || 0; renderInv(); } else if (currentEditType === 'nino') { listInv[editingInvIdx].k = valorNum || 0; renderInv(); } else if (currentEditType === 'gasto') { listInv[editingInvIdx].g = valorNum || 0; renderInv(); } guardarTicketParcial(); document.getElementById('modal-cantidad').style.display = 'none'; }
+function confirmar() { 
+    const valStr = document.getElementById('input-cantidad').innerText; 
+    const valorNum = parseFloat(valStr) || 0; 
+    
+    if (currentEditType === 'prod') { 
+        cantTemp = parseFloat(valStr) || 1;
+        document.getElementById('modal-cantidad').style.display = 'none';
+        if (listInv.length > 0) {
+            abrirSelectorComensal();
+        } else {
+            finalizarApunte(""); 
+        }
+    } else if (currentEditType === 'adulto') { 
+        listInv[editingInvIdx].a = parseInt(valorNum) || 0; renderInv(); document.getElementById('modal-cantidad').style.display = 'none';
+    } else if (currentEditType === 'nino') { 
+        listInv[editingInvIdx].k = valorNum || 0; renderInv(); document.getElementById('modal-cantidad').style.display = 'none';
+    } else if (currentEditType === 'gasto') { 
+        listInv[editingInvIdx].g = valorNum || 0; renderInv(); document.getElementById('modal-cantidad').style.display = 'none';
+    } 
+    guardarTicketParcial(); 
+}
+
+function abrirSelectorComensal() {
+    const cont = document.getElementById('grid-comensales-modal');
+    cont.innerHTML = "";
+    listInv.forEach(inv => {
+        const nombre = inv.n || socioActivo;
+        cont.innerHTML += `<button class="btn-comensal-modal" onclick="finalizarApunte('${nombre}')">${nombre}</button>`;
+    });
+    document.getElementById('modal-asignar-comensal').style.display = 'flex';
+}
+
+function finalizarApunte(com) {
+    const nFinal = com ? `${prodTemp} (${com})` : prodTemp;
+    const ex = carrito.find(i => i.n === nFinal);
+    if(ex) ex.cant += cantTemp; 
+    else carrito.push({n: nFinal, cant: cantTemp, p: PRECIOS[prodTemp], esLicor: CATEGORIAS["ESPIRITUOSOS"].includes(prodTemp)});
+    document.getElementById('modal-asignar-comensal').style.display = 'none';
+    guardarTicketParcial();
+}
+
 function cerrarVenta() { if(!confirm("¿CERRAR TICKET TOTAL?")) return; [...carrito, ...historial].forEach(i => { if(i.n && !i.n.includes("DESCORCHE") && i.p > 0) { const base = i.n.split(" (")[0]; stockActual[base] -= (i.esLicor ? i.cant*ML_COPA : i.cant); } }); localStorage.setItem('v29_stock', JSON.stringify(stockActual)); delete tickets[socioActivo]; localStorage.setItem('v29_tickets', JSON.stringify(tickets)); location.reload(); }
 function abrirReposicion() { modoRepoActivo = true; document.getElementById('pantalla-socios').style.display = 'none'; document.getElementById('pantalla-reposicion').style.display = 'flex'; mostrarMenuCats(); }
 function mostrarMenuCats() { document.getElementById('repo-menu-cats').style.display = 'grid'; document.getElementById('repo-menu-items').style.display = 'none'; document.getElementById('repo-menu-cats').innerHTML = Object.keys(CATEGORIAS).map(cat => `<button style="background:var(--primary); color:white; padding:30px 10px; border-radius:15px; border:none; font-size:1.4em; font-weight:bold;" onclick="mostrarProductosRepo('${cat}')">${cat}</button>`).join(''); }
