@@ -10,11 +10,12 @@
         
         #pantalla-socios { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; padding: 20px; overflow-y: auto; height: 100vh; box-sizing: border-box; align-content: start; }
         #interfaz-tpv { display: none; grid-template-columns: 1fr 350px; height: 100vh; }
-        #pantalla-reposicion { display: none; flex-direction: column; gap: 15px; padding: 20px; height: 100vh; box-sizing: border-box; overflow-y: auto; }
+        #pantalla-reposicion, #pantalla-mantenimiento { display: none; flex-direction: column; gap: 15px; padding: 20px; height: 100vh; box-sizing: border-box; overflow-y: auto; }
 
         .btn-socio { background: var(--white); border: 2px solid var(--primary); border-radius: 15px; padding: 35px 10px; font-weight: bold; font-size: 1.4em; cursor: pointer; text-align: center; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .btn-socio.activo { background: #ffeaa7; border-color: var(--warning); }
         .nav-reponedor { background: #cbd5e0; color: var(--primary); padding: 10px; border-radius: 10px; text-align: center; font-weight: normal; cursor: pointer; width: 100%; border: 1px solid var(--gray); box-sizing: border-box; grid-column: 1 / -1; font-size: 1em; margin-top: 20px; opacity: 0.7; }
+        .btn-mantenimiento { background: #e2e8f0; color: #64748b; padding: 8px; border-radius: 10px; text-align: center; cursor: pointer; grid-column: 1 / -1; font-size: 0.8em; border: 1px dashed #cbd5e0; margin-top: 5px; }
 
         .card { background: var(--white); border-radius: 12px; padding: 10px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.08); cursor: pointer; height: 145px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; border: 1px solid #e2e8f0; }
         .card img { height: 60px; width: auto; max-width: 90%; object-fit: contain; }
@@ -66,6 +67,22 @@
     <div id="repo-menu-items" style="display:none; width: 100%;">
         <button onclick="mostrarMenuCats()" style="margin-bottom:15px; padding:15px 30px; background:#4a5568; color:white; border:none; border-radius:10px; font-weight:bold;">⬅️ VOLVER</button>
         <div id="repo-grid-productos" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(160px, 1fr)); gap:15px;"></div>
+    </div>
+</div>
+
+<div id="pantalla-mantenimiento">
+    <div style="width:100%; display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+        <h2 style="font-size:1.8em; margin:0;">Mantenimiento</h2>
+        <button onclick="location.reload()" style="background:var(--success); color:white; padding:15px; border-radius:10px; border:none; font-weight:bold;">💾 GUARDAR Y SALIR</button>
+    </div>
+    <div style="background:white; padding:20px; border-radius:15px;">
+        <h3>Gestión de Socios</h3>
+        <div id="lista-socios-mant" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap:10px;"></div>
+        <button onclick="addSocioMant()" style="margin-top:15px; background:var(--accent); color:white; border:none; padding:10px; border-radius:8px;">+ Añadir Socio</button>
+    </div>
+    <div style="background:white; padding:20px; border-radius:15px; margin-top:20px;">
+        <h3>Otras Configuraciones</h3>
+        <p>Precios y Stock se gestionan desde el modo Reponedor y la programación de variables.</p>
     </div>
 </div>
 
@@ -121,6 +138,8 @@ const STOCK_IDEAL = { "MAHOU 25cl.": 180, "ALHAMBRA 33cl.": 12, "BUDWEISSER 33cl
 
 let stockActual = JSON.parse(localStorage.getItem('v29_stock')) || {...STOCK_IDEAL};
 let tickets = JSON.parse(localStorage.getItem('v29_tickets')) || {};
+let sociosApp = JSON.parse(localStorage.getItem('v29_socios')) || ["FRAN", "SANTI", "SANTOS", "JESÚS", "MANU", "JR", "MIGUEL", "NUÑEZ", "SILVA", "LUIS", "ROSADO"];
+
 let socioActivo = ""; let carrito = []; let historial = []; let catActiva = "CERVEZAS";
 let prodTemp = null; let inputVal = "";
 let listInv = []; let modoRepoActivo = false;
@@ -129,6 +148,7 @@ let currentEditType = "";
 let comensalSel = "";
 let cantTemp = 1;
 let flgNuevoInv = false;
+let flgEditSocio = false;
 
 function getImg(n) { return `img/${n.replace(/ /g, '_').toUpperCase()}.jpg`; }
 
@@ -136,19 +156,70 @@ function renderSocios() {
     modoRepoActivo = false;
     const cont = document.getElementById('pantalla-socios');
     cont.innerHTML = '';
-    ["FRAN", "SANTI", "SANTOS", "JESÚS", "MANU", "JR", "MIGUEL", "NUÑEZ", "SILVA", "LUIS", "ROSADO"].forEach(s => {
+    sociosApp.forEach(s => {
         const data = tickets[s] || [];
         const cant = data.filter(i => i.n && !i.esComida).reduce((acc, i) => acc + i.cant, 0);
         const claseActivo = cant > 0 ? "activo" : "";
         cont.innerHTML += `<div class="btn-socio ${claseActivo}" onclick="abrirTPV('${s}')">${s} ${cant > 0 ? `<span style="position:absolute; top:-8px; right:-8px; background:var(--danger); color:white; border-radius:50%; width:30px; height:30px; display:flex; align-items:center; justify-content:center; border:2px solid white; font-size:14px;">${cant}</span>` : ''}</div>`;
     });
     cont.innerHTML += '<div class="nav-reponedor" onclick="abrirReposicion()">🛠️ REPONEDOR</div>';
+    cont.innerHTML += '<div class="btn-mantenimiento" onclick="accesoMantenimiento()">⚙️ MANTENIMIENTO (RESTRINGIDO)</div>';
 }
 
+function accesoMantenimiento() {
+    const code = prompt("Introduzca código de acceso:");
+    if (code === "GUBO569668") {
+        abrirMantenimiento();
+    } else {
+        alert("Código incorrecto");
+    }
+}
+
+function abrirMantenimiento() {
+    document.getElementById('pantalla-socios').style.display = 'none';
+    document.getElementById('pantalla-mantenimiento').style.display = 'flex';
+    renderSociosMant();
+}
+
+function renderSociosMant() {
+    const cont = document.getElementById('lista-socios-mant');
+    cont.innerHTML = sociosApp.map((s, idx) => `
+        <div style="display:flex; gap:5px; align-items:center; background:#f1f5f9; padding:10px; border-radius:8px;">
+            <span style="flex:1; font-weight:bold;">${s}</span>
+            <button onclick="editarSocioNom(${idx})" style="border:none; background:var(--accent); color:white; border-radius:4px; padding:5px;">✎</button>
+            <button onclick="borrarSocioMant(${idx})" style="border:none; background:var(--danger); color:white; border-radius:4px; padding:5px;">×</button>
+        </div>
+    `).join('');
+}
+
+function addSocioMant() {
+    flgEditSocio = true;
+    editingInvIdx = -1;
+    currentTexto = "";
+    abrirTecladoTexto(-1);
+}
+
+function editarSocioNom(idx) {
+    flgEditSocio = true;
+    editingInvIdx = idx;
+    currentTexto = sociosApp[idx];
+    abrirTecladoTexto(-1);
+}
+
+function borrarSocioMant(idx) {
+    if(confirm(`¿Eliminar socio ${sociosApp[idx]}?`)) {
+        sociosApp.splice(idx, 1);
+        localStorage.setItem('v29_socios', JSON.stringify(sociosApp));
+        renderSociosMant();
+    }
+}
+
+// Funciones de lógica de negocio (abrirTPV, renderTabs, etc.) se mantienen igual a P1
 function abrirTPV(n) { socioActivo = n; let data = tickets[n] || []; carrito = data.filter(i => i.n && !i.esHistorial); historial = data.filter(i => i.esHistorial); let comidaG = data.find(i => i.esComida); listInv = comidaG ? comidaG.datos : []; comensalSel = ""; document.getElementById('pantalla-socios').style.display = 'none'; document.getElementById('interfaz-tpv').style.display = 'grid'; document.getElementById('nombre-socio').innerText = n; renderTabs(); renderProds(); actualizarTicket(); }
 function renderTabs() { const cont = document.getElementById('tab-container'); cont.innerHTML = Object.keys(CATEGORIAS).map(c => `<button style="padding:12px; flex:1; border:none; border-radius:10px; font-weight:bold; font-size:0.85em; background:${c===catActiva?'var(--accent)':'#cbd5e0'}; color:${c===catActiva?'white':'black'}" onclick="catActiva='${c}'; renderTabs(); renderProds()">${c}</button>`).join(''); }
 function renderProds() { document.getElementById('grid-prods').innerHTML = CATEGORIAS[catActiva].map(n => { const esE = (catActiva === "ESPIRITUOSOS"); const stockTxt = esE ? (stockActual[n]/700).toFixed(1)+' Bot.' : stockActual[n]+' uds'; return `<div class="card" onclick="abrirTecladoProd('${n}')"><img src="${getImg(n)}" onerror="this.style.opacity='0.1'"><b>${n}</b><span style="color:var(--success); font-weight:bold; font-size:1em;">${PRECIOS[n].toFixed(2)}€</span><small style="color:#666; font-size:0.7em;">Stk: ${stockTxt}</small></div>`; }).join(''); }
 
+// Las funciones de teclado y tiquet detallado se mantienen intactas de P1
 function verTiquetDetallado() {
     const cont = document.getElementById('cont-tiquet-papel');
     const totalBarHist = historial.reduce((acc, i) => acc + (i.p * i.cant), 0);
@@ -294,19 +365,36 @@ function mostrarMenuCats() { document.getElementById('repo-menu-cats').style.dis
 function mostrarProductosRepo(cat) { catActiva = cat; document.getElementById('repo-menu-cats').style.display = 'none'; document.getElementById('repo-menu-items').style.display = 'block'; const cont = document.getElementById('repo-grid-productos'); cont.innerHTML = CATEGORIAS[cat].filter(n => STOCK_IDEAL[n]).map(n => { const esE = (cat === "ESPIRITUOSOS"); return `<div class="card" onclick="abrirEdicionRepo('${n}')"><img src="${getImg(n)}" onerror="this.style.opacity='0.1'"><b>${n}</b><div style="font-weight:bold; color:var(--primary); font-size:0.8em;">${esE ? (stockActual[n]/700).toFixed(1)+' Bot.' : stockActual[n]+' uds'}</div></div>`; }).join(''); }
 function abrirEdicionRepo(n) { prodTemp = n; inputVal = ""; document.getElementById('edit-nombre').innerText = n; document.getElementById('txt-actual').innerText = "Stock: " + stockActual[n]; document.getElementById('edit-input-display').innerText = "0"; document.getElementById('btn-eliminar-fila').style.display = 'none'; document.getElementById('modal-edit').style.display = 'flex'; }
 function abrirTecladoNumComida(idx, tipo) { editingInvIdx = idx; currentEditType = tipo; inputVal = ""; const titulos = { 'adulto': 'Adultos', 'nino': 'Niños', 'gasto': 'Gasto €' }; document.getElementById('titulo-prod-modal').innerText = titulos[tipo]; document.getElementById('input-cantidad').innerText = "0"; document.getElementById('modal-cantidad').style.display = 'flex'; }
-function abrirTecladoTexto(idx) { editingInvIdx = idx; currentTexto = listInv[idx].n; document.getElementById('display-texto').innerText = currentTexto; document.getElementById('modal-teclado-texto').style.display = 'flex'; renderTecladoTexto(); }
+
+function abrirTecladoTexto(idx) { 
+    editingInvIdx = idx; 
+    if(!flgEditSocio) currentTexto = listInv[idx].n; 
+    document.getElementById('display-texto').innerText = currentTexto; 
+    document.getElementById('modal-teclado-texto').style.display = 'flex'; 
+    renderTecladoTexto(); 
+}
+
 function renderTecladoTexto() { const cont = document.getElementById('grid-teclado-texto'); const teclas = "1234567890QWERTYUIOPASDFGHJKLÑZXCVBNM ".split(""); cont.innerHTML = teclas.map(l => `<button class="tecla-t" onclick="addLetra('${l}')">${l===' '?'_':l}</button>`).join(''); cont.innerHTML += `<button class="tecla-t" style="background:var(--warning);" onclick="addLetra('BACK')">DEL</button>`; }
 function addLetra(l) { if(l === 'BACK') currentTexto = currentTexto.slice(0, -1); else if(currentTexto.length < 15) currentTexto += l; document.getElementById('display-texto').innerText = currentTexto; }
+
 function confirmarTexto() { 
-    listInv[editingInvIdx].n = currentTexto; 
     document.getElementById('modal-teclado-texto').style.display = 'none'; 
-    if (flgNuevoInv) {
+    if (flgEditSocio) {
+        if (editingInvIdx === -1) sociosApp.push(currentTexto);
+        else sociosApp[editingInvIdx] = currentTexto;
+        localStorage.setItem('v29_socios', JSON.stringify(sociosApp));
+        flgEditSocio = false;
+        renderSociosMant();
+    } else if (flgNuevoInv) {
+        listInv[editingInvIdx].n = currentTexto;
         flgNuevoInv = false;
         finalizarApunte(currentTexto);
     } else {
+        listInv[editingInvIdx].n = currentTexto;
         renderInv(); 
     }
 }
+
 function resetearComida() { if(confirm("¿Borrar comida?")) { listInv = []; guardarTicketParcial(); cerrarTPVCompletamente(); } }
 function abrirTecladoProd(n) { prodTemp = n; currentEditType = 'prod'; inputVal = ""; document.getElementById('titulo-prod-modal').innerText = n; document.getElementById('input-cantidad').innerText = "1"; document.getElementById('modal-cantidad').style.display = 'flex'; }
 function presionarNum(v) { if(v === '.' && inputVal.includes('.')) return; inputVal += v; document.getElementById('input-cantidad').innerText = inputVal || "0"; }
