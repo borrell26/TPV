@@ -3,54 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TPV Club Pro - Tablet 11" Compacto</title>
+    <title>TPV Club Pro - Auto Calc</title>
     <style>
         :root { --primary: #2c3e50; --success: #27ae60; --accent: #3498db; --bg: #f4f7f6; --danger: #e74c3c; --warning: #f39c12; --white: #ffffff; --gray: #95a5a6; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); height: 100vh; overflow: hidden; }
         
         #pantalla-socios { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; padding: 20px; overflow-y: auto; height: 100vh; box-sizing: border-box; align-content: start; }
-
-        /* INTERFAZ TPV */
         #interfaz-tpv { display: none; grid-template-columns: 1fr 350px; height: 100vh; }
-        
         #pantalla-reposicion { display: none; flex-direction: column; gap: 15px; padding: 20px; height: 100vh; box-sizing: border-box; overflow-y: auto; }
 
         .btn-socio { background: var(--white); border: 2px solid var(--primary); border-radius: 15px; padding: 35px 10px; font-weight: bold; font-size: 1.4em; cursor: pointer; text-align: center; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .btn-socio.activo { background: #ffeaa7; border-color: var(--warning); }
-
         .nav-reponedor { background: var(--warning); color: var(--primary); padding: 20px; border-radius: 15px; text-align: center; font-weight: bold; cursor: pointer; width: 100%; border: 2px solid var(--primary); box-sizing: border-box; grid-column: 1 / -1; font-size: 1.3em; margin-bottom: 10px; }
 
         .card { background: var(--white); border-radius: 12px; padding: 10px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.08); cursor: pointer; height: 145px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; border: 1px solid #e2e8f0; }
         .card img { height: 60px; width: auto; max-width: 90%; object-fit: contain; }
-        .card b { font-size: 0.9em; line-height: 1.1; }
         
         .sidebar { background: var(--primary); color: var(--white); display: flex; flex-direction: column; padding: 15px; overflow: hidden; }
         .lista { flex: 1; overflow-y: auto; margin: 10px 0; }
-        
         .item-tiquet { display: flex; justify-content: space-between; padding: 12px 15px; background: rgba(255,255,255,0.1); margin-bottom: 5px; border-radius: 8px; cursor: pointer; font-size: 1em; }
         .item-historial { background: rgba(255,255,255,0.05); color: #bdc3c7; font-size: 0.85em; cursor: default; }
-        
         .total { font-size: 2.8em; font-weight: bold; text-align: center; padding: 5px 0; border-top: 2px solid rgba(255,255,255,0.2); color: #fff; }
         
-        /* MODALES Y CAPAS ORIGINAL 2 */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; }
         #modal-cantidad, #modal-teclado-texto, #modal-edit { z-index: 3000 !important; }
         #modal-reparto { z-index: 2000; }
-
         .modal-content { background: var(--white); padding: 20px; border-radius: 20px; width: 90%; max-width: 650px; text-align: center; color: #333; max-height: 98vh; overflow-y: auto; }
         
         .fila-inv { display: grid; grid-template-columns: 1fr 60px 60px 80px 40px; gap: 8px; margin-bottom: 10px; }
         .fila-inv div { background: #f8fafc; border: 1px solid #cbd5e0; border-radius: 8px; padding: 12px 2px; text-align: center; font-size: 1.1em; font-weight: bold; }
-
         .grid-teclado { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
         .tecla { background: #edf2f7; border: none; padding: 20px; font-size: 1.5em; border-radius: 12px; font-weight: bold; cursor: pointer; }
-
         .btn-accion { padding: 18px; border: none; border-radius: 12px; color: white; font-weight: bold; font-size: 1.2em; cursor: pointer; flex: 1; }
         .btn-cancelar { background: #cbd5e0; color: #2d3748; padding: 12px; border-radius: 12px; border: none; font-weight: bold; margin-top: 10px; width: 100%; cursor: pointer; }
         .teclado-texto { display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; margin-top: 10px; }
         .tecla-t { background: #edf2f7; border: none; padding: 15px 2px; font-size: 1.1em; border-radius: 6px; font-weight: bold; cursor: pointer; }
 
-        /* NUEVO: ESTILO SELECTOR COMENSALES */
         .seccion-comensales { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; padding: 10px; background: #e2e8f0; border-radius: 12px; align-items: center; }
         .btn-comensal { padding: 10px 15px; border-radius: 10px; border: 2px solid var(--primary); background: white; font-weight: bold; cursor: pointer; }
         .btn-comensal.sel { background: var(--accent); color: white; border-color: var(--accent); }
@@ -78,7 +66,6 @@
 <div id="interfaz-tpv">
     <div style="padding:10px; display:flex; flex-direction:column; overflow:hidden;">
         <div id="selector-comensales" class="seccion-comensales" style="display:none;"></div>
-        
         <div class="tabs" id="tab-container" style="display:flex; gap:8px; margin-bottom:15px; flex-wrap:wrap;"></div>
         <div id="grid-prods" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(145px, 1fr)); gap:12px; overflow-y:auto;"></div>
     </div>
@@ -100,11 +87,10 @@
 <div id="modal-teclado-texto" class="modal"><div class="modal-content" style="width: 95%; max-width: 900px;"><h3 id="titulo-teclado">Nombre</h3><div id="display-texto" style="font-size:2.5em; font-weight:bold; background:#f8fafc; padding:15px; border-radius:15px; margin-bottom:10px; min-height:1.2em; border:2px solid #ccc;"></div><div class="teclado-texto" id="grid-teclado-texto"></div><div style="display:flex; gap:10px; margin-top:20px;"><button class="btn-accion" style="background:var(--success);" onclick="confirmarTexto()">ACEPTAR</button><button class="btn-accion" style="background:var(--danger);" onclick="document.getElementById('modal-teclado-texto').style.display='none'">CANCELAR</button></div></div></div>
 <div id="modal-cantidad" class="modal"><div class="modal-content" style="width: 400px;"><h3 id="titulo-prod-modal"></h3><div id="input-cantidad" style="font-size:4em; font-weight:bold; margin-bottom:10px; color: var(--accent);">0</div><div class="grid-teclado" id="teclado-nums"></div><button class="btn-cancelar" onclick="document.getElementById('modal-cantidad').style.display='none'">CANCELAR</button></div></div>
 <div id="modal-edit" class="modal"><div class="modal-content"><h3 id="edit-nombre"></h3><p id="txt-actual"></p><div id="edit-input-display" style="font-size:4em; font-weight:bold; color:var(--accent); margin:10px 0;">0</div><div style="display:flex; gap:10px;"><button class="btn-accion" style="background:var(--danger);" onclick="aplicarEdicion(-1)">-</button><button class="btn-accion" style="background:var(--success);" onclick="aplicarEdicion(1)">+</button></div><div class="grid-teclado" id="teclado-edit"></div><button id="btn-eliminar-fila" style="width:100%; padding:15px; background:var(--danger); color:white; border:none; border-radius:12px; margin-top:15px;" onclick="eliminarFilaEdicion()">ELIMINAR LÍNEA</button><button class="btn-cancelar" onclick="document.getElementById('modal-edit').style.display='none'">VOLVER</button></div></div>
-<div id="modal-reparto" class="modal"><div class="modal-content" style="width: 95%; max-width: 750px;"><h2>Gestión Comida</h2><div id="invitados-cont"></div><button id="btn-add-inv" onclick="addInv()" style="width:100%; padding:15px; margin: 10px 0; background:#f0f0f0; border:2px dashed #ccc; border-radius:12px; font-weight:bold;">+ Añadir Comensal</button><div id="resumen-reparto" style="text-align:left; background:#eef2f7; padding:20px; border-radius:15px; margin-top:10px; display:none; font-size: 1.1em;"></div><div style="display:flex; flex-direction:column; gap:10px; margin-top:15px;"><div style="display:flex; gap:10px;"><button class="btn-accion" style="background:var(--accent);" onclick="calcularCuentas()">CALCULAR</button><button class="btn-accion" style="background:var(--primary);" onclick="cerrarTPVCompletamente()">CERRAR</button></div><button class="btn-cancelar" style="background:var(--danger); color:white;" onclick="resetearComida()">RESET</button></div></div></div>
+<div id="modal-reparto" class="modal"><div class="modal-content" style="width: 95%; max-width: 750px;"><h2>Gestión Comida</h2><div id="invitados-cont"></div><button id="btn-add-inv" onclick="addInv()" style="width:100%; padding:15px; margin: 10px 0; background:#f0f0f0; border:2px dashed #ccc; border-radius:12px; font-weight:bold;">+ Añadir Comensal</button><div id="resumen-reparto" style="text-align:left; background:#eef2f7; padding:20px; border-radius:15px; margin-top:10px; display:block; font-size: 1.1em;"></div><div style="display:flex; flex-direction:column; gap:10px; margin-top:15px;"><button class="btn-accion" style="background:var(--primary);" onclick="cerrarTPVCompletamente()">VOLVER AL TICKET</button><button class="btn-cancelar" style="background:var(--danger); color:white;" onclick="resetearComida()">BORRAR TODO (REPARTO)</button></div></div></div>
 <div id="modal-compra" class="modal"><div class="modal-content"><h3>🛒 Faltas</h3><div id="cuerpo-compra" style="text-align:left; max-height:400px; overflow-y:auto;"></div><button style="width:100%; padding:20px; margin-top:15px; font-weight:bold;" onclick="cerrarModales()">CERRAR</button></div></div>
 
 <script>
-// VARIABLES ORIGINAL 2 CONSTANTES
 const ML_COPA = 30;
 const PRECIOS = { "MAHOU 25cl.": 0.90, "ALHAMBRA 33cl.": 1.50, "BUDWEISSER 33cl.": 1.50, "MAHOU SIN 25cl.": 0.90, "COCA COLA": 1.00, "COCA COLA ZERO": 1.00, "FANTA NARANJA": 1.00, "FANTA LIMÓN": 1.00, "SPRITE": 1.00, "ACUARIUS NARANJA": 1.00, "ACUARIUS LIMÓN": 1.00, "NESTEÁ LIMÓN": 1.00, "TÓNICA SCHWEPPES": 1.00, "TÓNICA SCHWEPPES ZERO": 1.00, "CASERA BLANCA 0,5L": 0.50, "AGUA": 0.50, "VIÑAS DEL VERO": 9.00, "BERONIA CRIANZA": 9.00, "BERONIA RESERVA": 16.00, "TIO PEPE 50cl.": 6.00, "MANZANILLA 50CL.": 6.00, "TINTO BÁSICO 70cl.": 2.00, "CROFT TWIST": 6.00, "DESCORCHE VINO": 2.00, "BARCELÓ": 2.00, "WHITE LABEL": 2.00, "RIVES": 2.00, "PINK RIVES": 2.00, "RIVES EXÓTICA": 2.00, "DESCORCHE COPA": 3.00, "ATÚN ENCEBOLLADO": 8.00, "ATÚN FRITADA": 8.00, "PATATAS FRITAS": 0.60 };
 const CATEGORIAS = { "CERVEZAS": ["MAHOU 25cl.", "ALHAMBRA 33cl.", "BUDWEISSER 33cl.", "MAHOU SIN 25cl."], "REFRESCOS": ["COCA COLA", "COCA COLA ZERO", "FANTA NARANJA", "FANTA LIMÓN", "SPRITE", "ACUARIUS NARANJA", "ACUARIUS LIMÓN", "NESTEÁ LIMÓN", "TÓNICA SCHWEPPES", "TÓNICA SCHWEPPES ZERO", "CASERA BLANCA 0,5L", "AGUA"], "VINOS": ["VIÑAS DEL VERO", "BERONIA CRIANZA", "BERONIA RESERVA", "TIO PEPE 50cl.", "MANZANILLA 50CL.", "TINTO BÁSICO 70cl.", "CROFT TWIST", "DESCORCHE VINO"], "ESPIRITUOSOS": ["BARCELÓ", "WHITE LABEL", "RIVES", "PINK RIVES", "RIVES EXÓTICA", "DESCORCHE COPA"], "OTROS": ["ATÚN ENCEBOLLADO", "ATÚN FRITADA", "PATATAS FRITAS"] };
@@ -117,7 +103,7 @@ let prodTemp = null; let inputVal = "";
 let listInv = []; let modoRepoActivo = false;
 let editingInvIdx = -1; let currentTexto = "";
 let currentEditType = "";
-let comensalSel = ""; // Nuevo estado para rescatar nombres
+let comensalSel = "";
 
 function getImg(n) { return `img/${n.replace(/ /g, '_').toUpperCase()}.jpg`; }
 
@@ -157,7 +143,7 @@ function actualizarSelectorComensales() {
             const nombre = inv.n || "Socio";
             cont.innerHTML += `<button class="btn-comensal ${comensalSel === nombre ? 'sel' : ''}" onclick="comensalSel='${nombre}'; actualizarSelectorComensales()">${nombre}</button>`;
         });
-        document.getElementById('btn-add-inv').style.display = 'none'; // Bloqueo añadir
+        document.getElementById('btn-add-inv').style.display = 'none';
     } else {
         cont.style.display = 'none';
         document.getElementById('btn-add-inv').style.display = 'block';
@@ -186,7 +172,7 @@ function abrirModalReparto() {
 }
 
 function addInv() { 
-    if(historial.length > 0) return; // Bloqueo total
+    if(historial.length > 0) return; 
     listInv.push({n: "", a: 0, k: 0, g: 0}); 
     renderInv(); 
 }
@@ -204,6 +190,31 @@ function renderInv() {
             <button onclick="${bloq ? '' : `listInv.splice(${i},1); renderInv(); guardarTicketParcial();`}" style="color:red; border:none; background:none; font-size:1.8em; opacity:${bloq?0:1}">×</button>
         </div>`;
     });
+    calcularCuentas(); // Ejecución automática
+}
+
+function calcularCuentas() {
+    const totalBar = [...carrito, ...historial].reduce((acc, i) => acc + (i.p * i.cant), 0);
+    const totalExterno = listInv.reduce((acc, i) => acc + i.g, 0);
+    const totalCoeficientes = listInv.reduce((acc, i) => acc + (i.a * 1) + (i.k * 0.5), 0);
+    
+    let h = `<div style="display:flex; justify-content:space-between; border-bottom:1px solid #ccc; margin-bottom:10px; padding-bottom:5px;"><b>TOTAL A REPARTIR:</b> <b>${(totalBar + totalExterno).toFixed(2)}€</b></div>`;
+    
+    if (totalCoeficientes > 0) {
+        const precioPorUnidad = (totalBar + totalExterno) / totalCoeficientes;
+        listInv.forEach(inv => {
+            const p = (inv.a * 1) + (inv.k * 0.5);
+            const deb = (p * precioPorUnidad) + (inv.a * 1);
+            const bal = deb - inv.g;
+            h += `<div style="display:flex; justify-content:space-between; font-size:0.95em; margin-bottom:4px;">
+                <span>${inv.n || '?'}</span>
+                ${bal > 0 ? `<span style="color:var(--danger); font-weight:bold;">DEBE ${bal.toFixed(2)}€</span>` : `<span style="color:var(--success); font-weight:bold;">RECIBE ${Math.abs(bal).toFixed(2)}€</span>`}
+            </div>`;
+        });
+    } else {
+        h += `<div style="color:gray; font-size:0.8em; text-align:center;">Añada comensales para ver el reparto</div>`;
+    }
+    document.getElementById('resumen-reparto').innerHTML = h;
 }
 
 function confirmar() {
@@ -211,7 +222,6 @@ function confirmar() {
     const valorNum = parseFloat(valStr) || 0;
     if (currentEditType === 'prod') {
         const c = parseFloat(valStr) || 1;
-        // Lógica de rescate de nombres:
         const nFinal = comensalSel ? `${prodTemp} (${comensalSel})` : prodTemp;
         const ex = carrito.find(i => i.n === nFinal);
         if(ex) ex.cant += c; else carrito.push({n: nFinal, cant: c, p: PRECIOS[prodTemp], esLicor: CATEGORIAS["ESPIRITUOSOS"].includes(prodTemp)});
@@ -225,7 +235,6 @@ function confirmar() {
 
 function cierreParcial() {
     if(carrito.length === 0 && historial.length === 0) {
-        // Si no hay productos pero hay invitados, forzamos un item invisible para "bloquear" la sesión
         if(listInv.length > 0) historial.push({n: "SESIÓN ACTIVA", cant: 0, p: 0, esHistorial: true});
         else return;
     }
@@ -239,7 +248,6 @@ function cierreParcial() {
     actualizarSelectorComensales();
 }
 
-// RESTO DE FUNCIONES ORIGINALES 2 (INTACTAS)
 function abrirReposicion() { modoRepoActivo = true; document.getElementById('pantalla-socios').style.display = 'none'; document.getElementById('pantalla-reposicion').style.display = 'flex'; mostrarMenuCats(); }
 function mostrarMenuCats() { document.getElementById('repo-menu-cats').style.display = 'grid'; document.getElementById('repo-menu-items').style.display = 'none'; document.getElementById('repo-menu-cats').innerHTML = Object.keys(CATEGORIAS).map(cat => `<button style="background:var(--primary); color:white; padding:30px 10px; border-radius:15px; border:none; font-size:1.4em; font-weight:bold;" onclick="mostrarProductosRepo('${cat}')">${cat}</button>`).join(''); }
 function mostrarProductosRepo(cat) { catActiva = cat; document.getElementById('repo-menu-cats').style.display = 'none'; document.getElementById('repo-menu-items').style.display = 'block'; const cont = document.getElementById('repo-grid-productos'); cont.innerHTML = CATEGORIAS[cat].filter(n => STOCK_IDEAL[n]).map(n => { const esE = (cat === "ESPIRITUOSOS"); return `<div class="card" onclick="abrirEdicionRepo('${n}')"><img src="${getImg(n)}" onerror="this.style.opacity='0.1'"><b>${n}</b><div style="font-weight:bold; color:var(--primary); font-size:0.8em;">${esE ? (stockActual[n]/700).toFixed(1)+' Bot.' : stockActual[n]+' uds'}</div></div>`; }).join(''); }
@@ -249,7 +257,6 @@ function abrirTecladoTexto(idx) { editingInvIdx = idx; currentTexto = listInv[id
 function renderTecladoTexto() { const cont = document.getElementById('grid-teclado-texto'); const teclas = "1234567890QWERTYUIOPASDFGHJKLÑZXCVBNM ".split(""); cont.innerHTML = teclas.map(l => `<button class="tecla-t" onclick="addLetra('${l}')">${l===' '?'_':l}</button>`).join(''); cont.innerHTML += `<button class="tecla-t" style="background:var(--warning);" onclick="addLetra('BACK')">DEL</button>`; }
 function addLetra(l) { if(l === 'BACK') currentTexto = currentTexto.slice(0, -1); else if(currentTexto.length < 15) currentTexto += l; document.getElementById('display-texto').innerText = currentTexto; }
 function confirmarTexto() { listInv[editingInvIdx].n = currentTexto; document.getElementById('modal-teclado-texto').style.display = 'none'; renderInv(); }
-function calcularCuentas() { const totalBar = [...carrito, ...historial].reduce((acc, i) => acc + (i.p * i.cant), 0); const totalExterno = listInv.reduce((acc, i) => acc + i.g, 0); const totalCoeficientes = listInv.reduce((acc, i) => acc + (i.a * 1) + (i.k * 0.5), 0); if (totalCoeficientes === 0) return; const precioPorUnidad = (totalBar + totalExterno) / totalCoeficientes; let h = `<h4>Cuentas:</h4>`; listInv.forEach(inv => { const p = (inv.a * 1) + (inv.k * 0.5); const deb = (p * precioPorUnidad) + (inv.a * 1); const bal = deb - inv.g; h += `<div style="font-size:0.9em; margin-bottom:5px;">${inv.n || '?'} ${bal > 0 ? `<span style="color:var(--danger)">DEBE ${bal.toFixed(2)}€</span>` : `<span style="color:var(--success)">RECIBE ${Math.abs(bal).toFixed(2)}€</span>`}</div>`; }); document.getElementById('resumen-reparto').innerHTML = h; document.getElementById('resumen-reparto').style.display = 'block'; guardarTicketParcial(); }
 function resetearComida() { if(confirm("¿Borrar comida?")) { listInv = []; document.getElementById('resumen-reparto').style.display = 'none'; guardarTicketParcial(); cerrarTPVCompletamente(); } }
 function abrirTecladoProd(n) { prodTemp = n; currentEditType = 'prod'; inputVal = ""; document.getElementById('titulo-prod-modal').innerText = n; document.getElementById('input-cantidad').innerText = "1"; document.getElementById('modal-cantidad').style.display = 'flex'; }
 function presionarNum(v) { if(v === '.' && inputVal.includes('.')) return; inputVal += v; document.getElementById('input-cantidad').innerText = inputVal || "0"; }
