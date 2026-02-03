@@ -32,7 +32,13 @@
         
         .total { font-size: 2.8em; font-weight: bold; text-align: center; padding: 5px 0; border-top: 2px solid rgba(255,255,255,0.2); color: #fff; }
         
+        /* MODALES Y CAPAS */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; }
+        
+        /* Prioridad máxima para teclados para que no queden bajo el modal de comida */
+        #modal-cantidad, #modal-teclado-texto, #modal-edit { z-index: 3000 !important; }
+        #modal-reparto { z-index: 2000; }
+
         .modal-content { background: var(--white); padding: 20px; border-radius: 20px; width: 90%; max-width: 650px; text-align: center; color: #333; max-height: 98vh; overflow-y: auto; }
         
         .fila-inv { display: grid; grid-template-columns: 1fr 60px 60px 80px 40px; gap: 8px; margin-bottom: 10px; }
@@ -244,7 +250,6 @@ function confirmarTexto() {
 }
 
 function calcularCuentas() {
-    // Calcular sobre tiquet activo + historial
     const totalBar = [...carrito, ...historial].reduce((acc, i) => acc + (i.p * i.cant), 0);
     const totalExterno = listInv.reduce((acc, i) => acc + i.g, 0);
     const totalCoeficientes = listInv.reduce((acc, i) => acc + (i.a * 1) + (i.k * 0.5), 0);
@@ -312,24 +317,18 @@ function guardarTicketParcial() {
 function actualizarTicket() {
     let tS = 0;
     let html = "";
-    
-    // Render carrito activo
     carrito.forEach(i => {
         tS += i.p * i.cant;
         html += `<div class="item-tiquet" onclick="abrirEdicionTicket('${i.n}')"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}€</span></div>`;
     });
-
-    // Render historial (gris)
     historial.forEach(i => {
         tS += i.p * i.cant;
         html += `<div class="item-tiquet item-historial"><span>(Hist) ${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}€</span></div>`;
     });
-
     const canonTotal = listInv.reduce((acc, i) => acc + (i.a * 1), 0);
     if(canonTotal > 0) {
         html += `<div class="item-tiquet" style="border:1px dashed #fff;"><span>Canon Comida (${canonTotal})</span><span>${canonTotal.toFixed(2)}€</span></div>`;
     }
-    
     document.getElementById('ticket-lista').innerHTML = html;
     document.getElementById('total-txt').innerText = (tS + canonTotal).toFixed(2) + "€";
 }
