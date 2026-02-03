@@ -222,40 +222,69 @@ function calcularCuentas() {
     document.getElementById('resumen-reparto').innerHTML = h;
 }
 
+// ... (resto del código HTML/CSS igual a V5)
+
 function verTiquetDetallado() {
     const cont = document.getElementById('cont-tiquet-papel');
-    const totalBarCarrito = carrito.reduce((acc, i) => acc + (i.p * i.cant), 0);
+    
+    // 1. CÁLCULO DE LA BASE DEL REPARTO (HISTORIAL + GASTO EXTERNO)
     const totalBarHist = historial.reduce((acc, i) => acc + (i.p * i.cant), 0);
-    const canonTotal = listInv.reduce((acc, i) => acc + (i.a * 1), 0);
     const totalExterno = listInv.reduce((acc, i) => acc + i.g, 0);
-    const totalRepartir = (totalBarCarrito + totalBarHist + totalExterno);
+    const canonTotal = listInv.reduce((acc, i) => acc + (i.a * 1), 0);
+    
+    const baseRepartoHistorial = totalBarHist + totalExterno;
     const totalCoef = listInv.reduce((acc, i) => acc + (i.a * 1) + (i.k * 0.5), 0);
-    const precioU = totalCoef > 0 ? totalRepartir / totalCoef : 0;
+    const precioU = totalCoef > 0 ? baseRepartoHistorial / totalCoef : 0;
 
     let h = `<div style="text-align:center; font-weight:bold; border-bottom:2px solid #000; margin-bottom:10px;">TIQUET CLUB - SOCIO ${socioActivo}</div>`;
     
-    h += `<b>--- CONSUMO BAR ---</b><br>`;
+    h += `<b>--- CONSUMO BAR (ACTUAL) ---</b><br>`;
     carrito.forEach(i => h += `<div class="tiquet-linea"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}</span></div>`);
+    
+    h += `<br><b>--- HISTORIAL (CERRADO) ---</b><br>`;
     historial.forEach(i => h += `<div class="tiquet-linea"><span style="color:#555;">(H) ${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}</span></div>`);
     
-    h += `<br><b>--- COMIDA ---</b><br>`;
-    h += `<div class="tiquet-linea"><span>Canon Adultos (${listInv.reduce((a,v)=>a+v.a,0)})</span><span>${canonTotal.toFixed(2)}</span></div>`;
-    h += `<div class="tiquet-linea"><span>Gasto Externo Comida</span><span>${totalExterno.toFixed(2)}</span></div>`;
+    h += `<br><b>--- COSTES FIJOS ---</b><br>`;
+    h += `<div class="tiquet-linea"><span>Canon Adultos</span><span>${canonTotal.toFixed(2)}</span></div>`;
+    h += `<div class="tiquet-linea"><span>Gasto Externo</span><span>${totalExterno.toFixed(2)}</span></div>`;
     
-    h += `<br><div class="tiquet-linea" style="font-weight:bold; font-size:1.2em;"><span>TOTAL CUENTA</span><span>${(totalBarCarrito+totalBarHist+canonTotal).toFixed(2)}€</span></div><br>`;
+    const totalCuentaSocio = carrito.reduce((acc, i)=>acc+(i.p*i.cant),0) + totalBarHist + canonTotal;
+    h += `<br><div class="tiquet-linea" style="font-weight:bold; font-size:1.2em;"><span>TOTAL CUENTA</span><span>${totalCuentaSocio.toFixed(2)}€</span></div><br>`;
     
-    h += `<b>--- REPARTO ---</b><br>`;
-    h += `<div style="font-size:0.8em; margin-bottom:5px;">Base reparto: ${totalRepartir.toFixed(2)}€ (${totalCoef} ptos)</div>`;
+    h += `<b>--- DESGLOSE REPARTO ---</b><br>`;
+    h += `<div style="font-size:0.75em; margin-bottom:5px;">Historial repartido por puntos (${totalCoef}p)</div>`;
+
     listInv.forEach(inv => {
-        const p = (inv.a * 1) + (inv.k * 0.5);
-        const deb = (p * precioU) + (inv.a * 1);
-        const bal = deb - inv.g;
-        h += `<div class="tiquet-linea"><span>${inv.n || '?'} (${p}p)</span><b>${bal > 0 ? '+' : ''}${bal.toFixed(2)}€</b></div>`;
+        const nombreLimpio = inv.n || socioActivo;
+        
+        // A. Parte proporcional del historial
+        const puntos = (inv.a * 1) + (inv.k * 0.5);
+        const parteHistorial = (puntos * precioU) + (inv.a * 1); // Incluye su propio canon
+        
+        // B. Consumo individual directo del carrito (Actual)
+        // Buscamos items en el carrito que tengan "(Nombre)"
+        const consumoIndividualActual = carrito
+            .filter(item => item.n.includes(`(${nombreLimpio})`))
+            .reduce((acc, item) => acc + (item.p * item.cant), 0);
+        
+        // C. Resultado final
+        const totalDebe = parteHistorial + consumoIndividualActual;
+        const bal = totalDebe - inv.g;
+
+        h += `<div style="border-bottom:1px solid #eee; margin-bottom:5px; padding-bottom:2px;">
+                <div class="tiquet-linea"><b>${nombreLimpio}</b> <span>${totalDebe.toFixed(2)}€</span></div>
+                <div style="font-size:0.7em; color:#666; display:flex; justify-content:space-between;">
+                    <span>Hist: ${parteHistorial.toFixed(2)} + Act: ${consumoIndividualActual.toFixed(2)}</span>
+                    <span style="color:${bal>0?'red':'green'}">${bal > 0 ? 'DEBE' : 'COBRA'} ${Math.abs(bal).toFixed(2)}€</span>
+                </div>
+              </div>`;
     });
 
     cont.innerHTML = h;
     document.getElementById('modal-tiquet-final').style.display = 'flex';
 }
+
+// ... (resto de funciones de V5 igual)
 
 function confirmar() {
     const valStr = document.getElementById('input-cantidad').innerText;
@@ -326,3 +355,4 @@ renderSocios();
 </script>
 </body>
 </html>
+
