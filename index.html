@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TPV Shoko - T7 Híbrido Final</title>
+    <title>TPV Shoko - T7 Corregido</title>
     <style>
         :root { --primary: #2c3e50; --success: #27ae60; --accent: #3498db; --bg: #f4f7f6; --danger: #e74c3c; --warning: #f39c12; --white: #ffffff; --gray: #95a5a6; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); height: 100vh; overflow: hidden; }
         
-        /* Estructura T6 */
         #pantalla-socios { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; padding: 20px; overflow-y: auto; height: 100vh; box-sizing: border-box; align-content: start; }
         #interfaz-tpv { display: none; grid-template-columns: 1fr 350px; height: 100vh; }
         
@@ -31,11 +30,9 @@
         .fila-botones { display: flex; gap: 8px; }
         .btn-side { border: none; border-radius: 12px; font-weight: bold; cursor: pointer; padding: 15px; color: white; flex: 1; font-size: 0.9em; }
 
-        /* Modales T6 */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: var(--white); padding: 20px; border-radius: 20px; width: 95%; max-width: 700px; text-align: center; color: #333; max-height: 98vh; overflow-y: auto; }
         
-        /* Gestión de Modos T7 */
         .selector-modos { display: flex; gap: 8px; margin: 15px 0; }
         .btn-modo { flex: 1; padding: 12px 5px; border-radius: 10px; border: 2px solid #ddd; background: #f8f9fa; cursor: pointer; font-weight: bold; font-size: 0.85em; }
         .btn-modo.active { border-color: var(--accent); background: #e3f2fd; color: var(--accent); }
@@ -64,7 +61,6 @@
 <div id="interfaz-tpv">
     <div style="padding:10px; display:flex; flex-direction:column; overflow:hidden;">
         <div id="selector-comensales" class="seccion-comensales" style="display:none;"></div>
-        
         <div class="tabs" id="tab-container" style="display:flex; gap:8px; margin-bottom:15px; flex-wrap:wrap;"></div>
         <div id="grid-prods" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(145px, 1fr)); gap:12px; overflow-y:auto;"></div>
     </div>
@@ -92,18 +88,15 @@
 <div id="modal-reparto" class="modal">
     <div class="modal-content">
         <h2>Gestión de la Sesión</h2>
-        
         <div class="selector-modos">
-            <button id="m-escote" class="btn-modo active" onclick="setModo('escote')">🤝 A ESCOTE<br><small>Híbrido (Proporcional + Individual)</small></button>
-            <button id="m-invito" class="btn-modo" onclick="setModo('invito')">🎁 INVITO YO<br><small>Socio paga bar común</small></button>
-            <button id="m-solo-bar" class="btn-modo" onclick="setModo('solo-bar')">🍻 SOLO BAR<br><small>Sin gastos comida</small></button>
+            <button id="m-escote" class="btn-modo active" onclick="setModo('escote')">🤝 A ESCOTE</button>
+            <button id="m-invito" class="btn-modo" onclick="setModo('invito')">🎁 INVITO YO</button>
+            <button id="m-solo-bar" class="btn-modo" onclick="setModo('solo-bar')">🍻 SOLO BAR</button>
         </div>
-
         <div id="area-invitados">
             <div id="invitados-cont"></div>
-            <button onclick="addInv()" style="width:100%; padding:15px; margin: 10px 0; background:#f0f0f0; border:2px dashed #ccc; border-radius:12px; font-weight:bold;">+ Añadir Comensal / Invitado</button>
+            <button onclick="addInv()" style="width:100%; padding:15px; margin: 10px 0; background:#f0f0f0; border:2px dashed #ccc; border-radius:12px; font-weight:bold;">+ Añadir Invitado</button>
         </div>
-
         <div style="display:flex; gap:10px; margin-top:15px;">
             <button style="flex:1; padding:15px; background:var(--primary); color:white; border:none; border-radius:12px; font-weight:bold;" onclick="document.getElementById('modal-reparto').style.display='none'">ACEPTAR</button>
             <button style="padding:15px; background:var(--danger); color:white; border:none; border-radius:12px; font-weight:bold;" onclick="resetearComida()">BORRAR TODO</button>
@@ -115,16 +108,15 @@
     <div class="modal-content" style="max-width: 450px;">
         <h3>DESGLOSE DE CUENTA</h3>
         <div id="cont-tiquet-papel" class="tiquet-papel"></div>
-        <button style="width:100%; background:var(--danger); color:white; border:none; padding:20px; border-radius:12px; font-weight:bold; margin-top:15px; cursor:pointer;" onclick="cerrarVenta()">🚩 CIERRE TOTAL (PAGAR AL CLUB)</button>
-        <button style="width:100%; border:none; background:none; color:gray; margin-top:10px;" onclick="document.getElementById('modal-tiquet-final').style.display='none'">Volver al TPV</button>
+        <button style="width:100%; background:var(--danger); color:white; border:none; padding:20px; border-radius:12px; font-weight:bold; margin-top:15px;" onclick="cerrarVenta()">🚩 CIERRE TOTAL</button>
+        <button style="width:100%; border:none; background:none; color:gray; margin-top:10px;" onclick="document.getElementById('modal-tiquet-final').style.display='none'">Volver</button>
     </div>
 </div>
 
 <div id="modal-cantidad" class="modal"><div class="modal-content" style="width: 380px;"><h3 id="titulo-modal">Cantidad</h3><div id="input-cantidad" style="font-size:4em; font-weight:bold; color:var(--accent); margin-bottom:15px;">0</div><div class="grid-teclado" id="teclado-nums"></div><button style="width:100%; margin-top:15px; padding:15px; border:none; border-radius:12px;" onclick="document.getElementById('modal-cantidad').style.display='none'">CANCELAR</button></div></div>
-<div id="modal-teclado-texto" class="modal"><div class="modal-content" style="width: 95%; max-width: 900px;"><h3 id="titulo-teclado">Nombre</h3><div id="display-texto" style="font-size:2.5em; font-weight:bold; background:#f8fafc; padding:15px; border-radius:15px; margin-bottom:10px; min-height:1.2em; border:2px solid #ccc;"></div><div class="teclado-texto" id="grid-teclado-texto"></div><div style="display:flex; gap:10px; margin-top:20px;"><button style="flex:1; padding:20px; background:var(--success); color:white; border-radius:12px; border:none; font-weight:bold;" onclick="confirmarTexto()">ACEPTAR</button><button style="flex:1; padding:20px; background:var(--danger); color:white; border-radius:12px; border:none; font-weight:bold;" onclick="document.getElementById('modal-teclado-texto').style.display='none'">CANCELAR</button></div></div></div>
+<div id="modal-teclado-texto" class="modal"><div class="modal-content" style="width: 95%; max-width: 900px;"><h3 id="titulo-teclado">Nombre</h3><div id="display-texto" style="font-size:2.5em; font-weight:bold; background:#f8fafc; padding:15px; border-radius:15px; margin-bottom:10px; min-height:1.2em; border:2px solid #ccc;"></div><div class="teclado-texto" id="grid-teclado-texto"></div><div style="display:flex; gap:10px; margin-top:20px;"><button style="flex:1; padding:20px; background:var(--success); color:white; border-radius:12px; border:none; font-weight:bold;" onclick="confirmarTexto()">ACEPTAR</button></div></div></div>
 
 <script>
-// CONFIGURACIÓN T6
 const PRECIOS = { "MAHOU 25cl.": 0.90, "ALHAMBRA 33cl.": 1.50, "COCA COLA": 1.00, "AGUA": 0.50, "ATÚN": 8.00 };
 const CATEGORIAS = { "BEBIDAS": ["MAHOU 25cl.", "ALHAMBRA 33cl.", "COCA COLA", "AGUA"], "COMIDA": ["ATÚN"] };
 
@@ -152,11 +144,9 @@ function abrirTPV(n) {
     listInv = comidaG ? comidaG.datos : [];
     modoPago = (data.find(i => i.esModo) || {m: 'escote'}).m;
     comensalSel = "";
-
     document.getElementById('pantalla-socios').style.display = 'none';
     document.getElementById('interfaz-tpv').style.display = 'grid';
     document.getElementById('nombre-socio').innerText = n;
-    
     setModo(modoPago);
     actualizarSelectorComensales();
     renderTabs();
@@ -166,18 +156,18 @@ function abrirTPV(n) {
 function setModo(m) {
     modoPago = m;
     document.querySelectorAll('.btn-modo').forEach(b => b.classList.remove('active'));
-    document.getElementById('m-' + m).classList.add('active');
+    let btn = document.getElementById('m-' + m);
+    if(btn) btn.classList.add('active');
     document.getElementById('area-invitados').style.opacity = (m === 'solo-bar') ? '0.3' : '1';
     guardarTicketParcial();
     actualizarTicket();
 }
 
-// NUEVO: Selector de comensal para bebidas individuales
 function actualizarSelectorComensales() {
     const cont = document.getElementById('selector-comensales');
     if (listInv.length > 0) {
         cont.style.display = 'flex';
-        cont.innerHTML = '<small style="color:var(--primary); font-weight:bold;">Para:</small>';
+        cont.innerHTML = '<small>Para:</small>';
         listInv.forEach(inv => {
             const nom = inv.n || "Socio";
             cont.innerHTML += `<button class="btn-comensal ${comensalSel === nom ? 'sel' : ''}" onclick="comensalSel='${nom}'; actualizarSelectorComensales()">${nom}</button>`;
@@ -189,54 +179,32 @@ function actualizarSelectorComensales() {
 function verTiquetDetallado() {
     const cont = document.getElementById('cont-tiquet-papel');
     const todosProds = [...historial, ...carrito];
-    
-    // FILTROS T7 HÍBRIDO
-    const consumoComunBar = todosProds.filter(i => !i.n.includes("(")).reduce((acc, i) => acc + (i.p * i.cant), 0);
+    const totalComunBar = todosProds.filter(i => !i.n.includes("(")).reduce((acc, i) => acc + (i.p * i.cant), 0);
     const totalGastosComida = (modoPago === 'solo-bar') ? 0 : listInv.reduce((acc, i) => acc + i.g, 0);
     const canonTotal = (modoPago === 'solo-bar') ? 0 : listInv.reduce((acc, i) => acc + (i.a * 1), 0);
-    
-    // Cálculo de reparto proporcional
-    const particip Comida = listInv.filter(inv => inv.a > 0 || inv.k > 0);
-    const totalCoef = participComida.reduce((acc, i) => (i.a * 1) + (i.k * 0.5), 0);
-    const precioU = totalCoef > 0 ? (consumoComunBar + totalGastosComida) / totalCoef : 0;
+    const participantes = listInv.filter(inv => inv.a > 0 || inv.k > 0);
+    const totalCoef = participantes.reduce((acc, i) => acc + (i.a * 1) + (i.k * 0.5), 0);
+    const precioU = totalCoef > 0 ? (totalComunBar + totalGastosComida) / totalCoef : 0;
 
-    let h = `<div style="text-align:center; font-weight:bold; border-bottom:2px solid #000; margin-bottom:10px;">TIQUE SHOKO - ${socioActivo}<br>REPARTO: ${modoPago.toUpperCase()}</div>`;
-    
-    // Listado visual
-    h += `<b>--- PRODUCTOS ---</b><br>`;
+    let h = `<div style="text-align:center; font-weight:bold;">TIQUE SHOKO - ${socioActivo}</div><hr>`;
     todosProds.forEach(i => h += `<div class="tiquet-linea"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}</span></div>`);
-    
     const totalClub = todosProds.reduce((acc,i)=>acc+(i.p*i.cant),0) + canonTotal;
-    h += `<br><div class="tiquet-linea" style="font-weight:bold; border-top:1px solid #000;"><span>TOTAL TIQUE SHOKO</span><span>${totalClub.toFixed(2)}€</span></div><br>`;
+    h += `<hr><div class="tiquet-linea" style="font-weight:bold;"><span>TOTAL TIQUE SHOKO</span><span>${totalClub.toFixed(2)}€</span></div><br>`;
 
-    h += `<b>--- DESGLOSE POR PERSONA ---</b><br>`;
     listInv.forEach(inv => {
         const nom = inv.n || socioActivo;
-        const esActivoEnComida = (inv.a > 0 || inv.k > 0);
-        
-        // Lo que le toca del "bote" (si no invita el socio)
-        const pComun = (modoPago === 'escote' && esActivoEnComida) ? (((inv.a*1)+(inv.k*0.5)) * precioU) : 0;
-        // Sus bebidas marcadas específicamente
+        const pComun = (modoPago === 'escote' && (inv.a > 0 || inv.k > 0)) ? (((inv.a*1)+(inv.k*0.5)) * precioU) : 0;
         const pIndiv = todosProds.filter(i => i.n.includes(`(${nom})`)).reduce((acc, i) => acc + (i.p * i.cant), 0);
-        // Su cuota fija
-        const pCuota = (modoPago !== 'solo-bar' && esActivoEnComida) ? (inv.a * 1) : 0;
-        
-        const debeTotal = pComun + pIndiv + pCuota;
-        const balance = debeTotal - inv.g;
-
-        h += `<div style="border-bottom:1px solid #eee; margin-bottom:5px; padding-bottom:3px;">
-                <div class="tiquet-linea"><b>${nom}</b> <span>${debeTotal.toFixed(2)}€</span></div>
-                <div style="font-size:0.75em; text-align:right; color:${nom===socioActivo?'red':'#e67e22'}; font-weight:bold;">
-                    ${nom===socioActivo ? 'PAGAR A CLUB: '+totalClub.toFixed(2) : (balance>0 ? 'PAGAR A '+socioActivo+': '+balance.toFixed(2) : 'RECIBIR: '+Math.abs(balance).toFixed(2))}€
-                </div>
-              </div>`;
+        const pCuota = (modoPago !== 'solo-bar' && (inv.a > 0 || inv.k > 0)) ? (inv.a * 1) : 0;
+        const debe = pComun + pIndiv + pCuota;
+        const balance = debe - inv.g;
+        h += `<div class="tiquet-linea"><b>${nom}</b> <span>${debe.toFixed(2)}€</span></div>`;
+        h += `<div style="font-size:0.8em; text-align:right;">${nom===socioActivo ? 'Paga Club: '+totalClub.toFixed(2) : 'Balance: '+balance.toFixed(2)}€</div><br>`;
     });
-
     cont.innerHTML = h;
     document.getElementById('modal-tiquet-final').style.display = 'flex';
 }
 
-// LOGICA T6 ORIGINAL (Adaptada)
 function addProd(n) {
     prodTemp = n; currentEditType = 'prod'; inputVal = "";
     document.getElementById('titulo-modal').innerText = n;
@@ -253,9 +221,7 @@ function confirmar() {
     } else if (currentEditType === 'adulto') { listInv[editingInvIdx].a = val; }
     else if (currentEditType === 'nino') { listInv[editingInvIdx].k = val; }
     else if (currentEditType === 'gasto') { listInv[editingInvIdx].g = val; }
-    
-    guardarTicketParcial();
-    actualizarTicket();
+    guardarTicketParcial(); actualizarTicket();
     document.getElementById('modal-cantidad').style.display = 'none';
 }
 
@@ -263,55 +229,46 @@ function actualizarTicket() {
     let t = 0; let html = "";
     carrito.forEach(i => { t += i.p * i.cant; html += `<div class="item-tiquet" onclick="eliminarFila('${i.n}')"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}€</span></div>`; });
     historial.forEach(i => { t += i.p * i.cant; html += `<div class="item-tiquet item-historial"><span>(H) ${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}€</span></div>`; });
-    
     if(modoPago !== 'solo-bar') {
         const canon = listInv.reduce((acc, i) => acc + (i.a * 1), 0);
-        if(canon > 0) html += `<div class="item-tiquet" style="border:1px dashed #fff;"><span>CUOTA MAYORES</span><span>${canon.toFixed(2)}€</span></div>`;
-        t += canon;
+        if(canon > 0) { html += `<div class="item-tiquet"><span>CUOTA MAYORES</span><span>${canon.toFixed(2)}€</span></div>`; t += canon; }
     }
     document.getElementById('ticket-lista').innerHTML = html;
     document.getElementById('total-txt').innerText = t.toFixed(2) + "€";
     document.getElementById('btn-cierre-parcial').disabled = (historial.length > 0);
 }
 
-function addInv() {
-    listInv.push({n: "Inv " + (listInv.length+1), a: 1, k: 0, g: 0});
-    renderInv();
-    actualizarSelectorComensales();
-}
-
+function addInv() { listInv.push({n: "Inv " + (listInv.length+1), a: 1, k: 0, g: 0}); renderInv(); actualizarSelectorComensales(); }
 function renderInv() {
     const cont = document.getElementById('invitados-cont');
     cont.innerHTML = listInv.map((inv, i) => `
         <div class="fila-inv">
-            <div onclick="abrirTecladoTexto(${i})" style="text-align:left; font-size:0.7em;">${inv.n}</div>
+            <div onclick="abrirTecladoTexto(${i})">${inv.n}</div>
             <div onclick="editingInvIdx=${i}; currentEditType='adulto'; abrirTecladoNum()">${inv.a}</div>
             <div onclick="editingInvIdx=${i}; currentEditType='nino'; abrirTecladoNum()">${inv.k}</div>
             <div onclick="editingInvIdx=${i}; currentEditType='gasto'; abrirTecladoNum()">${inv.g}€</div>
-            <button onclick="listInv.splice(${i},1); renderInv(); actualizarSelectorComensales();" style="border:none; color:red; background:none;">×</button>
-        </div>
-    `).join('');
+            <button onclick="listInv.splice(${i},1); renderInv(); actualizarSelectorComensales();">×</button>
+        </div>`).join('');
 }
 
-// TECLADOS T6 ORIGINALES (Lógica)
 function abrirTecladoNum() { document.getElementById('input-cantidad').innerText="0"; document.getElementById('modal-cantidad').style.display='flex'; }
 function presionarNum(v) { let d = document.getElementById('input-cantidad'); if(v==='C') d.innerText="0"; else d.innerText = (d.innerText==="0"?v:d.innerText+v); }
 function abrirTecladoTexto(idx) { editingInvIdx = idx; currentTexto = listInv[idx].n; document.getElementById('display-texto').innerText = currentTexto; document.getElementById('modal-teclado-texto').style.display='flex'; renderTecladoTexto(); }
-function renderTecladoTexto() { const cont = document.getElementById('grid-teclado-texto'); const teclas = "1234567890QWERTYUIOPASDFGHJKLÑZXCVBNM ".split(""); cont.innerHTML = teclas.map(l => `<button class="tecla-t" onclick="addLetra('${l}')">${l===' '?'_':l}</button>`).join(''); cont.innerHTML += `<button class="tecla-t" style="background:var(--warning);" onclick="addLetra('BACK')">DEL</button>`; }
-function addLetra(l) { if(l === 'BACK') currentTexto = currentTexto.slice(0, -1); else if(currentTexto.length < 15) currentTexto += l; document.getElementById('display-texto').innerText = currentTexto; }
-function confirmarTexto() { listInv[editingInvIdx].n = currentTexto; document.getElementById('modal-teclado-texto').style.display='none'; renderInv(); actualizarSelectorComensales(); guardarTicketParcial(); }
-
+function renderTecladoTexto() { const cont = document.getElementById('grid-teclado-texto'); const teclas = "1234567890QWERTYUIOPASDFGHJKLÑZXCVBNM ".split(""); cont.innerHTML = teclas.map(l => `<button class="tecla-t" onclick="addLetra('${l}')">${l}</button>`).join(''); }
+function addLetra(l) { currentTexto += l; document.getElementById('display-texto').innerText = currentTexto; }
+function confirmarTexto() { listInv[editingInvIdx].n = currentTexto; document.getElementById('modal-teclado-texto').style.display='none'; renderInv(); actualizarSelectorComensales(); }
 function renderTabs() { document.getElementById('tab-container').innerHTML = Object.keys(CATEGORIAS).map(c => `<button style="flex:1; padding:10px; border-radius:8px; border:none; background:var(--primary); color:white;" onclick="renderProds('${c}')">${c}</button>`).join(''); renderProds("BEBIDAS"); }
 function renderProds(cat) { document.getElementById('grid-prods').innerHTML = CATEGORIAS[cat].map(n => `<div class="card" onclick="addProd('${n}')"><b>${n}</b><br>${PRECIOS[n].toFixed(2)}€</div>`).join(''); }
 function cierreParcial() { carrito.forEach(i => historial.push({...i, esHistorial: true})); carrito = []; guardarTicketParcial(); actualizarTicket(); }
 function guardarTicketParcial() { tickets[socioActivo] = [...carrito, ...historial, {esComida:true, datos:listInv}, {esModo:true, m:modoPago}]; localStorage.setItem('shoko_t7_final', JSON.stringify(tickets)); }
-function resetearComida() { if(confirm("¿Borrar gestión?")) { listInv = []; modoPago = 'escote'; guardarTicketParcial(); location.reload(); } }
+function resetearComida() { listInv = []; modoPago = 'escote'; guardarTicketParcial(); location.reload(); }
 function cerrarVenta() { delete tickets[socioActivo]; localStorage.setItem('shoko_t7_final', JSON.stringify(tickets)); location.reload(); }
 function eliminarFila(n) { carrito = carrito.filter(i => i.n !== n); guardarTicketParcial(); actualizarTicket(); }
+function abrirModalReparto() { if(listInv.length===0) listInv.push({n: socioActivo, a: 1, k: 0, g: 0}); renderInv(); document.getElementById('modal-reparto').style.display='flex'; }
 
-const k = document.getElementById('teclado-nums');
-for(let i=1; i<=9; i++) k.innerHTML += `<button class="tecla" onclick="presionarNum('${i}')">${i}</button>`;
-k.innerHTML += `<button class="tecla" onclick="presionarNum('C')">C</button><button class="tecla" onclick="presionarNum('0')">0</button><button class="tecla" style="background:var(--success); color:white;" onclick="confirmar()">OK</button>`;
+const kn = document.getElementById('teclado-nums');
+for(let i=1; i<=9; i++) kn.innerHTML += `<button class="tecla" onclick="presionarNum('${i}')">${i}</button>`;
+kn.innerHTML += `<button class="tecla" onclick="presionarNum('C')">C</button><button class="tecla" onclick="presionarNum('0')">0</button><button class="tecla" style="background:var(--success); color:white;" onclick="confirmar()">OK</button>`;
 
 renderSocios();
 </script>
