@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TPV Shoko - T4 Actualizado</title>
+    <title>TPV Shoko - T5 Corregido</title>
     <style>
         :root { --primary: #2c3e50; --success: #27ae60; --accent: #3498db; --bg: #f4f7f6; --danger: #e74c3c; --warning: #f39c12; --white: #ffffff; --gray: #95a5a6; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); height: 100vh; overflow: hidden; }
@@ -156,18 +156,33 @@ function verTiquetDetallado() {
     const totalCoef = listInv.reduce((acc, i) => acc + (i.a * 1) + (i.k * 0.5), 0);
     const precioU = totalCoef > 0 ? baseRepartoHistorial / totalCoef : 0;
     const hoy = new Date().toLocaleDateString();
+    const hayHistorial = historial.length > 0;
 
     let h = `<div style="text-align:center; font-weight:bold; border-bottom:2px solid #000; margin-bottom:10px;">TIQUE SHOKO - ${socioActivo} - ${hoy}</div>`;
-    h += `<b>--- CONSUMO PRODUCTOS SHOKO (SEGUNDA CUENTA) ---</b><br>`;
-    carrito.forEach(i => h += `<div class="tiquet-linea"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}</span></div>`);
-    h += `<br><b>--- CONSUMO PRODUCTOS SHOKO (PRIMERA CUENTA) ---</b><br>`;
-    historial.forEach(i => h += `<div class="tiquet-linea"><span style="color:#555;">${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}</span></div>`);
+    
+    // CORRECCIÓN DE LÓGICA DE CUENTAS SOLICITADA
+    if (!hayHistorial) {
+        h += `<b>--- CONSUMO PRODUCTOS SHOKO (PRIMERA CUENTA) ---</b><br>`;
+        carrito.forEach(i => h += `<div class="tiquet-linea"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}</span></div>`);
+    } else {
+        h += `<b>--- CONSUMO PRODUCTOS SHOKO (PRIMERA CUENTA) ---</b><br>`;
+        historial.forEach(i => {
+            if(i.p > 0) h += `<div class="tiquet-linea"><span style="color:#555;">${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}</span></div>`;
+        });
+        if (carrito.length > 0) {
+            h += `<br><b>--- CONSUMO PRODUCTOS SHOKO (SEGUNDA CUENTA) ---</b><br>`;
+            carrito.forEach(i => h += `<div class="tiquet-linea"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}</span></div>`);
+        }
+    }
+
     h += `<br><b>--- COSTES FIJOS ---</b><br>`;
     h += `<div class="tiquet-linea"><span>Cuota mayores de 13 años</span><span>${canonTotal.toFixed(2)}</span></div>`;
     h += `<br><b>--- GASTOS COMIDA ---</b><br>`;
     h += `<div class="tiquet-linea"><span>Total gastos en ingredientes</span><span>${totalExterno.toFixed(2)}</span></div>`;
+    
     const totalCuentaSocio = carrito.reduce((acc, i)=>acc+(i.p*i.cant),0) + totalBarHist + canonTotal;
     h += `<br><div class="tiquet-linea" style="font-weight:bold; font-size:1.2em;"><span>TOTAL TIQUE SHOKO</span><span>${totalCuentaSocio.toFixed(2)}€</span></div><br>`;
+    
     h += `<b>--- DESGLOSE REPARTO ---</b><br>`;
     listInv.forEach(inv => {
         const nombreLimpio = inv.n || socioActivo;
@@ -214,20 +229,14 @@ function actualizarTicket() {
             html += `<div class="item-tiquet item-historial"><span>(Hist) ${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}€</span></div>`; 
         } 
     }); 
-
     const canonTotal = listInv.reduce((acc, i) => acc + (i.a * 1), 0); 
     if(canonTotal > 0) html += `<div class="item-tiquet" style="border:1px dashed #fff;"><span>Canon Comida (${canonTotal})</span><span>${canonTotal.toFixed(2)}€</span></div>`; 
-    
     document.getElementById('ticket-lista').innerHTML = html; 
     document.getElementById('total-txt').innerText = (tS + canonTotal).toFixed(2) + "€"; 
 
-    // BLOQUEO CIERRE PARCIAL SI HAY HISTORIAL
+    // Bloqueo botón cierre parcial si hay historial
     const btnCierre = document.getElementById('btn-cierre-parcial');
-    if (historial.length > 0) {
-        btnCierre.disabled = true;
-    } else {
-        btnCierre.disabled = false;
-    }
+    btnCierre.disabled = (historial.length > 0);
 }
 
 function confirmar() { const valStr = document.getElementById('input-cantidad').innerText; const valorNum = parseFloat(valStr) || 0; if (currentEditType === 'prod') { const c = parseFloat(valStr) || 1; const nFinal = comensalSel ? `${prodTemp} (${comensalSel})` : prodTemp; const ex = carrito.find(i => i.n === nFinal); if(ex) ex.cant += c; else carrito.push({n: nFinal, cant: c, p: PRECIOS[prodTemp], esLicor: CATEGORIAS["ESPIRITUOSOS"].includes(prodTemp)}); } else if (currentEditType === 'adulto') { listInv[editingInvIdx].a = parseInt(valorNum) || 0; renderInv(); } else if (currentEditType === 'nino') { listInv[editingInvIdx].k = valorNum || 0; renderInv(); } else if (currentEditType === 'gasto') { listInv[editingInvIdx].g = valorNum || 0; renderInv(); } guardarTicketParcial(); document.getElementById('modal-cantidad').style.display = 'none'; }
