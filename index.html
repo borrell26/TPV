@@ -14,7 +14,7 @@
 
         .btn-socio { background: var(--white); border: 2px solid var(--primary); border-radius: 15px; padding: 35px 10px; font-weight: bold; font-size: 1.4em; cursor: pointer; text-align: center; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .btn-socio.activo { background: #ffeaa7; border-color: var(--warning); }
-        .nav-reponedor { background: var(--warning); color: var(--primary); padding: 20px; border-radius: 15px; text-align: center; font-weight: bold; cursor: pointer; width: 100%; border: 2px solid var(--primary); box-sizing: border-box; grid-column: 1 / -1; font-size: 1.3em; margin-bottom: 10px; }
+        .nav-reponedor { background: #cbd5e0; color: var(--primary); padding: 10px; border-radius: 10px; text-align: center; font-weight: normal; cursor: pointer; width: 100%; border: 1px solid var(--gray); box-sizing: border-box; grid-column: 1 / -1; font-size: 1em; margin-top: 20px; opacity: 0.7; }
 
         .card { background: var(--white); border-radius: 12px; padding: 10px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.08); cursor: pointer; height: 145px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; border: 1px solid #e2e8f0; }
         .card img { height: 60px; width: auto; max-width: 90%; object-fit: contain; }
@@ -135,13 +135,14 @@ function getImg(n) { return `img/${n.replace(/ /g, '_').toUpperCase()}.jpg`; }
 function renderSocios() {
     modoRepoActivo = false;
     const cont = document.getElementById('pantalla-socios');
-    cont.innerHTML = '<div class="nav-reponedor" onclick="abrirReposicion()">🛠️ MODO REPONEDOR</div>';
+    cont.innerHTML = '';
     ["FRAN", "SANTI", "SANTOS", "JESÚS", "MANU", "JR", "MIGUEL", "NUÑEZ", "SILVA", "LUIS", "ROSADO"].forEach(s => {
         const data = tickets[s] || [];
         const cant = data.filter(i => i.n && !i.esComida).reduce((acc, i) => acc + i.cant, 0);
         const claseActivo = cant > 0 ? "activo" : "";
         cont.innerHTML += `<div class="btn-socio ${claseActivo}" onclick="abrirTPV('${s}')">${s} ${cant > 0 ? `<span style="position:absolute; top:-8px; right:-8px; background:var(--danger); color:white; border-radius:50%; width:30px; height:30px; display:flex; align-items:center; justify-content:center; border:2px solid white; font-size:14px;">${cant}</span>` : ''}</div>`;
     });
+    cont.innerHTML += '<div class="nav-reponedor" onclick="abrirReposicion()">🛠️ REPONEDOR</div>';
 }
 
 function abrirTPV(n) { socioActivo = n; let data = tickets[n] || []; carrito = data.filter(i => i.n && !i.esHistorial); historial = data.filter(i => i.esHistorial); let comidaG = data.find(i => i.esComida); listInv = comidaG ? comidaG.datos : []; comensalSel = ""; document.getElementById('pantalla-socios').style.display = 'none'; document.getElementById('interfaz-tpv').style.display = 'grid'; document.getElementById('nombre-socio').innerText = n; renderTabs(); renderProds(); actualizarTicket(); }
