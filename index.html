@@ -13,39 +13,26 @@
         
         .btn-socio { background: var(--white); border: 2px solid var(--primary); border-radius: 15px; padding: 35px 10px; font-weight: bold; font-size: 1.4em; cursor: pointer; text-align: center; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .btn-socio.activo { background: #ffeaa7; border-color: var(--warning); }
-        .nav-reponedor { background: var(--warning); color: var(--primary); padding: 20px; border-radius: 15px; text-align: center; font-weight: bold; cursor: pointer; width: 100%; border: 2px solid var(--primary); box-sizing: border-box; grid-column: 1 / -1; font-size: 1.3em; margin-bottom: 10px; }
-
-        .card { background: var(--white); border-radius: 12px; padding: 10px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.08); cursor: pointer; height: 145px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; border: 1px solid #e2e8f0; }
-        .card img { height: 60px; width: auto; max-width: 90%; object-fit: contain; }
-        .stock-tag { font-size: 0.8em; color: var(--gray); font-weight: bold; }
+        
+        .card { background: var(--white); border-radius: 12px; padding: 10px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.08); cursor: pointer; height: 145px; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid #e2e8f0; }
+        .card:active { transform: scale(0.95); }
         
         .sidebar { background: var(--primary); color: var(--white); display: flex; flex-direction: column; padding: 15px; overflow: hidden; }
         .lista { flex: 1; overflow-y: auto; margin: 10px 0; }
-        .item-tiquet { display: flex; justify-content: space-between; padding: 6px 10px; background: rgba(255,255,255,0.1); margin-bottom: 3px; border-radius: 6px; cursor: pointer; font-size: 0.9em; }
-        .item-historial { background: rgba(255,255,255,0.05); color: #bdc3c7; font-size: 0.8em; cursor: default; }
+        .item-tiquet { display: flex; justify-content: space-between; padding: 8px; background: rgba(255,255,255,0.1); margin-bottom: 3px; border-radius: 6px; font-size: 0.9em; }
+        .item-historial { background: rgba(255,255,255,0.05); color: #bdc3c7; }
         
-        .total-container { border-top: 2px solid rgba(255,255,255,0.2); padding: 10px 0; display: flex; justify-content: space-between; align-items: center; }
-        .tiquet-label { font-size: 0.9em; font-weight: bold; opacity: 0.9; }
-        .total { font-size: 1.3em; font-weight: bold; }
+        .total-container { border-top: 2px solid rgba(255,255,255,0.2); padding: 10px 0; display: flex; flex-direction: column; }
+        .total-row { display: flex; justify-content: space-between; align-items: center; }
+        .total { font-size: 1.4em; font-weight: bold; }
         
-        .botonera-inferior { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-        .btn-side { border: none; border-radius: 12px; font-weight: bold; cursor: pointer; padding: 15px; color: white; flex: 1; font-size: 0.9em; }
+        .botonera-inferior { display: flex; flex-direction: column; gap: 8px; }
+        .btn-side { border: none; border-radius: 12px; font-weight: bold; cursor: pointer; padding: 16px; color: white; font-size: 1em; }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: var(--white); padding: 20px; border-radius: 20px; width: 95%; max-width: 700px; text-align: center; color: #333; max-height: 98vh; overflow-y: auto; }
+        .modal-content { background: var(--white); padding: 20px; border-radius: 20px; width: 95%; max-width: 600px; max-height: 90vh; overflow-y: auto; color: #333; }
         
-        .tiquet-papel { background: #fff; color: #000; padding: 20px; font-family: 'Courier New', monospace; text-align: left; border: 1px solid #ccc; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin-top: 10px; font-size: 0.85em; }
-        .tiquet-linea { display: flex; justify-content: space-between; margin-bottom: 3px; border-bottom: 1px dotted #ccc; }
-        
-        .grid-teclado { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
-        .tecla { background: #edf2f7; border: none; padding: 20px; font-size: 1.5em; border-radius: 12px; font-weight: bold; cursor: pointer; }
-        
-        .fila-inv { display: grid; grid-template-columns: 1fr 60px 60px 80px 40px; gap: 8px; margin-bottom: 10px; }
-        .fila-inv div { background: #f8fafc; border: 1px solid #cbd5e0; border-radius: 8px; padding: 12px 2px; text-align: center; font-size: 1.1em; font-weight: bold; }
-
-        .tabs { display: flex; gap: 10px; margin-bottom: 15px; overflow-x: auto; padding-bottom: 5px; }
-        .tab { padding: 12px 25px; background: #e2e8f0; border-radius: 10px; font-weight: bold; cursor: pointer; white-space: nowrap; }
-        .tab.active { background: var(--primary); color: white; }
+        .tiquet-papel { background: #fff; color: #000; padding: 20px; font-family: 'Courier New', monospace; text-align: left; border: 1px solid #ccc; font-size: 0.9em; line-height: 1.2; }
     </style>
 </head>
 <body>
@@ -54,179 +41,181 @@
 
 <div id="interfaz-tpv">
     <div style="padding:15px; display:flex; flex-direction:column; overflow:hidden;">
-        <div class="tabs" id="tab-container"></div>
-        <div id="grid-prods" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(145px, 1fr)); gap:12px; overflow-y:auto;"></div>
+        <div id="tabs" style="display:flex; gap:10px; margin-bottom:15px;"></div>
+        <div id="grid-prods" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); gap:12px; overflow-y:auto;"></div>
     </div>
     <div class="sidebar">
-        <h2 id="nombre-socio" style="margin:0; font-size:1.8em; text-align:center;">Socio</h2>
-        <div class="lista" id="ticket-lista"></div>
+        <h2 id="socio-header" style="text-align:center; margin:0;">SOCIO</h2>
+        <div class="lista" id="lista-tiquet"></div>
         <div class="total-container">
-            <span class="tiquet-label">TIQUET SHOKO</span>
-            <div class="total" id="total-txt">0.00€</div>
+            <div class="total-row">
+                <span style="font-size:0.8em;">TIQUET SHOKO</span>
+                <span class="total" id="total-txt">0.00€</span>
+            </div>
         </div>
         <div class="botonera-inferior">
-            <button class="btn-side" style="background:var(--accent);" onclick="abrirModalComida()">COMIDA</button>
-            <button class="btn-side" style="background:var(--warning); color:#000;" onclick="verTiquetDetallado()">👁️ VER TIQUE</button>
+            <button class="btn-side" style="background:var(--accent);" onclick="abrirComida()">COMIDA</button>
+            <button class="btn-side" style="background:var(--warning); color:black;" onclick="verTiquetDetallado()">👁️ VER TIQUE</button>
             <button id="btn-cierre-parcial" class="btn-side" style="background:var(--success);" onclick="cierreParcial()">📦 CIERRE PARCIAL</button>
-            <button class="btn-side" style="background:#4a5568;" onclick="location.reload()">🔙 ATRÁS</button>
+            <button class="btn-side" style="background:#4a5568;" onclick="atras()">🔙 ATRÁS</button>
         </div>
     </div>
 </div>
 
-<div id="modal-reparto" class="modal">
+<div id="modal-comida" class="modal">
     <div class="modal-content">
-        <h2>Gestión de la Sesión (COMIDA)</h2>
-        <div id="invitados-cont"></div>
-        <button onclick="addInv()" style="width:100%; padding:15px; margin: 10px 0; background:#f0f0f0; border:2px dashed #ccc; border-radius:12px; font-weight:bold;">+ Añadir Invitado</button>
+        <h3>REPARTO DE COMIDA</h3>
+        <div id="reparto-cont"></div>
+        <button onclick="addInv()" style="width:100%; padding:12px; margin:10px 0; border-radius:10px; border:1px dashed #666;">+ Añadir Comensal</button>
         <div style="display:flex; gap:10px; margin-top:15px;">
-            <button style="flex:1; padding:15px; background:var(--primary); color:white; border:none; border-radius:12px; font-weight:bold;" onclick="cerrarModales()">ACEPTAR</button>
-            <button style="padding:15px; background:var(--danger); color:white; border:none; border-radius:12px; font-weight:bold;" onclick="resetComida()">BORRAR REPARTO</button>
+            <button class="btn-side" style="background:var(--primary); flex:1;" onclick="cerrarModales()">ACEPTAR</button>
+            <button class="btn-side" style="background:var(--danger); flex:1;" onclick="resetComida()">BORRAR TODO</button>
         </div>
     </div>
 </div>
 
-<div id="modal-tiquet-final" class="modal">
-    <div class="modal-content" style="max-width: 450px;">
+<div id="modal-tiquet" class="modal">
+    <div class="modal-content">
         <h3>DESGLOSE DE CUENTA</h3>
-        <div id="cont-tiquet-papel" class="tiquet-papel"></div>
-        <button style="width:100%; background:var(--danger); color:white; border:none; padding:20px; border-radius:12px; font-weight:bold; margin-top:15px;" onclick="cerrarVenta()">🚩 CIERRE TOTAL</button>
-        <button style="width:100%; border:none; background:none; color:gray; margin-top:10px;" onclick="cerrarModales()">Volver</button>
+        <div id="papel-tiquet" class="tiquet-papel"></div>
+        <button class="btn-side" style="background:var(--danger); width:100%; margin-top:15px; padding:20px;" onclick="cierreTotal()">🚩 CIERRE TOTAL</button>
+        <button onclick="cerrarModales()" style="width:100%; border:none; background:none; color:gray; padding:15px;">Cerrar vista</button>
     </div>
 </div>
 
 <script>
-// CONFIGURACIÓN T6
+// DATOS T6 ORIGINALES
 const PRODUCTOS = {
-    "BEBIDAS": [
-        { n: "MAHOU 25cl.", p: 0.90 },
-        { n: "ALHAMBRA 33cl.", p: 1.50 },
-        { n: "COCA COLA", p: 1.00 },
-        { n: "AGUA", p: 0.50 }
-    ],
-    "COCINA": [
-        { n: "ATÚN", p: 8.00 },
-        { n: "PLATO DÍA", p: 7.00 }
-    ]
+    "BEBIDAS": [{n:"MAHOU", p:0.90}, {n:"COCA COLA", p:1.00}, {n:"AGUA", p:0.50}],
+    "COMIDA": [{n:"PLATO DÍA", p:8.00}, {n:"RACIÓN", p:6.00}]
 };
 
-let tickets = JSON.parse(localStorage.getItem('shoko_t6_final')) || {};
+let db = JSON.parse(localStorage.getItem('shoko_t6_db')) || {};
 let socioActivo = ""; let carrito = []; let historial = []; let invitados = [];
 
 function renderSocios() {
-    const cont = document.getElementById('pantalla-socios');
-    cont.innerHTML = '<div class="nav-reponedor">🛠️ MODO ADMINISTRACIÓN</div>';
+    const p = document.getElementById('pantalla-socios');
+    p.innerHTML = '<div style="grid-column:1/-1; background:var(--warning); padding:15px; border-radius:12px; font-weight:bold; text-align:center;">SOCIOS SHOKO</div>';
     ["FRAN", "SANTI", "SANTOS", "JESÚS", "MANU"].forEach(s => {
-        const activo = tickets[s] ? 'activo' : '';
-        cont.innerHTML += `<div class="btn-socio ${activo}" onclick="abrirTPV('${s}')">${s}</div>`;
+        const activo = db[s] ? 'activo' : '';
+        p.innerHTML += `<div class="btn-socio ${activo}" onclick="entrar('${s}')">${s}</div>`;
     });
 }
 
-function abrirTPV(s) {
+function entrar(s) {
     socioActivo = s;
-    const data = tickets[s] || { c: [], h: [], i: [] };
+    const data = db[s] || { c: [], h: [], i: [] };
     carrito = data.c; historial = data.h; invitados = data.i;
     document.getElementById('pantalla-socios').style.display = 'none';
     document.getElementById('interfaz-tpv').style.display = 'grid';
-    document.getElementById('nombre-socio').innerText = s;
+    document.getElementById('socio-header').innerText = s;
     renderTabs();
-    actualizarTicket();
+    actualizar();
 }
 
-function actualizarTicket() {
-    let t = 0; let html = "";
-    carrito.forEach((i, idx) => { t += i.p; html += `<div class="item-tiquet" onclick="eliminar(${idx})"><span>${i.n}</span><span>${i.p.toFixed(2)}€</span></div>`; });
-    historial.forEach(i => { t += i.p; html += `<div class="item-tiquet item-historial"><span>(H) ${i.n}</span><span>${i.p.toFixed(2)}€</span></div>`; });
-    
-    // Cuotas automáticas
-    const cuotas = invitados.reduce((acc, inv) => acc + (inv.a * 1), 0);
-    if(cuotas > 0) { t += cuotas; html += `<div class="item-tiquet" style="border:1px dashed gold"><span>Cuota mayores de 13 años</span><span>${cuotas.toFixed(2)}€</span></div>`; }
+function actualizar() {
+    const lista = document.getElementById('lista-tiquet');
+    let total = 0;
+    lista.innerHTML = "";
 
-    document.getElementById('total-txt').innerText = t.toFixed(2) + "€";
-    document.getElementById('ticket-lista').innerHTML = html;
+    carrito.forEach((item, idx) => {
+        total += item.p;
+        lista.innerHTML += `<div class="item-tiquet" onclick="eliminar(${idx})"><span>${item.n}</span><span>${item.p.toFixed(2)}€</span></div>`;
+    });
+
+    historial.forEach(item => {
+        total += item.p;
+        lista.innerHTML += `<div class="item-tiquet item-historial"><span>(H) ${item.n}</span><span>${item.p.toFixed(2)}€</span></div>`;
+    });
+
+    const cuotas = invitados.reduce((acc, inv) => acc + (inv.a * 1), 0);
+    if(cuotas > 0) {
+        total += cuotas;
+        lista.innerHTML += `<div class="item-tiquet" style="border:1px dashed gold"><span>Cuota mayores de 13 años</span><span>${cuotas.toFixed(2)}€</span></div>`;
+    }
+
+    document.getElementById('total-txt').innerText = total.toFixed(2) + "€";
     document.getElementById('btn-cierre-parcial').style.display = historial.length > 0 ? 'none' : 'block';
     
-    tickets[socioActivo] = { c: carrito, h: historial, i: invitados };
-    localStorage.setItem('shoko_t6_final', JSON.stringify(tickets));
+    db[socioActivo] = { c: carrito, h: historial, i: invitados };
+    localStorage.setItem('shoko_t6_db', JSON.stringify(db));
 }
 
-function add(n, p) { carrito.push({ n, p }); actualizarTicket(); }
-function eliminar(idx) { carrito.splice(idx, 1); actualizarTicket(); }
-function cierreParcial() { historial = [...historial, ...carrito]; carrito = []; actualizarTicket(); }
+function add(p) { carrito.push({...p}); actualizar(); }
+function eliminar(idx) { carrito.splice(idx, 1); actualizar(); }
+function cierreParcial() { historial = [...historial, ...carrito]; carrito = []; actualizar(); }
 
-function abrirModalComida() {
-    const cont = document.getElementById('invitados-cont');
-    cont.innerHTML = `<div class="fila-inv" style="font-weight:bold; font-size:0.7em;"><div>NOMBRE</div><div>>13</div><div><13</div><div>GASTOS</div></div>`;
+function abrirComida() {
+    const cont = document.getElementById('reparto-cont');
+    cont.innerHTML = `<div style="display:grid; grid-template-columns: 1fr 50px 50px 60px; font-weight:bold; font-size:0.7em; margin-bottom:5px;"><div>NOMBRE</div><div>>13</div><div><13</div><div>GASTOS</div></div>`;
     invitados.forEach((inv, i) => {
         cont.innerHTML += `
-            <div class="fila-inv">
-                <div contenteditable="true" onblur="invitados[${i}].n=this.innerText">${inv.n}</div>
-                <div contenteditable="true" onblur="invitados[${i}].a=parseFloat(this.innerText)">${inv.a}</div>
-                <div contenteditable="true" onblur="invitados[${i}].k=parseFloat(this.innerText)">${inv.k}</div>
-                <div contenteditable="true" onblur="invitados[${i}].g=parseFloat(this.innerText)">${inv.g}</div>
-                <button onclick="invitados.splice(${i},1); abrirModalComida(); actualizarTicket()" style="border:none; background:none; color:red;">×</button>
+            <div style="display:grid; grid-template-columns: 1fr 50px 50px 60px 20px; gap:4px; margin-bottom:4px;">
+                <input type="text" value="${inv.n}" onchange="invitados[${i}].n=this.value; actualizar()" style="width:90%">
+                <input type="number" value="${inv.a}" onchange="invitados[${i}].a=parseInt(this.value); actualizar()" style="width:100%">
+                <input type="number" value="${inv.k}" onchange="invitados[${i}].k=parseInt(this.value); actualizar()" style="width:100%">
+                <input type="number" value="${inv.g}" onchange="invitados[${i}].g=parseFloat(this.value); actualizar()" style="width:100%">
+                <button onclick="invitados.splice(${i},1); abrirComida(); actualizar()" style="border:none; color:red; background:none;">×</button>
             </div>`;
     });
-    document.getElementById('modal-reparto').style.display = 'flex';
+    document.getElementById('modal-comida').style.display = 'flex';
 }
 
-function addInv() { invitados.push({ n: "Inv " + (invitados.length + 1), a: 1, k: 0, g: 0 }); abrirModalComida(); }
+function addInv() { invitados.push({ n: "Inv " + (invitados.length + 1), a: 1, k: 0, g: 0 }); abrirComida(); }
 
 function verTiquetDetallado() {
-    const cont = document.getElementById('cont-tiquet-papel');
-    const todos = [...historial, ...carrito];
-    const totalBar = todos.reduce((acc, i) => acc + i.p, 0);
+    const papel = document.getElementById('papel-tiquet');
+    const todosProds = [...historial, ...carrito];
+    const totalBar = todosProds.reduce((acc, i) => acc + i.p, 0);
     const gastosComida = invitados.reduce((acc, i) => acc + i.g, 0);
     const coefTotal = invitados.reduce((acc, i) => acc + (i.a * 1) + (i.k * 0.5), 0);
     const precioU = coefTotal > 0 ? (totalBar + gastosComida) / coefTotal : 0;
 
-    let h = `<div style="text-align:center"><b>TIQUE SHOKO</b><br>${socioActivo} - ${new Date().toLocaleDateString()}</div><hr>`;
-    h += `<b>CONSUMO PRODUCTOS SHOKO (PRIMERA CUENTA):</b><br>`;
-    historial.forEach(i => h += `<div class="tiquet-linea"><span>${i.n}</span><span>${i.p.toFixed(2)}</span></div>`);
-    h += `<br><b>CONSUMO PRODUCTOS SHOKO (SEGUNDA CUENTA):</b><br>`;
-    carrito.forEach(i => h += `<div class="tiquet-linea"><span>${i.n}</span><span>${i.p.toFixed(2)}</span></div>`);
-    h += `<br><b>GASTOS COMIDA:</b><br>`;
-    invitados.forEach(inv => { if(inv.g > 0) h += `<div class="tiquet-linea"><span>Gasto ${inv.n}</span><span>${inv.g.toFixed(2)}</span></div>`; });
+    let txt = `<div style="text-align:center"><b>TIQUE SHOKO</b><br>${socioActivo} - ${new Date().toLocaleDateString()}</div><hr>`;
     
-    const totalTique = totalBar + invitados.reduce((acc,i)=>acc+(i.a*1),0);
-    h += `<br><div class="tiquet-linea" style="font-weight:bold;"><span>TOTAL TIQUE SHOKO</span><span>${totalTique.toFixed(2)}€</span></div><hr>`;
+    txt += `<b>CONSUMO PRODUCTOS SHOKO (PRIMERA CUENTA):</b><br>`;
+    historial.forEach(i => txt += `<span>- ${i.n}</span><span style="float:right">${i.p.toFixed(2)}</span><br>`);
     
+    txt += `<br><b>CONSUMO PRODUCTOS SHOKO (SEGUNDA CUENTA):</b><br>`;
+    carrito.forEach(i => txt += `<span>- ${i.n}</span><span style="float:right">${i.p.toFixed(2)}</span><br>`);
+
+    txt += `<br><b>GASTOS COMIDA:</b><br>`;
+    invitados.forEach(inv => { if(inv.g > 0) txt += `<span>- Gasto ${inv.n}</span><span style="float:right">${inv.g.toFixed(2)}</span><br>`; });
+    
+    const totalTique = totalBar + invitados.reduce((acc, i) => acc + (i.a * 1), 0);
+    txt += `<br><div style="border-top:1px solid #000; font-weight:bold;">TOTAL TIQUE SHOKO <span style="float:right">${totalTique.toFixed(2)}€</span></div><hr>`;
+
     invitados.forEach(inv => {
         const debe = ((inv.a * 1) + (inv.k * 0.5)) * precioU + (inv.a * 1);
         const bal = debe - inv.g;
-        h += `<div><b>${inv.n}:</b> ${debe.toFixed(2)}€ <small>(${inv.n===socioActivo?'Paga Club':'Paga a '+socioActivo}: ${Math.abs(bal).toFixed(2)}€)</small></div>`;
+        txt += `<div><b>${inv.n}:</b> ${debe.toFixed(2)}€ <small>(${inv.n===socioActivo?'Paga Club':'Paga a '+socioActivo}: ${Math.abs(bal).toFixed(2)}€)</small></div>`;
     });
-    cont.innerHTML = h;
-    document.getElementById('modal-tiquet-final').style.display = 'flex';
+
+    papel.innerHTML = txt;
+    document.getElementById('modal-tiquet').style.display = 'flex';
 }
 
 function renderTabs() {
-    const cont = document.getElementById('tab-container');
-    cont.innerHTML = "";
-    Object.keys(PRODUCTOS).forEach((cat, idx) => {
-        const btn = document.createElement('div');
-        btn.className = `tab ${idx===0?'active':''}`;
-        btn.innerText = cat;
-        btn.onclick = () => {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            btn.classList.add('active');
-            renderProds(cat);
-        };
-        cont.appendChild(btn);
+    const t = document.getElementById('tabs');
+    t.innerHTML = "";
+    Object.keys(PRODUCTOS).forEach(cat => {
+        t.innerHTML += `<button onclick="renderProds('${cat}')" style="flex:1; padding:12px; border:none; background:var(--primary); color:white; border-radius:8px; font-weight:bold;">${cat}</button>`;
     });
-    renderProds(Object.keys(PRODUCTOS)[0]);
+    renderProds("BEBIDAS");
 }
 
 function renderProds(cat) {
-    const cont = document.getElementById('grid-prods');
-    cont.innerHTML = "";
+    const g = document.getElementById('grid-prods');
+    g.innerHTML = "";
     PRODUCTOS[cat].forEach(p => {
-        cont.innerHTML += `<div class="card" onclick="add('${p.n}', ${p.p})"><b>${p.n}</b><br>${p.p.toFixed(2)}€</div>`;
+        g.innerHTML += `<div class="card" onclick="add(${JSON.stringify(p).replace(/"/g, '&quot;')})"><b>${p.n}</b><br>${p.p.toFixed(2)}€</div>`;
     });
 }
 
 function cerrarModales() { document.querySelectorAll('.modal').forEach(m => m.style.display = 'none'); }
-function resetComida() { invitados = []; actualizarTicket(); cerrarModales(); }
-function cerrarVenta() { delete tickets[socioActivo]; localStorage.setItem('shoko_t6_final', JSON.stringify(tickets)); location.reload(); }
+function resetComida() { invitados = []; actualizar(); cerrarModales(); }
+function cierreTotal() { delete db[socioActivo]; localStorage.setItem('shoko_t6_db', JSON.stringify(db)); location.reload(); }
+function atras() { location.reload(); }
 
 renderSocios();
 </script>
