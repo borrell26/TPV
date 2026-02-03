@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TPV Club Pro - Versión Final con Historial</title>
+    <title>TPV Club Pro - Restaurado</title>
     <style>
         :root { --primary: #2c3e50; --success: #27ae60; --accent: #3498db; --bg: #f4f7f6; --danger: #e74c3c; --warning: #f39c12; --white: #ffffff; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); height: 100vh; overflow: hidden; }
@@ -28,15 +28,12 @@
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: var(--white); padding: 20px; border-radius: 20px; width: 90%; max-width: 650px; text-align: center; color: #333; max-height: 98vh; overflow-y: auto; }
         
-        .fila-inv { display: grid; grid-template-columns: 1fr 60px 60px 80px 40px; gap: 8px; margin-bottom: 10px; }
-        .fila-inv div { background: #f8fafc; border: 1px solid #cbd5e0; border-radius: 8px; padding: 12px 2px; text-align: center; font-weight: bold; }
-
         .grid-teclado { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
         .tecla { background: #edf2f7; border: none; padding: 20px; font-size: 1.5em; border-radius: 12px; font-weight: bold; cursor: pointer; }
-
         .btn-accion { padding: 18px; border: none; border-radius: 12px; color: white; font-weight: bold; font-size: 1.2em; cursor: pointer; flex: 1; }
         .btn-cancelar { background: #cbd5e0; color: #2d3748; padding: 12px; border-radius: 12px; border: none; font-weight: bold; margin-top: 10px; width: 100%; cursor: pointer; }
-
+        
+        /* Teclado Texto */
         .teclado-texto { display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; margin-top: 10px; }
         .tecla-t { background: #edf2f7; border: none; padding: 15px 2px; font-size: 1.1em; border-radius: 6px; font-weight: bold; cursor: pointer; }
     </style>
@@ -50,12 +47,12 @@
         <h2 style="font-size:1.8em; margin:0;">Reposición de Stock</h2>
         <div style="display:flex; gap:10px;">
             <button onclick="generarListaCompra()" style="background:var(--accent); color:white; padding:15px; border-radius:10px; border:none; font-weight:bold;">🛒 LISTA COMPRA</button>
-            <button onclick="location.reload()" style="background:var(--success); color:white; padding:15px; border-radius:10px; border:none; font-weight:bold;">💾 GUARDAR Y SALIR</button>
+            <button onclick="location.reload()" style="background:var(--success); color:white; padding:15px; border-radius:10px; border:none; font-weight:bold;">GUARDAR Y SALIR</button>
         </div>
     </div>
     <div id="repo-menu-cats" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px;"></div>
     <div id="repo-menu-items" style="display:none; width: 100%;">
-        <button onclick="mostrarMenuCats()" style="margin-bottom:15px; padding:15px 30px; background:#4a5568; color:white; border:none; border-radius:10px; font-weight:bold;">⬅️ VOLVER</button>
+        <button onclick="mostrarMenuCats()" style="margin-bottom:15px; padding:15px 30px; background:#4a5568; color:white; border:none; border-radius:10px; font-weight:bold;">⬅️ VOLVER A CATEGORÍAS</button>
         <div id="repo-grid-productos" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(160px, 1fr)); gap:15px;"></div>
     </div>
 </div>
@@ -68,15 +65,14 @@
     <div class="sidebar">
         <h2 id="nombre-socio" style="margin:0; font-size:1.8em; text-align:center;">Socio</h2>
         <div id="quien-consume" style="text-align:center; font-size:0.9em; background:rgba(255,255,255,0.2); border-radius:5px; margin-top:5px; display:none; padding:5px;"></div>
-        
         <div class="lista" id="ticket-lista"></div>
-
+        
         <div id="seccion-historial" style="display:none; border-top: 1px dashed rgba(255,255,255,0.3); margin-top: 10px; padding-top: 10px;">
             <div style="font-size: 0.8em; color: #bdc3c7; margin-bottom: 5px; display: flex; justify-content: space-between;">
-                <span>HISTORIAL (Cerrado)</span>
+                <span>HISTORIAL (Cerrado Parcial)</span>
                 <span id="total-historial">0.00€</span>
             </div>
-            <div id="lista-historial" style="max-height: 120px; overflow-y: auto; font-size: 0.85em; opacity: 0.7;"></div>
+            <div id="lista-historial" style="max-height: 100px; overflow-y: auto; font-size: 0.85em; opacity: 0.7;"></div>
         </div>
 
         <button onclick="abrirModalReparto()" style="background:var(--accent); color:white; border:none; padding:15px; border-radius:12px; font-weight:bold; margin-bottom:10px; cursor:pointer;">🍽️ COMIDA / REPARTO</button>
@@ -88,31 +84,16 @@
     </div>
 </div>
 
-<div id="modal-opciones-cierre" class="modal">
-    <div class="modal-content" style="max-width: 400px;">
-        <h2>Opciones de Cierre</h2>
-        <button class="btn-accion" style="background:var(--success); width:100%; margin-bottom:10px;" onclick="cerrarVenta()">CIERRE TOTAL (Finalizar)</button>
-        <button class="btn-accion" style="background:var(--accent); width:100%;" onclick="abrirDesgloseInvitados()">CIERRE PARCIAL (Dividir)</button>
-        <button class="btn-cancelar" onclick="cerrarModales()">CANCELAR</button>
-    </div>
-</div>
-
-<div id="modal-select-comensal" class="modal">
-    <div class="modal-content">
-        <h3>¿Quién consume ahora?</h3>
-        <div id="lista-comensales-btn" style="display:grid; grid-template-columns:1fr; gap:10px;"></div>
-        <button class="btn-cancelar" onclick="cerrarModales()">VOLVER</button>
-    </div>
-</div>
-
-<div id="modal-teclado-texto" class="modal"><div class="modal-content" style="width: 95%; max-width: 900px;"><h3 id="titulo-teclado">Nombre</h3><div id="display-texto" style="font-size:2.5em; font-weight:bold; background:#f8fafc; padding:15px; border-radius:15px; margin-bottom:10px; min-height:1.2em; border:2px solid #ccc;"></div><div class="teclado-texto" id="grid-teclado-texto"></div><div style="display:flex; gap:10px; margin-top:20px;"><button class="btn-accion" style="background:var(--success);" onclick="confirmarTexto()">ACEPTAR</button><button class="btn-accion" style="background:var(--danger);" onclick="cerrarModales()">CANCELAR</button></div></div></div>
+<div id="modal-opciones-cierre" class="modal"><div class="modal-content" style="max-width:400px;"><h2>Opciones de Cierre</h2><button class="btn-accion" style="background:var(--success); width:100%; margin-bottom:10px;" onclick="cerrarVenta()">CIERRE TOTAL</button><button class="btn-accion" style="background:var(--accent); width:100%;" onclick="abrirDesgloseInvitados()">CIERRE PARCIAL / DIVIDIR</button><button class="btn-cancelar" onclick="cerrarModales()">CANCELAR</button></div></div>
+<div id="modal-select-comensal" class="modal"><div class="modal-content"><h3>¿Quién consume?</h3><div id="lista-comensales-btn" style="display:grid; grid-template-columns:1fr; gap:10px;"></div><button class="btn-cancelar" onclick="cerrarModales()">VOLVER</button></div></div>
+<div id="modal-edit" class="modal"><div class="modal-content"><h3 id="edit-nombre"></h3><p id="txt-actual"></p><div id="edit-input-display" style="font-size:4em; font-weight:bold; color:var(--accent); margin:10px 0;">0</div><div style="display:flex; gap:10px;"><button class="btn-accion" style="background:var(--danger);" onclick="aplicarEdicion(-1)">QUITAR</button><button class="btn-accion" style="background:var(--success);" onclick="aplicarEdicion(1)">AÑADIR</button></div><div class="grid-teclado" id="teclado-edit"></div><button id="btn-eliminar-fila" style="width:100%; padding:15px; background:var(--danger); color:white; border:none; border-radius:12px; margin-top:15px;" onclick="eliminarFilaEdicion()">ELIMINAR LÍNEA</button><button class="btn-cancelar" onclick="cerrarModales()">VOLVER</button></div></div>
 <div id="modal-cantidad" class="modal"><div class="modal-content" style="width: 400px;"><h3 id="titulo-prod-modal"></h3><div id="input-cantidad" style="font-size:4em; font-weight:bold; margin-bottom:10px; color: var(--accent);">0</div><div class="grid-teclado" id="teclado-nums"></div><button class="btn-cancelar" onclick="cerrarModales()">CANCELAR</button></div></div>
-<div id="modal-edit" class="modal"><div class="modal-content"><h3 id="edit-nombre"></h3><p id="txt-actual"></p><div id="edit-input-display" style="font-size:4em; font-weight:bold; color:var(--accent); margin:10px 0;">0</div><div style="display:flex; gap:10px;"><button class="btn-accion" style="background:var(--danger);" onclick="aplicarEdicion(-1)">-</button><button class="btn-accion" style="background:var(--success);" onclick="aplicarEdicion(1)">+</button></div><div class="grid-teclado" id="teclado-edit"></div><button id="btn-eliminar-fila" style="width:100%; padding:15px; background:var(--danger); color:white; border:none; border-radius:12px; margin-top:15px;" onclick="eliminarFilaEdicion()">ELIMINAR LÍNEA</button><button class="btn-cancelar" onclick="cerrarModales()">VOLVER</button></div></div>
-<div id="modal-reparto" class="modal"><div class="modal-content" style="width: 95%; max-width: 750px;"><h2>Gestión Comida</h2><div id="invitados-cont"></div><button onclick="addInv()" style="width:100%; padding:15px; margin: 10px 0; background:#f0f0f0; border:2px dashed #ccc; border-radius:12px; font-weight:bold;">+ Añadir Comensal</button><div id="resumen-reparto" style="text-align:left; background:#eef2f7; padding:20px; border-radius:15px; margin-top:10px; display:none; font-size: 1.1em;"></div><div style="display:flex; flex-direction:column; gap:10px; margin-top:15px;"><div style="display:flex; gap:10px;"><button class="btn-accion" style="background:var(--accent);" onclick="calcularCuentas()">CALCULAR</button><button class="btn-accion" style="background:var(--primary);" onclick="cerrarModales()">CERRAR</button></div><button class="btn-cancelar" style="background:var(--danger); color:white;" onclick="resetearComida()">RESET COMIDA</button></div></div></div>
-<div id="modal-compra" class="modal"><div class="modal-content"><h3>🛒 Faltas de Stock</h3><div id="cuerpo-compra" style="text-align:left; max-height:400px; overflow-y:auto;"></div><button style="width:100%; padding:20px; margin-top:15px;" onclick="cerrarModales()">CERRAR</button></div></div>
+<div id="modal-reparto" class="modal"><div class="modal-content" style="width: 95%; max-width: 750px;"><h2>Gestión Comida</h2><div id="invitados-cont"></div><button onclick="addInv()" style="width:100%; padding:15px; margin: 10px 0; background:#f0f0f0; border:2px dashed #ccc; border-radius:12px; font-weight:bold;">+ Añadir Comensal</button><div id="resumen-reparto" style="text-align:left; background:#eef2f7; padding:20px; border-radius:15px; margin-top:10px; display:none;"></div><div style="display:flex; gap:10px; margin-top:15px;"><button class="btn-accion" style="background:var(--accent);" onclick="calcularCuentas()">CALCULAR</button><button class="btn-accion" style="background:var(--primary);" onclick="cerrarModales()">CERRAR</button></div><button class="btn-cancelar" style="background:var(--danger); color:white;" onclick="resetearComida()">RESET COMIDA</button></div></div>
+<div id="modal-teclado-texto" class="modal"><div class="modal-content" style="width:95%; max-width:900px;"><h3 id="titulo-teclado">Nombre</h3><div id="display-texto" style="font-size:2.5em; font-weight:bold; background:#f8fafc; padding:15px; border-radius:15px; margin-bottom:10px; border:2px solid #ccc;"></div><div class="teclado-texto" id="grid-teclado-texto"></div><div style="display:flex; gap:10px; margin-top:20px;"><button class="btn-accion" style="background:var(--success);" onclick="confirmarTexto()">ACEPTAR</button><button class="btn-accion" style="background:var(--danger);" onclick="cerrarModales()">CANCELAR</button></div></div></div>
+<div id="modal-compra" class="modal"><div class="modal-content"><h3>🛒 Faltas</h3><div id="cuerpo-compra" style="text-align:left; max-height:400px; overflow-y:auto;"></div><button style="width:100%; padding:20px; margin-top:15px;" onclick="cerrarModales()">CERRAR</button></div></div>
 
 <script>
-// --- CONSTANTES ORIGINALES ---
+// --- DATOS ---
 const ML_COPA = 30;
 const PRECIOS = { "MAHOU 25cl.": 0.90, "ALHAMBRA 33cl.": 1.50, "BUDWEISSER 33cl.": 1.50, "MAHOU SIN 25cl.": 0.90, "COCA COLA": 1.00, "COCA COLA ZERO": 1.00, "FANTA NARANJA": 1.00, "FANTA LIMÓN": 1.00, "SPRITE": 1.00, "ACUARIUS NARANJA": 1.00, "ACUARIUS LIMÓN": 1.00, "NESTEÁ LIMÓN": 1.00, "TÓNICA SCHWEPPES": 1.00, "TÓNICA SCHWEPPES ZERO": 1.00, "CASERA BLANCA 0,5L": 0.50, "AGUA": 0.50, "VIÑAS DEL VERO": 9.00, "BERONIA CRIANZA": 9.00, "BERONIA RESERVA": 16.00, "TIO PEPE 50cl.": 6.00, "MANZANILLA 50CL.": 6.00, "TINTO BÁSICO 70cl.": 2.00, "CROFT TWIST": 6.00, "DESCORCHE VINO": 2.00, "BARCELÓ": 2.00, "WHITE LABEL": 2.00, "RIVES": 2.00, "PINK RIVES": 2.00, "RIVES EXÓTICA": 2.00, "DESCORCHE COPA": 3.00, "ATÚN ENCEBOLLADO": 8.00, "ATÚN FRITADA": 8.00, "PATATAS FRITAS": 0.60 };
 const CATEGORIAS = { "CERVEZAS": ["MAHOU 25cl.", "ALHAMBRA 33cl.", "BUDWEISSER 33cl.", "MAHOU SIN 25cl."], "REFRESCOS": ["COCA COLA", "COCA COLA ZERO", "FANTA NARANJA", "FANTA LIMÓN", "SPRITE", "ACUARIUS NARANJA", "ACUARIUS LIMÓN", "NESTEÁ LIMÓN", "TÓNICA SCHWEPPES", "TÓNICA SCHWEPPES ZERO", "CASERA BLANCA 0,5L", "AGUA"], "VINOS": ["VIÑAS DEL VERO", "BERONIA CRIANZA", "BERONIA RESERVA", "TIO PEPE 50cl.", "MANZANILLA 50CL.", "TINTO BÁSICO 70cl.", "CROFT TWIST", "DESCORCHE VINO"], "ESPIRITUOSOS": ["BARCELÓ", "WHITE LABEL", "RIVES", "PINK RIVES", "RIVES EXÓTICA", "DESCORCHE COPA"], "OTROS": ["ATÚN ENCEBOLLADO", "ATÚN FRITADA", "PATATAS FRITAS"] };
@@ -145,12 +126,14 @@ function abrirReposicion() {
     document.getElementById('pantalla-reposicion').style.display = 'flex';
     mostrarMenuCats();
 }
+
 function mostrarMenuCats() {
     document.getElementById('repo-menu-items').style.display = 'none';
     const cont = document.getElementById('repo-menu-cats');
     cont.style.display = 'grid';
     cont.innerHTML = Object.keys(CATEGORIAS).map(cat => `<div class="btn-socio" onclick="mostrarProductosRepo('${cat}')">${cat}</div>`).join('');
 }
+
 function mostrarProductosRepo(cat) {
     catActiva = cat;
     document.getElementById('repo-menu-cats').style.display = 'none';
@@ -166,6 +149,7 @@ function mostrarProductosRepo(cat) {
         </div>`;
     }).join('');
 }
+
 function abrirEdicionStock(n) {
     prodTemp = n; inputVal = "";
     document.getElementById('edit-nombre').innerText = n;
@@ -175,21 +159,18 @@ function abrirEdicionStock(n) {
     document.getElementById('modal-edit').style.display = 'flex';
 }
 
-// --- LÓGICA TPV ---
+// --- TPV ---
 function abrirTPV(n) {
     modoRepoActivo = false; socioActivo = n; comensalActual = n;
     let data = tickets[n] || [];
     carrito = data.filter(i => i.n && !i.esComida);
     let comidaG = data.find(i => i.esComida);
     listInv = comidaG ? comidaG.datos : [];
-    
-    // Cargar Historial persistente del socio
     consumidoConfirmado = JSON.parse(localStorage.getItem('v29_historial_' + n)) || [];
     
     document.getElementById('pantalla-socios').style.display = 'none';
     document.getElementById('interfaz-tpv').style.display = 'grid';
     document.getElementById('nombre-socio').innerText = n;
-    document.getElementById('quien-consume').style.display = 'none';
     renderTabs(); renderProds(); actualizarTicket();
 }
 
@@ -206,9 +187,7 @@ function confirmar() {
     else if (currentEditType === 'adulto') listInv[editingInvIdx].a = parseInt(valorNum) || 0;
     else if (currentEditType === 'nino') listInv[editingInvIdx].k = valorNum || 0;
     else if (currentEditType === 'gasto') listInv[editingInvIdx].g = valorNum || 0;
-    
-    guardarTicketParcial();
-    cerrarModales();
+    guardarTicketParcial(); cerrarModales();
     if (currentEditType !== 'prod') renderInv();
 }
 
@@ -228,13 +207,11 @@ function aplicarEdicion(signo) {
 
 function actualizarTicket() {
     let tS = 0; let tH = 0;
-    // Tiquet Activo
     document.getElementById('ticket-lista').innerHTML = carrito.map(i => {
         tS += i.p * i.cant;
         return `<div class="item-tiquet" onclick="abrirEdicionTicket('${i.n}')"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}€</span></div>`;
     }).join('');
     
-    // Tiquet Historial
     const seccionH = document.getElementById('seccion-historial');
     if (consumidoConfirmado.length > 0) {
         seccionH.style.display = 'block';
@@ -247,17 +224,15 @@ function actualizarTicket() {
 
     const canon = listInv.reduce((acc, i) => acc + (i.a * 1), 0);
     if(canon > 0) document.getElementById('ticket-lista').innerHTML += `<div class="item-tiquet" style="border:1px dashed #fff; background:rgba(39, 174, 96, 0.2);"><span>Canon Comida (${canon})</span><span>${canon.toFixed(2)}€</span></div>`;
-    
     document.getElementById('total-txt').innerText = (tS + tH + canon).toFixed(2) + "€";
 }
 
 function abrirDesgloseInvitados() {
-    if (carrito.length > 0 && confirm("¿Deseas archivar el consumo actual en el Historial?")) {
+    if (carrito.length > 0 && confirm("¿Archivar consumos en Historial?")) {
         consumidoConfirmado = consumidoConfirmado.concat(carrito);
         carrito = [];
         localStorage.setItem('v29_historial_' + socioActivo, JSON.stringify(consumidoConfirmado));
-        guardarTicketParcial();
-        actualizarTicket();
+        guardarTicketParcial(); actualizarTicket();
     }
     cerrarModales(); 
     const cont = document.getElementById('lista-comensales-btn');
@@ -269,10 +244,7 @@ function abrirDesgloseInvitados() {
 function setComensal(nombre) { comensalActual = nombre; const ind = document.getElementById('quien-consume'); ind.innerText = "Cargando a: " + nombre; ind.style.display = 'block'; cerrarModales(); }
 
 function calcularCuentas() {
-    const totalBarActivo = carrito.reduce((acc, i) => acc + (i.p * i.cant), 0);
-    const totalBarHistorial = consumidoConfirmado.reduce((acc, i) => acc + (i.p * i.cant), 0);
-    const totalBar = totalBarActivo + totalBarHistorial;
-    
+    const totalBar = carrito.reduce((acc, i) => acc + (i.p * i.cant), 0) + consumidoConfirmado.reduce((acc, i) => acc + (i.p * i.cant), 0);
     const totalExterno = listInv.reduce((acc, i) => acc + i.g, 0);
     const totalCoeficientes = listInv.reduce((acc, i) => acc + (i.a * 1) + (i.k * 0.5), 0);
     if (totalCoeficientes === 0) return;
@@ -288,29 +260,24 @@ function calcularCuentas() {
 }
 
 function cerrarVenta() {
-    const todoElConsumo = carrito.concat(consumidoConfirmado);
-    todoElConsumo.forEach(i => {
+    const todo = carrito.concat(consumidoConfirmado);
+    todo.forEach(i => {
         const nombreReal = i.originalName || i.n;
         if(!nombreReal.includes("DESCORCHE")) { stockActual[nombreReal] -= (i.esLicor ? i.cant*ML_COPA : i.cant); }
     });
     localStorage.setItem('v29_stock', JSON.stringify(stockActual));
     localStorage.removeItem('v29_historial_' + socioActivo);
-    delete tickets[socioActivo]; 
-    localStorage.setItem('v29_tickets', JSON.stringify(tickets)); 
-    location.reload();
+    delete tickets[socioActivo]; localStorage.setItem('v29_tickets', JSON.stringify(tickets)); location.reload();
 }
 
-// --- RESTO DE FUNCIONES ---
 function renderTabs() { document.getElementById('tab-container').innerHTML = Object.keys(CATEGORIAS).map(c => `<button style="padding:12px; flex:1; border:none; border-radius:10px; font-weight:bold; background:${c===catActiva?'var(--accent)':'#cbd5e0'}; color:${c===catActiva?'white':'black'}" onclick="catActiva='${c}'; renderTabs(); renderProds()">${c}</button>`).join(''); }
 function renderProds() {
-    document.getElementById('grid-prods').innerHTML = CATEGORIAS[catActiva].map(n => {
-        const esE = (catActiva === "ESPIRITUOSOS");
-        return `<div class="card" onclick="abrirTecladoProd('${n}')">
+    document.getElementById('grid-prods').innerHTML = CATEGORIAS[catActiva].map(n => `
+        <div class="card" onclick="abrirTecladoProd('${n}')">
             <img src="${getImg(n)}" onerror="this.style.opacity='0.1'">
             <b>${n}</b>
             <span style="color:var(--success); font-weight:bold;">${PRECIOS[n].toFixed(2)}€</span>
-        </div>`;
-    }).join('');
+        </div>`).join('');
 }
 function presionarNum(v) { if(v === '.' && inputVal.includes('.')) return; inputVal += v; document.getElementById('input-cantidad').innerText = inputVal || "0"; }
 function presionarNumEdit(v) { if(v === '.' && inputVal.includes('.')) return; inputVal += v; document.getElementById('edit-input-display').innerText = inputVal; }
