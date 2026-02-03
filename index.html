@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TPV Club Pro - V1 Bloqueo</title>
+    <title>TPV Club Pro - V4 Detalle</title>
     <style>
         :root { --primary: #2c3e50; --success: #27ae60; --accent: #3498db; --bg: #f4f7f6; --danger: #e74c3c; --warning: #f39c12; --white: #ffffff; --gray: #95a5a6; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); height: 100vh; overflow: hidden; }
@@ -26,7 +26,7 @@
         .total { font-size: 2.8em; font-weight: bold; text-align: center; padding: 5px 0; border-top: 2px solid rgba(255,255,255,0.2); color: #fff; }
         
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; }
-        #modal-cantidad, #modal-teclado-texto, #modal-edit { z-index: 3000 !important; }
+        #modal-cantidad, #modal-teclado-texto, #modal-edit, #modal-tiquet-final { z-index: 3000 !important; }
         #modal-reparto { z-index: 2000; }
         .modal-content { background: var(--white); padding: 20px; border-radius: 20px; width: 90%; max-width: 650px; text-align: center; color: #333; max-height: 98vh; overflow-y: auto; }
         
@@ -42,6 +42,9 @@
         .seccion-comensales { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; padding: 10px; background: #e2e8f0; border-radius: 12px; align-items: center; }
         .btn-comensal { padding: 10px 15px; border-radius: 10px; border: 2px solid var(--primary); background: white; font-weight: bold; cursor: pointer; }
         .btn-comensal.sel { background: var(--accent); color: white; border-color: var(--accent); }
+
+        .tiquet-papel { background: #fff; color: #000; padding: 20px; font-family: 'Courier New', monospace; text-align: left; border: 1px solid #ccc; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin-top: 10px; }
+        .tiquet-linea { display: flex; justify-content: space-between; margin-bottom: 3px; border-bottom: 1px dotted #ccc; }
     </style>
 </head>
 <body>
@@ -87,7 +90,10 @@
 <div id="modal-teclado-texto" class="modal"><div class="modal-content" style="width: 95%; max-width: 900px;"><h3 id="titulo-teclado">Nombre</h3><div id="display-texto" style="font-size:2.5em; font-weight:bold; background:#f8fafc; padding:15px; border-radius:15px; margin-bottom:10px; min-height:1.2em; border:2px solid #ccc;"></div><div class="teclado-texto" id="grid-teclado-texto"></div><div style="display:flex; gap:10px; margin-top:20px;"><button class="btn-accion" style="background:var(--success);" onclick="confirmarTexto()">ACEPTAR</button><button class="btn-accion" style="background:var(--danger);" onclick="document.getElementById('modal-teclado-texto').style.display='none'">CANCELAR</button></div></div></div>
 <div id="modal-cantidad" class="modal"><div class="modal-content" style="width: 400px;"><h3 id="titulo-prod-modal"></h3><div id="input-cantidad" style="font-size:4em; font-weight:bold; margin-bottom:10px; color: var(--accent);">0</div><div class="grid-teclado" id="teclado-nums"></div><button class="btn-cancelar" onclick="document.getElementById('modal-cantidad').style.display='none'">CANCELAR</button></div></div>
 <div id="modal-edit" class="modal"><div class="modal-content"><h3 id="edit-nombre"></h3><p id="txt-actual"></p><div id="edit-input-display" style="font-size:4em; font-weight:bold; color:var(--accent); margin:10px 0;">0</div><div style="display:flex; gap:10px;"><button class="btn-accion" style="background:var(--danger);" onclick="aplicarEdicion(-1)">-</button><button class="btn-accion" style="background:var(--success);" onclick="aplicarEdicion(1)">+</button></div><div class="grid-teclado" id="teclado-edit"></div><button id="btn-eliminar-fila" style="width:100%; padding:15px; background:var(--danger); color:white; border:none; border-radius:12px; margin-top:15px;" onclick="eliminarFilaEdicion()">ELIMINAR LÍNEA</button><button class="btn-cancelar" onclick="document.getElementById('modal-edit').style.display='none'">VOLVER</button></div></div>
-<div id="modal-reparto" class="modal"><div class="modal-content" style="width: 95%; max-width: 750px;"><h2>Gestión Comida</h2><div id="invitados-cont"></div><button id="btn-add-inv" onclick="addInv()" style="width:100%; padding:15px; margin: 10px 0; background:#f0f0f0; border:2px dashed #ccc; border-radius:12px; font-weight:bold;">+ Añadir Comensal</button><div id="resumen-reparto" style="text-align:left; background:#eef2f7; padding:20px; border-radius:15px; margin-top:10px; display:block; font-size: 1.1em;"></div><div style="display:flex; flex-direction:column; gap:10px; margin-top:15px;"><button class="btn-accion" style="background:var(--primary);" onclick="cerrarTPVCompletamente()">VOLVER AL TICKET</button><button class="btn-cancelar" style="background:var(--danger); color:white;" onclick="resetearComida()" id="btn-reset-comida">BORRAR TODO (REPARTO)</button></div></div></div>
+
+<div id="modal-reparto" class="modal"><div class="modal-content" style="width: 95%; max-width: 750px;"><h2>Gestión Comida</h2><div id="invitados-cont"></div><button id="btn-add-inv" onclick="addInv()" style="width:100%; padding:15px; margin: 10px 0; background:#f0f0f0; border:2px dashed #ccc; border-radius:12px; font-weight:bold;">+ Añadir Comensal</button><div id="resumen-reparto" style="text-align:left; background:#eef2f7; padding:20px; border-radius:15px; margin-top:10px; display:block; font-size: 1.1em;"></div><div style="display:flex; flex-direction:column; gap:10px; margin-top:15px;"><button class="btn-accion" style="background:var(--warning); color:#000;" onclick="verTiquetDetallado()">👁️ VER DESGLOSE DETALLADO</button><button class="btn-accion" style="background:var(--primary);" onclick="cerrarTPVCompletamente()">VOLVER AL TICKET</button><button class="btn-cancelar" style="background:var(--danger); color:white;" onclick="resetearComida()" id="btn-reset-comida">BORRAR TODO (REPARTO)</button></div></div></div>
+
+<div id="modal-tiquet-final" class="modal"><div class="modal-content" style="max-width: 450px;"><h3>DESGLOSE DE CUENTA</h3><div id="cont-tiquet-papel" class="tiquet-papel"></div><button class="btn-cancelar" style="background:var(--primary); color:white; padding:20px;" onclick="document.getElementById('modal-tiquet-final').style.display='none'">CERRAR DESGLOSE</button></div></div>
 <div id="modal-compra" class="modal"><div class="modal-content"><h3>🛒 Faltas</h3><div id="cuerpo-compra" style="text-align:left; max-height:400px; overflow-y:auto;"></div><button style="width:100%; padding:20px; margin-top:15px; font-weight:bold;" onclick="cerrarModales()">CERRAR</button></div></div>
 
 <script>
@@ -145,7 +151,7 @@ function actualizarSelectorComensales() {
             cont.innerHTML += `<button class="btn-comensal ${comensalSel === nombre ? 'sel' : ''}" onclick="comensalSel='${nombre}'; actualizarSelectorComensales()">${nombre}</button>`;
         });
         document.getElementById('btn-add-inv').style.display = 'none';
-        if(bloq) document.getElementById('btn-reset-comida').style.display = 'none'; // No se puede borrar si ya hay cierre parcial
+        if(bloq) document.getElementById('btn-reset-comida').style.display = 'none';
     } else {
         cont.style.display = 'none';
         document.getElementById('btn-add-inv').style.display = 'block';
@@ -214,6 +220,41 @@ function calcularCuentas() {
         });
     } else { h += `<div style="color:gray; font-size:0.8em; text-align:center;">Añada comensales para ver el reparto</div>`; }
     document.getElementById('resumen-reparto').innerHTML = h;
+}
+
+function verTiquetDetallado() {
+    const cont = document.getElementById('cont-tiquet-papel');
+    const totalBarCarrito = carrito.reduce((acc, i) => acc + (i.p * i.cant), 0);
+    const totalBarHist = historial.reduce((acc, i) => acc + (i.p * i.cant), 0);
+    const canonTotal = listInv.reduce((acc, i) => acc + (i.a * 1), 0);
+    const totalExterno = listInv.reduce((acc, i) => acc + i.g, 0);
+    const totalRepartir = (totalBarCarrito + totalBarHist + totalExterno);
+    const totalCoef = listInv.reduce((acc, i) => acc + (i.a * 1) + (i.k * 0.5), 0);
+    const precioU = totalCoef > 0 ? totalRepartir / totalCoef : 0;
+
+    let h = `<div style="text-align:center; font-weight:bold; border-bottom:2px solid #000; margin-bottom:10px;">TIQUET CLUB - SOCIO ${socioActivo}</div>`;
+    
+    h += `<b>--- CONSUMO BAR ---</b><br>`;
+    carrito.forEach(i => h += `<div class="tiquet-linea"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}</span></div>`);
+    historial.forEach(i => h += `<div class="tiquet-linea"><span style="color:#555;">(H) ${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}</span></div>`);
+    
+    h += `<br><b>--- COMIDA ---</b><br>`;
+    h += `<div class="tiquet-linea"><span>Canon Adultos (${listInv.reduce((a,v)=>a+v.a,0)})</span><span>${canonTotal.toFixed(2)}</span></div>`;
+    h += `<div class="tiquet-linea"><span>Gasto Externo Comida</span><span>${totalExterno.toFixed(2)}</span></div>`;
+    
+    h += `<br><div class="tiquet-linea" style="font-weight:bold; font-size:1.2em;"><span>TOTAL CUENTA</span><span>${(totalBarCarrito+totalBarHist+canonTotal).toFixed(2)}€</span></div><br>`;
+    
+    h += `<b>--- REPARTO ---</b><br>`;
+    h += `<div style="font-size:0.8em; margin-bottom:5px;">Base reparto: ${totalRepartir.toFixed(2)}€ (${totalCoef} ptos)</div>`;
+    listInv.forEach(inv => {
+        const p = (inv.a * 1) + (inv.k * 0.5);
+        const deb = (p * precioU) + (inv.a * 1);
+        const bal = deb - inv.g;
+        h += `<div class="tiquet-linea"><span>${inv.n || '?'} (${p}p)</span><b>${bal > 0 ? '+' : ''}${bal.toFixed(2)}€</b></div>`;
+    });
+
+    cont.innerHTML = h;
+    document.getElementById('modal-tiquet-final').style.display = 'flex';
 }
 
 function confirmar() {
