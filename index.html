@@ -160,7 +160,6 @@ function verTiquetDetallado() {
 
     let h = `<div style="text-align:center; font-weight:bold; border-bottom:2px solid #000; margin-bottom:10px;">TIQUE SHOKO - ${socioActivo} - ${hoy}</div>`;
     
-    // CORRECCIÓN DE LÓGICA DE CUENTAS SOLICITADA
     if (!hayHistorial) {
         h += `<b>--- CONSUMO PRODUCTOS SHOKO (PRIMERA CUENTA) ---</b><br>`;
         carrito.forEach(i => h += `<div class="tiquet-linea"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}</span></div>`);
@@ -234,7 +233,6 @@ function actualizarTicket() {
     document.getElementById('ticket-lista').innerHTML = html; 
     document.getElementById('total-txt').innerText = (tS + canonTotal).toFixed(2) + "€"; 
 
-    // Bloqueo botón cierre parcial si hay historial
     const btnCierre = document.getElementById('btn-cierre-parcial');
     btnCierre.disabled = (historial.length > 0);
 }
@@ -259,7 +257,16 @@ function aplicarEdicion(signo) { const val = parseFloat(inputVal) || 0; if (modo
 function eliminarFilaEdicion() { carrito = carrito.filter(i => i.n !== prodTemp); guardarTicketParcial(); document.getElementById('modal-edit').style.display = 'none'; }
 function generarListaCompra() { let h = ""; Object.keys(STOCK_IDEAL).forEach(n => { const f = STOCK_IDEAL[n] - stockActual[n]; if(f > 0) h += `<div style="padding:10px; border-bottom:1px solid #eee;"><span>${n}: </span><b>${STOCK_IDEAL[n]>1000 ? (f/1000).toFixed(1)+'L' : f+' uds'}</b></div>`; }); document.getElementById('cuerpo-compra').innerHTML = h || "Todo lleno"; document.getElementById('modal-compra').style.display = 'flex'; }
 function cerrarTPVCompletamente() { document.getElementById('modal-reparto').style.display = 'none'; }
-function crearTeclado(id, func) { const cont = document.getElementById(id); cont.innerHTML = ""; for(let i=1; i<=9; i++) cont.innerHTML += `<button class="tecla" onclick="${func}('${i}')">${i}</button>`; cont.innerHTML += `<button class="tecla" onclick="${func}('.')">.</button>`; cont.innerHTML += `<button class="tecla" onclick="${func}('0')">0</button>`; cont.innerHTML += `<button class="tecla" style="background:#ccc;" onclick="inputVal=''; document.getElementById('${id==='teclado-nums'?'input-cantidad':'edit-input-display'}').innerText='0'">C</button>`; if (id === 'teclado-nums') cont.innerHTML += `<button class="tecla" style="background:var(--success);color:white; grid-column: span 3; padding: 25px;" onclick="confirmar()">ACEPTAR</button>`; }
+
+function crearTeclado(id, func) { 
+    const cont = document.getElementById(id); 
+    cont.innerHTML = ""; 
+    for(let i=1; i<=9; i++) cont.innerHTML += `<button class="tecla" onclick="${func}('${i}')">${i}</button>`; 
+    cont.innerHTML += `<button class="tecla" onclick="${func}('.')">.</button>`; 
+    cont.innerHTML += `<button class="tecla" onclick="${func}('0')">0</button>`; 
+    cont.innerHTML += `<button class="tecla" style="background:#ccc;" onclick="inputVal=''; document.getElementById('${id==='teclado-nums'?'input-cantidad':'edit-input-display'}').innerText='0'">C</button>`; 
+    if (id === 'teclado-nums') cont.innerHTML += `<button class="tecla" style="background:var(--success);color:white; grid-column: span 3; padding: 25px;" onclick="confirmar()">ACEPTAR</button>`; 
+}
 
 crearTeclado('teclado-nums', 'presionarNum');
 crearTeclado('teclado-edit', 'presionarNumEdit');
