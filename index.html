@@ -3,55 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TPV Shoko - T7 Corregido</title>
+    <title>TPV Shoko - T7 Fiel a T6</title>
     <style>
-        :root { --primary: #2c3e50; --success: #27ae60; --accent: #3498db; --bg: #f4f7f6; --danger: #e74c3c; --warning: #f39c12; --white: #ffffff; --gray: #95a5a6; }
+        :root { --primary: #2c3e50; --success: #27ae60; --accent: #3498db; --bg: #f4f7f6; --danger: #e74c3c; --warning: #f39c12; --white: #ffffff; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); height: 100vh; overflow: hidden; }
         
-        #pantalla-socios { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; padding: 20px; overflow-y: auto; height: 100vh; box-sizing: border-box; align-content: start; }
+        /* Estructura Idéntica a T6 */
+        #pantalla-socios { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; padding: 20px; }
         #interfaz-tpv { display: none; grid-template-columns: 1fr 350px; height: 100vh; }
         
-        .btn-socio { background: var(--white); border: 2px solid var(--primary); border-radius: 15px; padding: 35px 10px; font-weight: bold; font-size: 1.4em; cursor: pointer; text-align: center; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .btn-socio { background: var(--white); border: 2px solid var(--primary); border-radius: 15px; padding: 35px 10px; font-weight: bold; font-size: 1.4em; cursor: pointer; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .btn-socio.activo { background: #ffeaa7; border-color: var(--warning); }
-        .nav-reponedor { background: var(--warning); color: var(--primary); padding: 20px; border-radius: 15px; text-align: center; font-weight: bold; cursor: pointer; width: 100%; border: 2px solid var(--primary); box-sizing: border-box; grid-column: 1 / -1; font-size: 1.3em; margin-bottom: 10px; }
 
-        .card { background: var(--white); border-radius: 12px; padding: 10px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.08); cursor: pointer; height: 145px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; border: 1px solid #e2e8f0; }
-        .card img { height: 60px; width: auto; max-width: 90%; object-fit: contain; }
+        .sidebar { background: var(--primary); color: var(--white); display: flex; flex-direction: column; padding: 15px; }
+        .lista { flex: 1; overflow-y: auto; }
+        .item-tiquet { display: flex; justify-content: space-between; padding: 8px; background: rgba(255,255,255,0.1); margin-bottom: 4px; border-radius: 6px; font-size: 0.9em; }
+        .item-historial { color: #bdc3c7; font-style: italic; }
         
-        .sidebar { background: var(--primary); color: var(--white); display: flex; flex-direction: column; padding: 15px; overflow: hidden; }
-        .lista { flex: 1; overflow-y: auto; margin: 10px 0; }
-        .item-tiquet { display: flex; justify-content: space-between; padding: 6px 10px; background: rgba(255,255,255,0.1); margin-bottom: 3px; border-radius: 6px; cursor: pointer; font-size: 0.9em; }
-        .item-historial { background: rgba(255,255,255,0.05); color: #bdc3c7; font-size: 0.8em; cursor: default; }
-        
-        .total-container { border-top: 2px solid rgba(255,255,255,0.2); padding: 10px 0; display: flex; justify-content: space-between; align-items: center; }
-        .tiquet-label, .total { font-size: 1.1em; font-weight: bold; }
-        
-        .botonera-inferior { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-        .fila-botones { display: flex; gap: 8px; }
-        .btn-side { border: none; border-radius: 12px; font-weight: bold; cursor: pointer; padding: 15px; color: white; flex: 1; font-size: 0.9em; }
+        .total-container { border-top: 2px solid rgba(255,255,255,0.3); padding: 10px 0; margin-top: 5px; }
+        .tiquet-label { font-size: 0.9em; opacity: 0.8; }
+        .total { font-size: 1.5em; font-weight: bold; }
 
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: var(--white); padding: 20px; border-radius: 20px; width: 95%; max-width: 700px; text-align: center; color: #333; max-height: 98vh; overflow-y: auto; }
-        
-        .selector-modos { display: flex; gap: 8px; margin: 15px 0; }
-        .btn-modo { flex: 1; padding: 12px 5px; border-radius: 10px; border: 2px solid #ddd; background: #f8f9fa; cursor: pointer; font-weight: bold; font-size: 0.85em; }
-        .btn-modo.active { border-color: var(--accent); background: #e3f2fd; color: var(--accent); }
+        /* Botonera lateral T6 */
+        .botonera-inferior { display: flex; flex-direction: column; gap: 8px; }
+        .btn-side { border: none; border-radius: 12px; font-weight: bold; cursor: pointer; padding: 18px; color: white; font-size: 1em; }
 
-        .tiquet-papel { background: #fff; color: #000; padding: 20px; font-family: 'Courier New', monospace; text-align: left; border: 1px solid #ccc; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin-top: 10px; font-size: 0.85em; }
-        .tiquet-linea { display: flex; justify-content: space-between; margin-bottom: 3px; border-bottom: 1px dotted #ccc; }
+        /* Estilo de los productos */
+        .card { background: var(--white); border-radius: 12px; padding: 15px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1); cursor: pointer; }
         
-        .grid-teclado { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
-        .tecla { background: #edf2f7; border: none; padding: 20px; font-size: 1.5em; border-radius: 12px; font-weight: bold; cursor: pointer; }
-        
-        .seccion-comensales { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; padding: 10px; background: #e2e8f0; border-radius: 12px; align-items: center; }
-        .btn-comensal { padding: 10px 15px; border-radius: 10px; border: 2px solid var(--primary); background: white; font-weight: bold; cursor: pointer; }
-        .btn-comensal.sel { background: var(--accent); color: white; border-color: var(--accent); }
+        /* Selector de Comensal sutil */
+        .selector-mini { display: flex; gap: 5px; margin-bottom: 10px; overflow-x: auto; padding: 5px; background: #e2e8f0; border-radius: 10px; }
+        .btn-mini { padding: 8px 15px; border-radius: 20px; border: 1px solid var(--primary); background: white; white-space: nowrap; font-size: 0.8em; font-weight: bold; }
+        .btn-mini.active { background: var(--accent); color: white; border-color: var(--accent); }
 
-        .teclado-texto { display: grid; grid-template-columns: repeat(10, 1fr); gap: 5px; margin-top: 10px; }
-        .tecla-t { background: #edf2f7; border: none; padding: 15px 2px; font-size: 1.1em; border-radius: 6px; font-weight: bold; cursor: pointer; }
-
-        .fila-inv { display: grid; grid-template-columns: 1fr 60px 60px 80px 40px; gap: 8px; margin-bottom: 10px; }
-        .fila-inv div { background: #f8fafc; border: 1px solid #cbd5e0; border-radius: 8px; padding: 12px 2px; text-align: center; font-size: 1.1em; font-weight: bold; }
+        /* Modal Tiquet Estilo T6 */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 25px; border-radius: 20px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; }
+        .tiquet-papel { font-family: monospace; text-align: left; padding: 15px; border: 1px solid #ddd; background: #fdfdfd; }
     </style>
 </head>
 <body>
@@ -59,216 +47,231 @@
 <div id="pantalla-socios"></div>
 
 <div id="interfaz-tpv">
-    <div style="padding:10px; display:flex; flex-direction:column; overflow:hidden;">
-        <div id="selector-comensales" class="seccion-comensales" style="display:none;"></div>
-        <div class="tabs" id="tab-container" style="display:flex; gap:8px; margin-bottom:15px; flex-wrap:wrap;"></div>
-        <div id="grid-prods" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(145px, 1fr)); gap:12px; overflow-y:auto;"></div>
+    <div style="padding:15px; display:flex; flex-direction:column;">
+        <div id="selector-comensales" class="selector-mini"></div>
+        <div id="tab-container" style="display:flex; gap:10px; margin-bottom:15px;"></div>
+        <div id="grid-prods" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); gap:15px;"></div>
     </div>
+
     <div class="sidebar">
-        <h2 id="nombre-socio" style="margin:0; font-size:1.8em; text-align:center;">Socio</h2>
+        <h2 id="nombre-socio" style="text-align:center; margin-top:0;">SOCIO</h2>
         <div class="lista" id="ticket-lista"></div>
+        
         <div class="total-container">
-            <span class="tiquet-label">TIQUE SHOKO</span>
+            <div class="tiquet-label">TIQUE SHOKO</div>
             <div class="total" id="total-txt">0.00€</div>
         </div>
+
         <div class="botonera-inferior">
-            <div class="fila-botones">
-                <button class="btn-side" style="background:var(--accent);" onclick="abrirModalReparto()">🍽️ COMIDA</button>
-                <button class="btn-side" style="background:var(--warning); color:#000;" onclick="verTiquetDetallado()">👁️ VER TIQUE</button>
-            </div>
+            <button class="btn-side" style="background:var(--accent);" onclick="abrirComida()">COMIDA</button>
+            <button class="btn-side" style="background:var(--warning); color:black;" onclick="verTiquetDetallado()">👁️ VER TIQUE</button>
             <button id="btn-cierre-parcial" class="btn-side" style="background:var(--success);" onclick="cierreParcial()">📦 CIERRE PARCIAL</button>
-            <div class="fila-botones">
-                <button class="btn-side" style="background:#7f8c8d;" onclick="alert('Limpieza')">🧹 LIMPIEZA</button>
-                <button class="btn-side" style="background:#4a5568;" onclick="location.reload()">🔙 ATRÁS</button>
-            </div>
+            <button class="btn-side" style="background:#4a5568;" onclick="location.reload()">🔙 ATRÁS</button>
         </div>
     </div>
 </div>
 
-<div id="modal-reparto" class="modal">
+<div id="modal-comida" class="modal">
     <div class="modal-content">
-        <h2>Gestión de la Sesión</h2>
-        <div class="selector-modos">
-            <button id="m-escote" class="btn-modo active" onclick="setModo('escote')">🤝 A ESCOTE</button>
-            <button id="m-invito" class="btn-modo" onclick="setModo('invito')">🎁 INVITO YO</button>
-            <button id="m-solo-bar" class="btn-modo" onclick="setModo('solo-bar')">🍻 SOLO BAR</button>
-        </div>
-        <div id="area-invitados">
-            <div id="invitados-cont"></div>
-            <button onclick="addInv()" style="width:100%; padding:15px; margin: 10px 0; background:#f0f0f0; border:2px dashed #ccc; border-radius:12px; font-weight:bold;">+ Añadir Invitado</button>
-        </div>
+        <h2 style="margin-top:0;">Gestión Comida</h2>
+        <div id="invitados-lista"></div>
+        <button onclick="nuevoInv()" style="width:100%; padding:12px; margin:10px 0; border-radius:10px; border:1px dashed #666;">+ Añadir Invitado/Comensal</button>
         <div style="display:flex; gap:10px; margin-top:15px;">
-            <button style="flex:1; padding:15px; background:var(--primary); color:white; border:none; border-radius:12px; font-weight:bold;" onclick="document.getElementById('modal-reparto').style.display='none'">ACEPTAR</button>
-            <button style="padding:15px; background:var(--danger); color:white; border:none; border-radius:12px; font-weight:bold;" onclick="resetearComida()">BORRAR TODO</button>
+            <button class="btn-side" style="background:var(--primary); flex:1;" onclick="cerrarModales()">ACEPTAR</button>
+            <button class="btn-side" style="background:var(--danger); flex:1;" onclick="resetComida()">RESET</button>
         </div>
     </div>
 </div>
 
-<div id="modal-tiquet-final" class="modal">
-    <div class="modal-content" style="max-width: 450px;">
-        <h3>DESGLOSE DE CUENTA</h3>
-        <div id="cont-tiquet-papel" class="tiquet-papel"></div>
-        <button style="width:100%; background:var(--danger); color:white; border:none; padding:20px; border-radius:12px; font-weight:bold; margin-top:15px;" onclick="cerrarVenta()">🚩 CIERRE TOTAL</button>
-        <button style="width:100%; border:none; background:none; color:gray; margin-top:10px;" onclick="document.getElementById('modal-tiquet-final').style.display='none'">Volver</button>
+<div id="modal-tiquet" class="modal">
+    <div class="modal-content">
+        <h3 id="tiquet-header">DESGLOSE DE CUENTA</h3>
+        <div id="papel-tiquet" class="tiquet-papel"></div>
+        <button class="btn-side" style="background:var(--danger); width:100%; margin-top:15px;" onclick="cierreTotal()">🚩 CIERRE TOTAL</button>
+        <button onclick="cerrarModales()" style="width:100%; border:none; background:none; color:gray; padding:10px;">Cerrar</button>
     </div>
 </div>
-
-<div id="modal-cantidad" class="modal"><div class="modal-content" style="width: 380px;"><h3 id="titulo-modal">Cantidad</h3><div id="input-cantidad" style="font-size:4em; font-weight:bold; color:var(--accent); margin-bottom:15px;">0</div><div class="grid-teclado" id="teclado-nums"></div><button style="width:100%; margin-top:15px; padding:15px; border:none; border-radius:12px;" onclick="document.getElementById('modal-cantidad').style.display='none'">CANCELAR</button></div></div>
-<div id="modal-teclado-texto" class="modal"><div class="modal-content" style="width: 95%; max-width: 900px;"><h3 id="titulo-teclado">Nombre</h3><div id="display-texto" style="font-size:2.5em; font-weight:bold; background:#f8fafc; padding:15px; border-radius:15px; margin-bottom:10px; min-height:1.2em; border:2px solid #ccc;"></div><div class="teclado-texto" id="grid-teclado-texto"></div><div style="display:flex; gap:10px; margin-top:20px;"><button style="flex:1; padding:20px; background:var(--success); color:white; border-radius:12px; border:none; font-weight:bold;" onclick="confirmarTexto()">ACEPTAR</button></div></div></div>
 
 <script>
-const PRECIOS = { "MAHOU 25cl.": 0.90, "ALHAMBRA 33cl.": 1.50, "COCA COLA": 1.00, "AGUA": 0.50, "ATÚN": 8.00 };
-const CATEGORIAS = { "BEBIDAS": ["MAHOU 25cl.", "ALHAMBRA 33cl.", "COCA COLA", "AGUA"], "COMIDA": ["ATÚN"] };
+// DATOS
+const PRECIOS = { "MAHOU": 0.90, "REFRESCO": 1.00, "AGUA": 0.50, "PLATO": 8.00 };
+const CATEGORIAS = { "BAR": ["MAHOU", "REFRESCO", "AGUA"], "COCINA": ["PLATO"] };
 
-let tickets = JSON.parse(localStorage.getItem('shoko_t7_final')) || {};
-let socioActivo = ""; let carrito = []; let historial = []; let listInv = [];
-let modoPago = 'escote'; let comensalSel = ""; let prodTemp = ""; let inputVal = ""; 
-let currentEditType = ""; let editingInvIdx = -1; let currentTexto = "";
+let storage = JSON.parse(localStorage.getItem('shoko_v7')) || {};
+let socio = ""; let carrito = []; let historial = []; let invitados = []; let comensalActivo = "";
 
 function renderSocios() {
-    const cont = document.getElementById('pantalla-socios');
-    cont.innerHTML = '<div class="nav-reponedor">🛠️ MODO ADMINISTRACIÓN</div>';
+    const p = document.getElementById('pantalla-socios');
+    p.innerHTML = '<div style="grid-column:1/-1; background:var(--warning); padding:15px; border-radius:10px; font-weight:bold; text-align:center;">MENU PRINCIPAL</div>';
     ["FRAN", "SANTI", "SANTOS", "JESÚS", "MANU"].forEach(s => {
-        const data = tickets[s] || [];
-        const cant = data.filter(i => i.n && !i.esComida && !i.esModo).length;
-        cont.innerHTML += `<div class="btn-socio ${cant>0?'activo':''}" onclick="abrirTPV('${s}')">${s}</div>`;
+        const activo = storage[s] ? 'activo' : '';
+        p.innerHTML += `<div class="btn-socio ${activo}" onclick="entrar('${s}')">${s}</div>`;
     });
 }
 
-function abrirTPV(n) {
-    socioActivo = n;
-    let data = tickets[n] || [];
-    carrito = data.filter(i => i.n && !i.esHistorial && !i.esComida && !i.esModo);
-    historial = data.filter(i => i.esHistorial);
-    let comidaG = data.find(i => i.esComida);
-    listInv = comidaG ? comidaG.datos : [];
-    modoPago = (data.find(i => i.esModo) || {m: 'escote'}).m;
-    comensalSel = "";
+function entrar(n) {
+    socio = n;
+    const data = storage[n] || { c: [], h: [], i: [] };
+    carrito = data.c; historial = data.h; invitados = data.i;
+    
     document.getElementById('pantalla-socios').style.display = 'none';
     document.getElementById('interfaz-tpv').style.display = 'grid';
-    document.getElementById('nombre-socio').innerText = n;
-    setModo(modoPago);
-    actualizarSelectorComensales();
+    document.getElementById('nombre-socio').innerText = socio;
+    
     renderTabs();
-    actualizarTicket();
+    actualizar();
+    actualizarMiniSelector();
 }
 
-function setModo(m) {
-    modoPago = m;
-    document.querySelectorAll('.btn-modo').forEach(b => b.classList.remove('active'));
-    let btn = document.getElementById('m-' + m);
-    if(btn) btn.classList.add('active');
-    document.getElementById('area-invitados').style.opacity = (m === 'solo-bar') ? '0.3' : '1';
-    guardarTicketParcial();
-    actualizarTicket();
+function actualizar() {
+    const lista = document.getElementById('ticket-lista');
+    let total = 0;
+    lista.innerHTML = "";
+
+    // Segunda Cuenta (Carrito)
+    carrito.forEach((item, idx) => {
+        total += item.p;
+        lista.innerHTML += `<div class="item-tiquet" onclick="eliminar(${idx})"><span>${item.n}</span><span>${item.p.toFixed(2)}€</span></div>`;
+    });
+
+    // Primera Cuenta (Historial)
+    historial.forEach(item => {
+        total += item.p;
+        lista.innerHTML += `<div class="item-tiquet item-historial"><span>(H) ${item.n}</span><span>${item.p.toFixed(2)}€</span></div>`;
+    });
+
+    // Cuota Mayores (Si hay invitados y no es solo bar)
+    const cuotas = invitados.reduce((acc, inv) => acc + (inv.a * 1), 0);
+    if(cuotas > 0) {
+        total += cuotas;
+        lista.innerHTML += `<div class="item-tiquet" style="border:1px dashed gold"><span>Cuota mayores de 13 años</span><span>${cuotas.toFixed(2)}€</span></div>`;
+    }
+
+    document.getElementById('total-txt').innerText = total.toFixed(2) + "€";
+    document.getElementById('btn-cierre-parcial').style.display = historial.length > 0 ? 'none' : 'block';
+    
+    storage[socio] = { c: carrito, h: historial, i: invitados };
+    localStorage.setItem('shoko_v7', JSON.stringify(storage));
 }
 
-function actualizarSelectorComensales() {
+function add(n) {
+    const nombreFinal = comensalActivo ? `${n} (${comensalActivo})` : n;
+    carrito.push({ n: nombreFinal, p: PRECIOS[n] });
+    actualizar();
+}
+
+function eliminar(idx) {
+    carrito.splice(idx, 1);
+    actualizar();
+}
+
+function cierreParcial() {
+    historial = [...historial, ...carrito];
+    carrito = [];
+    actualizar();
+}
+
+function abrirComida() {
+    const cont = document.getElementById('invitados-lista');
+    cont.innerHTML = `
+        <div style="display:grid; grid-template-columns: 1fr 50px 50px 50px; font-size:0.7em; font-weight:bold; margin-bottom:5px; text-align:center;">
+            <div>NOMBRE</div><div>>13</div><div><13</div><div>GASTOS</div>
+        </div>
+    `;
+    invitados.forEach((inv, idx) => {
+        cont.innerHTML += `
+            <div style="display:grid; grid-template-columns: 1fr 50px 50px 50px; gap:5px; margin-bottom:5px;">
+                <input type="text" value="${inv.n}" onchange="invitados[${idx}].n=this.value; actualizarMiniSelector()" style="width:90%">
+                <input type="number" value="${inv.a}" onchange="invitados[${idx}].a=parseInt(this.value); actualizar()" style="width:100%">
+                <input type="number" value="${inv.k}" onchange="invitados[${idx}].k=parseInt(this.value); actualizar()" style="width:100%">
+                <input type="number" value="${inv.g}" onchange="invitados[${idx}].g=parseFloat(this.value); actualizar()" style="width:100%">
+            </div>
+        `;
+    });
+    document.getElementById('modal-comida').style.display = 'flex';
+}
+
+function nuevoInv() {
+    invitados.push({ n: "Inv " + (invitados.length + 1), a: 1, k: 0, g: 0 });
+    abrirComida();
+    actualizarMiniSelector();
+}
+
+function actualizarMiniSelector() {
     const cont = document.getElementById('selector-comensales');
-    if (listInv.length > 0) {
-        cont.style.display = 'flex';
-        cont.innerHTML = '<small>Para:</small>';
-        listInv.forEach(inv => {
-            const nom = inv.n || "Socio";
-            cont.innerHTML += `<button class="btn-comensal ${comensalSel === nom ? 'sel' : ''}" onclick="comensalSel='${nom}'; actualizarSelectorComensales()">${nom}</button>`;
-        });
-        cont.innerHTML += `<button class="btn-comensal ${comensalSel === '' ? 'sel' : ''}" onclick="comensalSel=''; actualizarSelectorComensales()">TODOS</button>`;
-    } else { cont.style.display = 'none'; }
+    if (invitados.length === 0) { cont.style.display = "none"; return; }
+    cont.style.display = "flex";
+    cont.innerHTML = `<button class="btn-mini ${comensalActivo===''?'active':''}" onclick="setComensal('')">COMÚN</button>`;
+    invitados.forEach(inv => {
+        cont.innerHTML += `<button class="btn-mini ${comensalActivo===inv.n?'active':''}" onclick="setComensal('${inv.n}')">${inv.n}</button>`;
+    });
 }
+
+function setComensal(n) { comensalActivo = n; actualizarMiniSelector(); }
 
 function verTiquetDetallado() {
-    const cont = document.getElementById('cont-tiquet-papel');
-    const todosProds = [...historial, ...carrito];
-    const totalComunBar = todosProds.filter(i => !i.n.includes("(")).reduce((acc, i) => acc + (i.p * i.cant), 0);
-    const totalGastosComida = (modoPago === 'solo-bar') ? 0 : listInv.reduce((acc, i) => acc + i.g, 0);
-    const canonTotal = (modoPago === 'solo-bar') ? 0 : listInv.reduce((acc, i) => acc + (i.a * 1), 0);
-    const participantes = listInv.filter(inv => inv.a > 0 || inv.k > 0);
-    const totalCoef = participantes.reduce((acc, i) => acc + (i.a * 1) + (i.k * 0.5), 0);
-    const precioU = totalCoef > 0 ? (totalComunBar + totalGastosComida) / totalCoef : 0;
+    const papel = document.getElementById('papel-tiquet');
+    const todos = [...historial, ...carrito];
+    const hoy = new Date().toLocaleDateString();
+    
+    // Cálculos de Reparto
+    const barComun = todos.filter(i => !i.n.includes("(")).reduce((acc, i) => acc + i.p, 0);
+    const gastosComida = invitados.reduce((acc, i) => acc + i.g, 0);
+    const totalReparto = barComun + gastosComida;
+    
+    const coefTotal = invitados.reduce((acc, i) => acc + (i.a * 1) + (i.k * 0.5), 0);
+    const precioU = coefTotal > 0 ? totalReparto / coefTotal : 0;
 
-    let h = `<div style="text-align:center; font-weight:bold;">TIQUE SHOKO - ${socioActivo}</div><hr>`;
-    todosProds.forEach(i => h += `<div class="tiquet-linea"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}</span></div>`);
-    const totalClub = todosProds.reduce((acc,i)=>acc+(i.p*i.cant),0) + canonTotal;
-    h += `<hr><div class="tiquet-linea" style="font-weight:bold;"><span>TOTAL TIQUE SHOKO</span><span>${totalClub.toFixed(2)}€</span></div><br>`;
+    let txt = `<div style="text-align:center"><b>TIQUE SHOKO</b><br>${socio} - ${hoy}</div><br>`;
+    
+    txt += `<b>CONSUMO PRODUCTOS SHOKO (PRIMERA CUENTA):</b><br>`;
+    historial.forEach(i => txt += `<span>- ${i.n}</span><span style="float:right">${i.p.toFixed(2)}</span><br>`);
+    
+    txt += `<br><b>CONSUMO PRODUCTOS SHOKO (SEGUNDA CUENTA):</b><br>`;
+    carrito.forEach(i => txt += `<span>- ${i.n}</span><span style="float:right">${i.p.toFixed(2)}</span><br>`);
 
-    listInv.forEach(inv => {
-        const nom = inv.n || socioActivo;
-        const pComun = (modoPago === 'escote' && (inv.a > 0 || inv.k > 0)) ? (((inv.a*1)+(inv.k*0.5)) * precioU) : 0;
-        const pIndiv = todosProds.filter(i => i.n.includes(`(${nom})`)).reduce((acc, i) => acc + (i.p * i.cant), 0);
-        const pCuota = (modoPago !== 'solo-bar' && (inv.a > 0 || inv.k > 0)) ? (inv.a * 1) : 0;
-        const debe = pComun + pIndiv + pCuota;
+    txt += `<br><b>GASTOS COMIDA:</b><br>`;
+    invitados.forEach(inv => { if(inv.g > 0) txt += `<span>- Gasto ${inv.n}</span><span style="float:right">${inv.g.toFixed(2)}</span><br>`; });
+    
+    const totalTique = todos.reduce((acc,i)=>acc+i.p,0) + invitados.reduce((acc,i)=>acc+i.a,0);
+    txt += `<br><div style="border-top:1px solid #000; font-weight:bold">TOTAL TIQUE SHOKO: <span style="float:right">${totalTique.toFixed(2)}€</span></div><br>`;
+    
+    txt += `<b>--- DESGLOSE REPARTO ---</b><br>`;
+    invitados.forEach(inv => {
+        const pReparto = ((inv.a * 1) + (inv.k * 0.5)) * precioU;
+        const pIndiv = todos.filter(i => i.n.includes(`(${inv.n})`)).reduce((acc, i) => acc + i.p, 0);
+        const pCuota = (inv.a * 1);
+        const debe = pReparto + pIndiv + pCuota;
         const balance = debe - inv.g;
-        h += `<div class="tiquet-linea"><b>${nom}</b> <span>${debe.toFixed(2)}€</span></div>`;
-        h += `<div style="font-size:0.8em; text-align:right;">${nom===socioActivo ? 'Paga Club: '+totalClub.toFixed(2) : 'Balance: '+balance.toFixed(2)}€</div><br>`;
+        
+        txt += `<b>${inv.n}:</b> ${debe.toFixed(2)}€<br>`;
+        txt += `<small>(${inv.n === socio ? 'PAGA AL CLUB' : (balance > 0 ? 'PAGA A '+socio : 'RECIBE')} : ${Math.abs(balance).toFixed(2)}€)</small><br>`;
     });
-    cont.innerHTML = h;
-    document.getElementById('modal-tiquet-final').style.display = 'flex';
+
+    papel.innerHTML = txt;
+    document.getElementById('modal-tiquet').style.display = 'flex';
 }
 
-function addProd(n) {
-    prodTemp = n; currentEditType = 'prod'; inputVal = "";
-    document.getElementById('titulo-modal').innerText = n;
-    document.getElementById('input-cantidad').innerText = "1";
-    document.getElementById('modal-cantidad').style.display = 'flex';
+function renderTabs() {
+    const t = document.getElementById('tab-container');
+    t.innerHTML = "";
+    Object.keys(CATEGORIAS).forEach(cat => {
+        t.innerHTML += `<button onclick="renderProds('${cat}')" style="flex:1; padding:10px; border:none; background:var(--primary); color:white; border-radius:8px; font-weight:bold;">${cat}</button>`;
+    });
+    renderProds("BAR");
 }
 
-function confirmar() {
-    const val = parseFloat(document.getElementById('input-cantidad').innerText) || 0;
-    if (currentEditType === 'prod') {
-        const nomFinal = comensalSel ? `${prodTemp} (${comensalSel})` : prodTemp;
-        let ex = carrito.find(i => i.n === nomFinal);
-        if(ex) ex.cant += val; else carrito.push({n: nomFinal, cant: val, p: PRECIOS[prodTemp]});
-    } else if (currentEditType === 'adulto') { listInv[editingInvIdx].a = val; }
-    else if (currentEditType === 'nino') { listInv[editingInvIdx].k = val; }
-    else if (currentEditType === 'gasto') { listInv[editingInvIdx].g = val; }
-    guardarTicketParcial(); actualizarTicket();
-    document.getElementById('modal-cantidad').style.display = 'none';
+function renderProds(cat) {
+    const g = document.getElementById('grid-prods');
+    g.innerHTML = "";
+    CATEGORIAS[cat].forEach(p => {
+        g.innerHTML += `<div class="card" onclick="add('${p}')"><b>${p}</b><br>${PRECIOS[p].toFixed(2)}€</div>`;
+    });
 }
 
-function actualizarTicket() {
-    let t = 0; let html = "";
-    carrito.forEach(i => { t += i.p * i.cant; html += `<div class="item-tiquet" onclick="eliminarFila('${i.n}')"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}€</span></div>`; });
-    historial.forEach(i => { t += i.p * i.cant; html += `<div class="item-tiquet item-historial"><span>(H) ${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}€</span></div>`; });
-    if(modoPago !== 'solo-bar') {
-        const canon = listInv.reduce((acc, i) => acc + (i.a * 1), 0);
-        if(canon > 0) { html += `<div class="item-tiquet"><span>CUOTA MAYORES</span><span>${canon.toFixed(2)}€</span></div>`; t += canon; }
-    }
-    document.getElementById('ticket-lista').innerHTML = html;
-    document.getElementById('total-txt').innerText = t.toFixed(2) + "€";
-    document.getElementById('btn-cierre-parcial').disabled = (historial.length > 0);
-}
-
-function addInv() { listInv.push({n: "Inv " + (listInv.length+1), a: 1, k: 0, g: 0}); renderInv(); actualizarSelectorComensales(); }
-function renderInv() {
-    const cont = document.getElementById('invitados-cont');
-    cont.innerHTML = listInv.map((inv, i) => `
-        <div class="fila-inv">
-            <div onclick="abrirTecladoTexto(${i})">${inv.n}</div>
-            <div onclick="editingInvIdx=${i}; currentEditType='adulto'; abrirTecladoNum()">${inv.a}</div>
-            <div onclick="editingInvIdx=${i}; currentEditType='nino'; abrirTecladoNum()">${inv.k}</div>
-            <div onclick="editingInvIdx=${i}; currentEditType='gasto'; abrirTecladoNum()">${inv.g}€</div>
-            <button onclick="listInv.splice(${i},1); renderInv(); actualizarSelectorComensales();">×</button>
-        </div>`).join('');
-}
-
-function abrirTecladoNum() { document.getElementById('input-cantidad').innerText="0"; document.getElementById('modal-cantidad').style.display='flex'; }
-function presionarNum(v) { let d = document.getElementById('input-cantidad'); if(v==='C') d.innerText="0"; else d.innerText = (d.innerText==="0"?v:d.innerText+v); }
-function abrirTecladoTexto(idx) { editingInvIdx = idx; currentTexto = listInv[idx].n; document.getElementById('display-texto').innerText = currentTexto; document.getElementById('modal-teclado-texto').style.display='flex'; renderTecladoTexto(); }
-function renderTecladoTexto() { const cont = document.getElementById('grid-teclado-texto'); const teclas = "1234567890QWERTYUIOPASDFGHJKLÑZXCVBNM ".split(""); cont.innerHTML = teclas.map(l => `<button class="tecla-t" onclick="addLetra('${l}')">${l}</button>`).join(''); }
-function addLetra(l) { currentTexto += l; document.getElementById('display-texto').innerText = currentTexto; }
-function confirmarTexto() { listInv[editingInvIdx].n = currentTexto; document.getElementById('modal-teclado-texto').style.display='none'; renderInv(); actualizarSelectorComensales(); }
-function renderTabs() { document.getElementById('tab-container').innerHTML = Object.keys(CATEGORIAS).map(c => `<button style="flex:1; padding:10px; border-radius:8px; border:none; background:var(--primary); color:white;" onclick="renderProds('${c}')">${c}</button>`).join(''); renderProds("BEBIDAS"); }
-function renderProds(cat) { document.getElementById('grid-prods').innerHTML = CATEGORIAS[cat].map(n => `<div class="card" onclick="addProd('${n}')"><b>${n}</b><br>${PRECIOS[n].toFixed(2)}€</div>`).join(''); }
-function cierreParcial() { carrito.forEach(i => historial.push({...i, esHistorial: true})); carrito = []; guardarTicketParcial(); actualizarTicket(); }
-function guardarTicketParcial() { tickets[socioActivo] = [...carrito, ...historial, {esComida:true, datos:listInv}, {esModo:true, m:modoPago}]; localStorage.setItem('shoko_t7_final', JSON.stringify(tickets)); }
-function resetearComida() { listInv = []; modoPago = 'escote'; guardarTicketParcial(); location.reload(); }
-function cerrarVenta() { delete tickets[socioActivo]; localStorage.setItem('shoko_t7_final', JSON.stringify(tickets)); location.reload(); }
-function eliminarFila(n) { carrito = carrito.filter(i => i.n !== n); guardarTicketParcial(); actualizarTicket(); }
-function abrirModalReparto() { if(listInv.length===0) listInv.push({n: socioActivo, a: 1, k: 0, g: 0}); renderInv(); document.getElementById('modal-reparto').style.display='flex'; }
-
-const kn = document.getElementById('teclado-nums');
-for(let i=1; i<=9; i++) kn.innerHTML += `<button class="tecla" onclick="presionarNum('${i}')">${i}</button>`;
-kn.innerHTML += `<button class="tecla" onclick="presionarNum('C')">C</button><button class="tecla" onclick="presionarNum('0')">0</button><button class="tecla" style="background:var(--success); color:white;" onclick="confirmar()">OK</button>`;
+function cerrarModales() { document.querySelectorAll('.modal').forEach(m => m.style.display='none'); }
+function resetComida() { invitados = []; comensalActivo = ""; actualizar(); actualizarMiniSelector(); cerrarModales(); }
+function cierreTotal() { delete storage[socio]; localStorage.setItem('shoko_v7', JSON.stringify(storage)); location.reload(); }
 
 renderSocios();
 </script>
