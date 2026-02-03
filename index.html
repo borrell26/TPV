@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TPV Shoko - T1 Actualizado</title>
+    <title>TPV Shoko - T2 Actualizado</title>
     <style>
         :root { --primary: #2c3e50; --success: #27ae60; --accent: #3498db; --bg: #f4f7f6; --danger: #e74c3c; --warning: #f39c12; --white: #ffffff; --gray: #95a5a6; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); height: 100vh; overflow: hidden; }
@@ -78,7 +78,7 @@
         <h2 id="nombre-socio" style="margin:0; font-size:1.8em; text-align:center;">Socio</h2>
         <div class="lista" id="ticket-lista"></div>
         <button onclick="abrirModalReparto()" style="background:var(--accent); color:white; border:none; padding:15px; border-radius:12px; font-weight:bold; margin-bottom:10px; cursor:pointer;">🍽️ COMIDA</button>
-        <button onclick="verTiquetDetallado()" style="background:var(--warning); color:#000; border:none; padding:12px; border-radius:12px; font-weight:bold; margin-bottom:10px; cursor:pointer;">👁️ VER DESGLOSE</button>
+        <button onclick="verTiquetDetallado()" style="background:var(--warning); color:#000; border:none; padding:12px; border-radius:12px; font-weight:bold; margin-bottom:10px; cursor:pointer;">👁️ VER TIQUE</button>
         
         <div class="total-container">
             <span class="tiquet-label">TIQUET SHOKO</span>
@@ -87,10 +87,7 @@
 
         <div style="display: flex; flex-direction: column; gap: 8px;">
             <button id="btn-cierre-parcial" style="background:var(--success); color:white; border:none; padding:15px; border-radius:12px; font-weight:bold; cursor:pointer;" onclick="cierreParcial()">📦 CIERRE PARCIAL (Ronda)</button>
-            <div style="display: flex; gap: 10px;">
-                <button style="flex: 1; background:var(--danger); color:white; border:none; padding:15px; border-radius:12px; font-weight:bold; cursor:pointer;" onclick="cerrarVenta()">🚩 CIERRE TOTAL</button>
-                <button style="flex: 1; background:#4a5568; color:white; border:none; padding:15px; border-radius:12px; font-weight:bold; cursor:pointer;" onclick="location.reload()">🔙 ATRÁS</button>
-            </div>
+            <button style="background:#4a5568; color:white; border:none; padding:15px; border-radius:12px; font-weight:bold; cursor:pointer;" onclick="location.reload()">🔙 ATRÁS</button>
         </div>
     </div>
 </div>
@@ -99,7 +96,14 @@
 <div id="modal-cantidad" class="modal"><div class="modal-content" style="width: 400px;"><h3 id="titulo-prod-modal"></h3><div id="input-cantidad" style="font-size:4em; font-weight:bold; margin-bottom:10px; color: var(--accent);">0</div><div class="grid-teclado" id="teclado-nums"></div><button class="btn-cancelar" onclick="document.getElementById('modal-cantidad').style.display='none'">CANCELAR</button></div></div>
 <div id="modal-edit" class="modal"><div class="modal-content"><h3 id="edit-nombre"></h3><p id="txt-actual"></p><div id="edit-input-display" style="font-size:4em; font-weight:bold; color:var(--accent); margin:10px 0;">0</div><div style="display:flex; gap:10px;"><button class="btn-accion" style="background:var(--danger);" onclick="aplicarEdicion(-1)">-</button><button class="btn-accion" style="background:var(--success);" onclick="aplicarEdicion(1)">+</button></div><div class="grid-teclado" id="teclado-edit"></div><button id="btn-eliminar-fila" style="width:100%; padding:15px; background:var(--danger); color:white; border:none; border-radius:12px; margin-top:15px;" onclick="eliminarFilaEdicion()">ELIMINAR LÍNEA</button><button class="btn-cancelar" onclick="document.getElementById('modal-edit').style.display='none'">VOLVER</button></div></div>
 <div id="modal-reparto" class="modal"><div class="modal-content" style="width: 95%; max-width: 750px;"><h2>Gestión Comida</h2><div id="invitados-cont"></div><button id="btn-add-inv" onclick="addInv()" style="width:100%; padding:15px; margin: 10px 0; background:#f0f0f0; border:2px dashed #ccc; border-radius:12px; font-weight:bold;">+ Añadir Comensal</button><div style="display:flex; flex-direction:column; gap:10px; margin-top:15px;"><button class="btn-accion" style="background:var(--primary);" onclick="cerrarTPVCompletamente()">VOLVER AL TICKET</button><button class="btn-cancelar" style="background:var(--danger); color:white;" onclick="resetearComida()" id="btn-reset-comida">BORRAR TODO</button></div></div></div>
-<div id="modal-tiquet-final" class="modal"><div class="modal-content" style="max-width: 450px;"><h3>DESGLOSE DE CUENTA</h3><div id="cont-tiquet-papel" class="tiquet-papel"></div><button class="btn-cancelar" style="background:var(--primary); color:white; padding:20px;" onclick="document.getElementById('modal-tiquet-final').style.display='none'">CERRAR DESGLOSE</button></div></div>
+<div id="modal-tiquet-final" class="modal">
+    <div class="modal-content" style="max-width: 450px;">
+        <h3>DESGLOSE DE CUENTA</h3>
+        <div id="cont-tiquet-papel" class="tiquet-papel"></div>
+        <button style="width:100%; background:var(--danger); color:white; border:none; padding:20px; border-radius:12px; font-weight:bold; margin-top:15px; cursor:pointer; font-size:1.1em;" onclick="cerrarVenta()">🚩 CIERRE TOTAL (Pagar a SHOKO)</button>
+        <button class="btn-cancelar" style="background:var(--primary); color:white; padding:15px;" onclick="document.getElementById('modal-tiquet-final').style.display='none'">VOLVER AL TPV</button>
+    </div>
+</div>
 
 <script>
 const ML_COPA = 30;
@@ -148,19 +152,14 @@ function verTiquetDetallado() {
     let h = `<div style="text-align:center; font-weight:bold; border-bottom:2px solid #000; margin-bottom:10px;">TIQUE SHOKO - ${socioActivo} - ${hoy}</div>`;
     h += `<b>--- CONSUMO PRODUCTOS SHOKO (SEGUNDA CUENTA) ---</b><br>`;
     carrito.forEach(i => h += `<div class="tiquet-linea"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}</span></div>`);
-    
     h += `<br><b>--- CONSUMO PRODUCTOS SHOKO (PRIMERA CUENTA) ---</b><br>`;
     historial.forEach(i => h += `<div class="tiquet-linea"><span style="color:#555;">${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}</span></div>`);
-    
     h += `<br><b>--- COSTES FIJOS ---</b><br>`;
     h += `<div class="tiquet-linea"><span>Cuota mayores de 13 años</span><span>${canonTotal.toFixed(2)}</span></div>`;
-    
     h += `<br><b>--- GASTOS COMIDA ---</b><br>`;
     h += `<div class="tiquet-linea"><span>Total gastos en ingredientes</span><span>${totalExterno.toFixed(2)}</span></div>`;
-    
     const totalCuentaSocio = carrito.reduce((acc, i)=>acc+(i.p*i.cant),0) + totalBarHist + canonTotal;
     h += `<br><div class="tiquet-linea" style="font-weight:bold; font-size:1.2em;"><span>TOTAL TIQUE SHOKO</span><span>${totalCuentaSocio.toFixed(2)}€</span></div><br>`;
-    
     h += `<b>--- DESGLOSE REPARTO ---</b><br>`;
     listInv.forEach(inv => {
         const nombreLimpio = inv.n || socioActivo;
@@ -169,18 +168,13 @@ function verTiquetDetallado() {
         const consumoIndividualActual = carrito.filter(item => item.n.includes(`(${nombreLimpio})`)).reduce((acc, item) => acc + (item.p * item.cant), 0);
         const totalDebe = parteHistorial + consumoIndividualActual;
         const bal = totalDebe - inv.g;
-
         let leyendaEstado = "";
         if (nombreLimpio === socioActivo) {
             leyendaEstado = `PAGAR A SHOKO: ${totalCuentaSocio.toFixed(2)}€`;
         } else {
-            if (bal > 0) {
-                leyendaEstado = `PAGAR A ${socioActivo}: ${bal.toFixed(2)}€`;
-            } else {
-                leyendaEstado = `RECIBIR DE ${socioActivo}: ${Math.abs(bal).toFixed(2)}€`;
-            }
+            if (bal > 0) leyendaEstado = `PAGAR A ${socioActivo}: ${bal.toFixed(2)}€`;
+            else leyendaEstado = `RECIBIR DE ${socioActivo}: ${Math.abs(bal).toFixed(2)}€`;
         }
-
         h += `<div style="border-bottom:1px solid #eee; margin-bottom:5px; padding-bottom:2px;">
                 <div class="tiquet-linea"><b>${nombreLimpio}</b> <span>${totalDebe.toFixed(2)}€</span></div>
                 <div style="font-size:0.7em; color:#666; display:flex; justify-content:space-between;">
