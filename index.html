@@ -278,25 +278,47 @@ function cerrarVenta() {
 
     // DESGLOSE REPARTO
 if(listInv.length > 0) {
-        h += `<br><br><div style="font-weight:bold; background:#333; color:#fff; padding:5px; text-align:center; margin-bottom:10px;">DESGLOSE REPARTO</div>`;
-        listInv.forEach(inv => {
-            const nombreLimpio = inv.n || socioActivo;
-            const puntos = (inv.a * 1) + (inv.k * 0.5);
-            const parteHistorial = (puntos * precioU) + (inv.a * 1);
-            const consumoIndividualActual = carrito.filter(it => it.n.includes(`(${nombreLimpio})`)).reduce((acc, it) => acc + (it.p * it.cant), 0);
-            const totalDebe = parteHistorial + consumoIndividualActual;
-            const bal = totalDebe - inv.g;
-            
-            let color = (nombreLimpio === socioActivo || bal > 0) ? "#d9534f" : "#5cb85c";
-            let leyenda = (nombreLimpio === socioActivo) ? `PAGAR A SHOKO: ${totalCuentaSocio.toFixed(2)}€` : 
-                          (bal > 0 ? `PAGAR A ${socioActivo}: ${bal.toFixed(2)}€` : `RECIBIR DE ${socioActivo}: ${Math.abs(bal).toFixed(2)}€`);
 
-            // Cambiamos a una sola línea con el mismo tamaño de fuente
-            h += `<div style="border-bottom:1px solid #eee; margin-bottom:8px; padding-bottom:5px; display:flex; justify-content:space-between; align-items:center; font-weight:bold; font-size:14px;">
-                    <span>${nombreLimpio}:&nbsp;&nbsp;&nbsp;</span>
-                    <span style="color:${color};">${leyenda}</span>
+        h += `<br><br><div style="font-weight:bold; background:#333; color:#fff; padding:5px; text-align:center; margin-bottom:10px;">DESGLOSE REPARTO</div>`;
+
+        listInv.forEach(inv => {
+
+            const nombreLimpio = inv.n || socioActivo;
+
+            const puntos = (inv.a * 1) + (inv.k * 0.5);
+
+            const parteHistorial = (puntos * precioU) + (inv.a * 1);
+
+            const consumoIndividualActual = carrito.filter(it => it.n.includes(`(${nombreLimpio})`)).reduce((acc, it) => acc + (it.p * it.cant), 0);
+
+            const totalDebe = parteHistorial + consumoIndividualActual;
+
+            const bal = totalDebe - inv.g;
+
+            
+
+            let color = (nombreLimpio === socioActivo || bal > 0) ? "#d9534f" : "#5cb85c";
+
+            let leyenda = "";
+
+            if (nombreLimpio === socioActivo) leyenda = `PAGAR A SHOKO: ${totalCuentaSocio.toFixed(2)}€`;
+
+            else if (bal > 0) leyenda = `PAGAR A ${socioActivo}: ${bal.toFixed(2)}€`;
+
+            else leyenda = `RECIBIR DE ${socioActivo}: ${Math.abs(bal).toFixed(2)}€`;
+
+
+
+            h += `<div style="border-bottom:1px solid #eee; margin-bottom:8px; padding-bottom:5px;">
+
+                    <div style="display:flex; justify-content:space-between; font-weight:bold;"><span>${nombreLimpio}:&nbsp;&nbsp;&nbsp;</span><span>${totalDebe.toFixed(2)}€</span></div>
+
+                    <div style="font-size:12px; color:${color}; text-align:right; font-weight:bold; margin-top:2px;">${leyenda}</div>
+
                   </div>`;
+
         });
+
     }
 
     h += `<br><div style="font-size:11px; color:#999; text-align:center;">Este es un tiquet oficial generado por el TPV del Shoko.</div>`;
@@ -346,6 +368,7 @@ renderSocios();
 </script>
 </body>
 </html>
+
 
 
 
