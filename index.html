@@ -277,7 +277,7 @@ function cerrarVenta() {
     h += `<br><div style="display:flex; justify-content:space-between; font-weight:bold; font-size:14px; border-top:2px solid #000; padding-top:10px; margin-top:10px;"><span>TOTAL TIQUE SHOKO:&nbsp;&nbsp;&nbsp;</span><span>${totalCuentaSocio.toFixed(2)}€</span></div>`;
 
     // DESGLOSE REPARTO
-    if(listInv.length > 0) {
+if(listInv.length > 0) {
         h += `<br><br><div style="font-weight:bold; background:#333; color:#fff; padding:5px; text-align:center; margin-bottom:10px;">DESGLOSE REPARTO</div>`;
         listInv.forEach(inv => {
             const nombreLimpio = inv.n || socioActivo;
@@ -288,14 +288,13 @@ function cerrarVenta() {
             const bal = totalDebe - inv.g;
             
             let color = (nombreLimpio === socioActivo || bal > 0) ? "#d9534f" : "#5cb85c";
-            let leyenda = "";
-            if (nombreLimpio === socioActivo) leyenda = `PAGAR A SHOKO: ${totalCuentaSocio.toFixed(2)}€`;
-            else if (bal > 0) leyenda = `PAGAR A ${socioActivo}: ${bal.toFixed(2)}€`;
-            else leyenda = `RECIBIR DE ${socioActivo}: ${Math.abs(bal).toFixed(2)}€`;
+            let leyenda = (nombreLimpio === socioActivo) ? `PAGAR A SHOKO: ${totalCuentaSocio.toFixed(2)}€` : 
+                          (bal > 0 ? `PAGAR A ${socioActivo}: ${bal.toFixed(2)}€` : `RECIBIR DE ${socioActivo}: ${Math.abs(bal).toFixed(2)}€`);
 
-            h += `<div style="border-bottom:1px solid #eee; margin-bottom:8px; padding-bottom:5px;">
-                    <div style="display:flex; justify-content:space-between; font-weight:bold;"><span>${nombreLimpio}:&nbsp;&nbsp;&nbsp;</span><span>${totalDebe.toFixed(2)}€</span></div>
-                    <div style="font-size:12px; color:${color}; text-align:right; font-weight:bold; margin-top:2px;">${leyenda}</div>
+            // Cambiamos a una sola línea con el mismo tamaño de fuente
+            h += `<div style="border-bottom:1px solid #eee; margin-bottom:8px; padding-bottom:5px; display:flex; justify-content:space-between; align-items:center; font-weight:bold; font-size:14px;">
+                    <span>${nombreLimpio}:&nbsp;&nbsp;&nbsp;</span>
+                    <span style="color:${color};">${leyenda}</span>
                   </div>`;
         });
     }
@@ -347,6 +346,7 @@ renderSocios();
 </script>
 </body>
 </html>
+
 
 
 
