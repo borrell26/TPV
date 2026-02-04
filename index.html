@@ -166,15 +166,21 @@ function renderProds() { document.getElementById('grid-prods').innerHTML = CATEG
 function verTiquetDetallado() {
     const cont = document.getElementById('cont-tiquet-papel');
     const totalBarHist = historial.reduce((acc, i) => acc + (i.p * i.cant), 0);
-    const totalExterno = listInv.reduce((acc, i) => acc + i.g, 0);
     const canonTotal = listInv.reduce((acc, i) => acc + (i.a * 1), 0);
     const totalCuentaSocio = carrito.reduce((acc, i)=>acc+(i.p*i.cant),0) + totalBarHist + canonTotal;
     
-    let h = `<div style="text-align:center; font-weight:bold; border-bottom:2px solid #000; margin-bottom:10px;">TIQUE SHOKO - ${socioActivo}</div>`;
-    historial.concat(carrito).forEach(i => {
-        if(i.p > 0) h += `<div class="tiquet-linea"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}</span></div>`;
+    // Obtenemos la fecha actual formateada (DD/MM/YYYY)
+    const fechaHoy = new Date().toLocaleDateString('es-ES');
+    
+    // Cambio solicitado en el encabezado
+    let h = `<div style="text-align:center; font-weight:bold; border-bottom:2px solid #000; margin-bottom:10px; font-size:1.1em;">TIQUE ${socioActivo} (${fechaHoy})</div>`;
+    
+    historial.concat(carrito).forEach(i => { 
+        if(i.p > 0) h += `<div class="tiquet-linea"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}</span></div>`; 
     });
+    
     if(canonTotal > 0) h += `<div class="tiquet-linea"><span>Cuota >13 años</span><span>${canonTotal.toFixed(2)}</span></div>`;
+    
     h += `<br><div class="tiquet-linea" style="font-weight:bold;"><span>TOTAL</span><span>${totalCuentaSocio.toFixed(2)}€</span></div>`;
     
     cont.innerHTML = h;
@@ -320,3 +326,4 @@ crearTeclado('teclado-nums', 'presionarNum'); crearTeclado('teclado-edit', 'pres
 </script>
 </body>
 </html>
+
