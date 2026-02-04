@@ -165,28 +165,55 @@ function renderProds() { document.getElementById('grid-prods').innerHTML = CATEG
 
 function verTiquetDetallado() {
     const cont = document.getElementById('cont-tiquet-papel');
-    const totalBarHist = historial.reduce((acc, i) => acc + (i.p * i.cant), 0);
-    const canonTotal = listInv.reduce((acc, i) => acc + (i.a * 1), 0);
-    const totalCuentaSocio = carrito.reduce((acc, i)=>acc+(i.p*i.cant),0) + totalBarHist + canonTotal;
-    
-    // Obtenemos la fecha actual formateada (DD/MM/YYYY)
     const fechaHoy = new Date().toLocaleDateString('es-ES');
     
-    // Cambio solicitado en el encabezado
-    let h = `<div style="text-align:center; font-weight:bold; border-bottom:2px solid #000; margin-bottom:10px; font-size:1.1em;">TIQUE ${socioActivo} (${fechaHoy})</div>`;
+    // Título solicitado
+    let h = `<div style="text-align:center; font-weight:bold; border-bottom:2px solid #000; margin-bottom:10px;">TIQUE ${socioActivo} (${fechaHoy})</div>`;
     
-    historial.concat(carrito).forEach(i => { 
-        if(i.p > 0) h += `<div class="tiquet-linea"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}</span></div>`; 
-    });
+    // 1. PRIMERA CUENTA (Historial previo)
+    if (historial.length > 0) {
+        h += `<div style="font-weight:bold; text-decoration:underline; margin:5px 0;">CONSUMO PRODUCTOS SHOKO (PRIMERA CUENTA)</div>`;
+        historial.forEach(i => {
+            if(i.p > 0) h += `<div class="tiquet-linea"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}</span></div>`;
+        });
+    }
+
+    // 2. SEGUNDA CUENTA (Lo que hay en el carrito actual)
+    if (carrito.length > 0) {
+        h += `<div style="font-weight:bold; text-decoration:underline; margin:10px 0 5px 0;">CONSUMO PRODUCTOS SHOKO (SEGUNDA CUENTA)</div>`;
+        carrito.forEach(i => {
+            if(i.p > 0) h += `<div class="tiquet-linea"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}</span></div>`;
+        });
+    }
+
+    // 3. SECCIÓN COMIDA / REPARTO
+    const totalExterno = listInv.reduce((acc, i) => acc + i.g, 0);
+    const canonTotal = listInv.reduce((acc, i) => acc + (i.a * 1), 0);
+    const numAdultos = listInv.reduce((acc, i) => acc + (i.a * 1), 0);
     
-    if(canonTotal > 0) h += `<div class="tiquet-linea"><span>Cuota >13 años</span><span>${canonTotal.toFixed(2)}</span></div>`;
-    
-    h += `<br><div class="tiquet-linea" style="font-weight:bold;"><span>TOTAL</span><span>${totalCuentaSocio.toFixed(2)}€</span></div>`;
+    if (listInv.length > 0 && (totalExterno > 0 || canonTotal > 0)) {
+        h += `<div style="font-weight:bold; text-decoration:underline; margin:10px 0 5px 0;">GASTOS COMIDA</div>`;
+        if (totalExterno > 0) h += `<div class="tiquet-linea"><span>Gasto Externo Comida</span><span>${totalExterno.toFixed(2)}</span></div>`;
+        if (canonTotal > 0) h += `<div class="tiquet-linea"><span>Cuota mayores de 13 años (${numAdultos})</span><span>${canonTotal.toFixed(2)}</span></div>`;
+        
+        // El reparto (Solo informativo en el desglose)
+        const porPersona = numAdultos > 0 ? (totalExterno / numAdultos) : 0;
+        const miGasto = listInv.find(i => i.n === socioActivo || i.n === "")?.g || 0;
+        const resultadoReparto = porPersona - miGasto;
+        
+        h += `<div class="tiquet-linea" style="font-style:italic; font-size:0.9em;"><span>A pagar/recibir por reparto:</span><span>${resultadoReparto.toFixed(2)}</span></div>`;
+    }
+
+    // 4. TOTAL FINAL
+    const totalBarHist = historial.reduce((acc, i) => acc + (i.p * i.cant), 0);
+    const totalBarActual = carrito.reduce((acc, i) => acc + (i.p * i.cant), 0);
+    const totalCuentaSocio = totalBarHist + totalBarActual + canonTotal;
+
+    h += `<br><div class="tiquet-linea" style="font-weight:bold; border-top:2px solid #000; padding-top:5px;"><span>TOTAL TIQUE SHOKO</span><span>${totalCuentaSocio.toFixed(2)}€</span></div>`;
     
     cont.innerHTML = h;
     document.getElementById('modal-tiquet-final').style.display = 'flex';
 }
-
 function cerrarVenta() { 
     if(!confirm("¿CONFIRMAR PAGO Y ENVIAR MAIL AUTOMÁTICO?")) return;
     
@@ -326,4 +353,5 @@ crearTeclado('teclado-nums', 'presionarNum'); crearTeclado('teclado-edit', 'pres
 </script>
 </body>
 </html>
+
 
