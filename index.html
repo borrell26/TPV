@@ -3,35 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TPV Shoko - MASTER CORREO</title>
-    
+    <title>TPV Shoko - MASTER</title>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-
+    <script type="text/javascript">
+        (function() { emailjs.init("lc8woRfpiuAUn_9QM"); })(); 
+    </script>
     <style>
         :root { --primary: #2c3e50; --success: #27ae60; --accent: #3498db; --bg: #f4f7f6; --danger: #e74c3c; --warning: #f39c12; --white: #ffffff; --gray: #95a5a6; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); height: 100vh; overflow: hidden; }
+        
         #pantalla-socios { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; padding: 20px; overflow-y: auto; height: 100vh; box-sizing: border-box; align-content: start; }
         #interfaz-tpv { display: none; grid-template-columns: 1fr 350px; height: 100vh; }
         #pantalla-reposicion { display: none; flex-direction: column; gap: 15px; padding: 20px; height: 100vh; box-sizing: border-box; overflow-y: auto; }
+
         .btn-socio { background: var(--white); border: 2px solid var(--primary); border-radius: 15px; padding: 35px 10px; font-weight: bold; font-size: 1.4em; cursor: pointer; text-align: center; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .btn-socio.activo { background: #ffeaa7; border-color: var(--warning); }
         .nav-reponedor { background: #cbd5e0; color: var(--primary); padding: 10px; border-radius: 10px; text-align: center; font-weight: normal; cursor: pointer; width: 100%; border: 1px solid var(--gray); box-sizing: border-box; grid-column: 1 / -1; font-size: 1em; margin-top: 20px; opacity: 0.7; }
+
         .card { background: var(--white); border-radius: 12px; padding: 10px; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.08); cursor: pointer; height: 145px; display: flex; flex-direction: column; justify-content: space-between; align-items: center; border: 1px solid #e2e8f0; }
         .card img { height: 60px; width: auto; max-width: 90%; object-fit: contain; }
+        
         .sidebar { background: var(--primary); color: var(--white); display: flex; flex-direction: column; padding: 15px; overflow: hidden; }
         .lista { flex: 1; overflow-y: auto; margin: 10px 0; }
         .item-tiquet { display: flex; justify-content: space-between; padding: 6px 10px; background: rgba(255,255,255,0.1); margin-bottom: 3px; border-radius: 6px; cursor: pointer; font-size: 0.9em; }
         .item-historial { background: rgba(255,255,255,0.05); color: #bdc3c7; font-size: 0.8em; cursor: default; }
+        
         .total-container { border-top: 2px solid rgba(255,255,255,0.2); padding: 10px 0; display: flex; justify-content: space-between; align-items: center; }
         .tiquet-label, .total { font-size: 1.1em; font-weight: bold; }
+        
         .botonera-inferior { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
         .fila-botones { display: flex; gap: 8px; }
         .btn-side { border: none; border-radius: 12px; font-weight: bold; cursor: pointer; padding: 15px; color: white; flex: 1; font-size: 0.9em; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(0.5); }
+
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: var(--white); padding: 20px; border-radius: 20px; width: 90%; max-width: 650px; text-align: center; color: #333; max-height: 98vh; overflow-y: auto; }
         .tiquet-papel { background: #fff; color: #000; padding: 20px; font-family: 'Courier New', monospace; text-align: left; border: 1px solid #ccc; box-shadow: 0 0 10px rgba(0,0,0,0.1); margin-top: 10px; }
         .tiquet-linea { display: flex; justify-content: space-between; margin-bottom: 3px; border-bottom: 1px dotted #ccc; }
         .btn-cancelar { background: #cbd5e0; color: #2d3748; padding: 12px; border-radius: 12px; border: none; font-weight: bold; margin-top: 10px; width: 100%; cursor: pointer; }
+        
         .grid-teclado { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
         .tecla { background: #edf2f7; border: none; padding: 20px; font-size: 1.5em; border-radius: 12px; font-weight: bold; cursor: pointer; }
         .btn-accion { padding: 18px; border: none; border-radius: 12px; color: white; font-weight: bold; font-size: 1.2em; cursor: pointer; flex: 1; }
@@ -45,14 +55,18 @@
 <body>
 
 <div id="pantalla-socios"></div>
+
 <div id="pantalla-reposicion">
     <div style="width:100%; display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-        <h2>Reposición</h2>
-        <button onclick="location.reload()" style="background:var(--success); color:white; padding:15px; border-radius:10px; border:none; font-weight:bold;">SALIR</button>
+        <h2 style="font-size:1.8em; margin:0;">Reposición</h2>
+        <div style="display:flex; gap:10px;">
+            <button onclick="generarListaCompra()" style="background:var(--accent); color:white; padding:15px; border-radius:10px; border:none; font-weight:bold;">🛒 LISTA COMPRA</button>
+            <button onclick="location.reload()" style="background:var(--success); color:white; padding:15px; border-radius:10px; border:none; font-weight:bold;">💾 SALIR</button>
+        </div>
     </div>
     <div id="repo-menu-cats" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px;"></div>
     <div id="repo-menu-items" style="display:none; width: 100%;">
-        <button onclick="mostrarMenuCats()" style="margin-bottom:15px; padding:15px 30px; background:#4a5568; color:white; border:none; border-radius:10px; font-weight:bold;">VOLVER</button>
+        <button onclick="mostrarMenuCats()" style="margin-bottom:15px; padding:15px 30px; background:#4a5568; color:white; border:none; border-radius:10px; font-weight:bold;">⬅️ VOLVER</button>
         <div id="repo-grid-productos" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(160px, 1fr)); gap:15px;"></div>
     </div>
 </div>
@@ -65,17 +79,24 @@
     <div class="sidebar">
         <h2 id="nombre-socio" style="margin:0; font-size:1.8em; text-align:center;">Socio</h2>
         <div class="lista" id="ticket-lista"></div>
+        
         <div class="total-container">
             <span class="tiquet-label">TIQUE SHOKO</span>
             <div class="total" id="total-txt">0.00€</div>
         </div>
+
         <div class="botonera-inferior">
             <div class="fila-botones">
                 <button class="btn-side" style="background:var(--accent);" onclick="abrirModalReparto()">🍽️ COMIDA</button>
                 <button class="btn-side" style="background:var(--warning); color:#000;" onclick="verTiquetDetallado()">👁️ VER TIQUE</button>
             </div>
+            
             <button id="btn-cierre-parcial" class="btn-side" style="background:var(--success);" onclick="cierreParcial()">📦 CIERRE PARCIAL</button>
-            <button class="btn-side" style="background:#4a5568;" onclick="location.reload()">🔙 ATRÁS</button>
+            
+            <div class="fila-botones">
+                <button class="btn-side" style="background:#7f8c8d;" onclick="alert('Función limpieza seleccionada')">🧹 LIMPIEZA</button>
+                <button class="btn-side" style="background:#4a5568;" onclick="location.reload()">🔙 ATRÁS</button>
+            </div>
         </div>
     </div>
 </div>
@@ -85,36 +106,32 @@
         <h3>DESGLOSE DE CUENTA</h3>
         <div id="cont-tiquet-papel" class="tiquet-papel"></div>
         <button id="btn-final-enviar" style="width:100%; background:var(--danger); color:white; border:none; padding:20px; border-radius:12px; font-weight:bold; margin-top:15px; cursor:pointer; font-size:1.1em;" onclick="cerrarVenta()">🚩 CIERRE TOTAL (Pagar a SHOKO)</button>
-        <button class="btn-cancelar" onclick="document.getElementById('modal-tiquet-final').style.display='none'">VOLVER AL TPV</button>
+        <button class="btn-cancelar" style="background:var(--primary); color:white; padding:15px;" onclick="document.getElementById('modal-tiquet-final').style.display='none'">VOLVER AL TPV</button>
     </div>
 </div>
 
-<div id="modal-teclado-texto" class="modal"><div class="modal-content"><h3 id="titulo-teclado">Nombre</h3><div id="display-texto" style="font-size:2em; padding:10px; border:1px solid #ccc; margin-bottom:10px;"></div><div class="teclado-texto" id="grid-teclado-texto"></div><button onclick="confirmarTexto()">ACEPTAR</button></div></div>
-<div id="modal-cantidad" class="modal"><div class="modal-content"><h3 id="titulo-prod-modal"></h3><div id="input-cantidad" style="font-size:3em;">0</div><div class="grid-teclado" id="teclado-nums"></div><button onclick="document.getElementById('modal-cantidad').style.display='none'">X</button></div></div>
-<div id="modal-edit" class="modal"><div class="modal-content"><h3 id="edit-nombre"></h3><div id="edit-input-display" style="font-size:3em;">0</div><div class="grid-teclado" id="teclado-edit"></div><button onclick="aplicarEdicion(1)">APLICAR</button><button onclick="eliminarFilaEdicion()">BORRAR</button></div></div>
-<div id="modal-reparto" class="modal"><div class="modal-content"><h2>Gestión Comida</h2><div id="invitados-cont"></div><button onclick="addInv()">+ Añadir</button><button onclick="cerrarTPVCompletamente()">VOLVER</button></div></div>
-<div id="modal-asignar-comensal" class="modal"><div class="modal-content"><h3>¿Quién consume?</h3><div id="grid-comensales-modal"></div></div></div>
+<div id="modal-compra" class="modal">
+    <div class="modal-content" style="max-width: 400px;">
+        <h3>🛒 LISTA DE COMPRA</h3>
+        <div id="cuerpo-compra" style="text-align: left; max-height: 400px; overflow-y: auto; margin: 15px 0; border: 1px solid #eee; padding: 10px; border-radius: 10px;"></div>
+        <button class="btn-side" style="background:var(--success); width: 100%; padding: 15px;" onclick="document.getElementById('modal-compra').style.display='none'">CERRAR</button>
+    </div>
+</div>
+
+<div id="modal-teclado-texto" class="modal"><div class="modal-content" style="width: 95%; max-width: 900px;"><h3 id="titulo-teclado">Nombre</h3><div id="display-texto" style="font-size:2.5em; font-weight:bold; background:#f8fafc; padding:15px; border-radius:15px; margin-bottom:10px; min-height:1.2em; border:2px solid #ccc;"></div><div class="teclado-texto" id="grid-teclado-texto"></div><div style="display:flex; gap:10px; margin-top:20px;"><button class="btn-accion" style="background:var(--success);" onclick="confirmarTexto()">ACEPTAR</button><button class="btn-accion" style="background:var(--danger);" onclick="document.getElementById('modal-teclado-texto').style.display='none'">CANCELAR</button></div></div></div>
+<div id="modal-cantidad" class="modal"><div class="modal-content" style="width: 400px;"><h3 id="titulo-prod-modal"></h3><div id="input-cantidad" style="font-size:4em; font-weight:bold; margin-bottom:10px; color: var(--accent);">0</div><div class="grid-teclado" id="teclado-nums"></div><button class="btn-cancelar" onclick="document.getElementById('modal-cantidad').style.display='none'">CANCELAR</button></div></div>
+<div id="modal-edit" class="modal"><div class="modal-content"><h3 id="edit-nombre"></h3><p id="txt-actual"></p><div id="edit-input-display" style="font-size:4em; font-weight:bold; color:var(--accent); margin:10px 0;">0</div><div style="display:flex; gap:10px;"><button class="btn-accion" style="background:var(--danger);" onclick="aplicarEdicion(-1)">-</button><button class="btn-accion" style="background:var(--success);" onclick="aplicarEdicion(1)">+</button></div><div class="grid-teclado" id="teclado-edit"></div><button id="btn-eliminar-fila" style="width:100%; padding:15px; background:var(--danger); color:white; border:none; border-radius:12px; margin-top:15px;" onclick="eliminarFilaEdicion()">ELIMINAR LÍNEA</button><button class="btn-cancelar" onclick="document.getElementById('modal-edit').style.display='none'">VOLVER</button></div></div>
+<div id="modal-reparto" class="modal"><div class="modal-content" style="width: 95%; max-width: 750px;"><h2>Gestión Comida</h2><div id="invitados-cont"></div><button id="btn-add-inv" onclick="addInv()" style="width:100%; padding:15px; margin: 10px 0; background:#f0f0f0; border:2px dashed #ccc; border-radius:12px; font-weight:bold;">+ Añadir Comensal</button><div style="display:flex; flex-direction:column; gap:10px; margin-top:15px;"><button class="btn-accion" style="background:var(--primary);" onclick="cerrarTPVCompletamente()">VOLVER AL TICKET</button><button class="btn-cancelar" style="background:var(--danger); color:white;" onclick="resetearComida()" id="btn-reset-comida">BORRAR TODO</button></div></div></div>
+<div id="modal-asignar-comensal" class="modal"><div class="modal-content"><h3>¿A quién asignar consumición?</h3><div id="grid-comensales-modal" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:15px;"></div><button class="btn-cancelar" onclick="document.getElementById('modal-asignar-comensal').style.display='none'">CANCELAR</button></div></div>
 
 <script>
-// --- CONFIGURACIÓN EMAILJS ---
-const PUBLIC_KEY = "lc8woRfpiuAUn_9QM";
-const SERVICE_ID = "service_zchbl2f";
-const TEMPLATE_ID = "template_qqn30c5";
-
-// Inicialización con control de errores
-try {
-    emailjs.init(PUBLIC_KEY);
-    console.log("EmailJS inicializado");
-} catch(e) {
-    alert("Error cargando EmailJS: Revisa tu conexión a internet.");
-}
-
+const ML_COPA = 30;
+// 3. CONFIGURACIÓN DE EMAILS
 const EMAILS_SOCIOS = { 
     "MIGUEL": "mguardiz@gmail.com", 
     "SANTI": "sbborrell@gmail.com" 
 };
 
-// --- DATOS TPV ---
 const PRECIOS = { "MAHOU 25cl.": 0.90, "ALHAMBRA 33cl.": 1.50, "BUDWEISSER 33cl.": 1.50, "MAHOU SIN 25cl.": 0.90, "COCA COLA": 1.00, "COCA COLA ZERO": 1.00, "FANTA NARANJA": 1.00, "FANTA LIMÓN": 1.00, "SPRITE": 1.00, "ACUARIUS NARANJA": 1.00, "ACUARIUS LIMÓN": 1.00, "NESTEÁ LIMÓN": 1.00, "TÓNICA SCHWEPPES": 1.00, "TÓNICA SCHWEPPES ZERO": 1.00, "CASERA BLANCA 0,5L": 0.50, "AGUA": 0.50, "VIÑAS DEL VERO": 9.00, "BERONIA CRIANZA": 9.00, "BERONIA RESERVA": 16.00, "TIO PEPE 50cl.": 6.00, "MANZANILLA 50CL.": 6.00, "TINTO BÁSICO 70cl.": 2.00, "CROFT TWIST": 6.00, "DESCORCHE VINO": 2.00, "BARCELÓ": 2.00, "WHITE LABEL": 2.00, "RIVES": 2.00, "PINK RIVES": 2.00, "RIVES EXÓTICA": 2.00, "DESCORCHE COPA": 3.00, "ATÚN ENCEBOLLADO": 8.00, "ATÚN FRITADA": 8.00, "PATATAS FRITAS": 0.60 };
 const CATEGORIAS = { "CERVEZAS": ["MAHOU 25cl.", "ALHAMBRA 33cl.", "BUDWEISSER 33cl.", "MAHOU SIN 25cl."], "REFRESCOS": ["COCA COLA", "COCA COLA ZERO", "FANTA NARANJA", "FANTA LIMÓN", "SPRITE", "ACUARIUS NARANJA", "ACUARIUS LIMÓN", "NESTEÁ LIMÓN", "TÓNICA SCHWEPPES", "TÓNICA SCHWEPPES ZERO", "CASERA BLANCA 0,5L", "AGUA"], "VINOS": ["VIÑAS DEL VERO", "BERONIA CRIANZA", "BERONIA RESERVA", "TIO PEPE 50cl.", "MANZANILLA 50CL.", "TINTO BÁSICO 70cl.", "CROFT TWIST", "DESCORCHE VINO"], "ESPIRITUOSOS": ["BARCELÓ", "WHITE LABEL", "RIVES", "PINK RIVES", "RIVES EXÓTICA", "DESCORCHE COPA"], "OTROS": ["ATÚN ENCEBOLLADO", "ATÚN FRITADA", "PATATAS FRITAS"] };
 const STOCK_IDEAL = { "MAHOU 25cl.": 180, "ALHAMBRA 33cl.": 12, "BUDWEISSER 33cl.": 12, "MAHOU SIN 25cl.": 60, "COCA COLA": 60, "COCA COLA ZERO": 60, "FANTA NARANJA": 60, "FANTA LIMÓN": 60, "SPRITE": 60, "ACUARIUS NARANJA": 60, "ACUARIUS LIMÓN": 60, "NESTEÁ LIMÓN": 60, "TÓNICA SCHWEPPES": 60, "TÓNICA SCHWEPPES ZERO": 60, "CASERA BLANCA 0,5L": 60, "AGUA": 60, "VIÑAS DEL VERO": 6, "BERONIA CRIANZA": 6, "BERONIA RESERVA": 6, "TIO PEPE 50cl.": 6, "MANZANILLA 50CL.": 6, "TINTO BÁSICO 70cl.": 6, "CROFT TWIST": 6, "BARCELÓ": 3000, "WHITE LABEL": 3000, "RIVES": 3000, "PINK RIVES": 3000, "RIVES EXÓTICA": 3000, "ATÚN ENCEBOLLADO": 8, "ATÚN FRITADA": 8, "PATATAS FRITAS": 20 };
@@ -122,50 +139,124 @@ const STOCK_IDEAL = { "MAHOU 25cl.": 180, "ALHAMBRA 33cl.": 12, "BUDWEISSER 33cl
 let stockActual = JSON.parse(localStorage.getItem('v29_stock')) || {...STOCK_IDEAL};
 let tickets = JSON.parse(localStorage.getItem('v29_tickets')) || {};
 let socioActivo = ""; let carrito = []; let historial = []; let catActiva = "CERVEZAS";
-let prodTemp = null; let inputVal = ""; let listInv = []; let modoRepoActivo = false;
-let editingInvIdx = -1; let currentTexto = ""; let currentEditType = ""; let cantTemp = 1; let flgNuevoInv = false;
+let prodTemp = null; let inputVal = "";
+let listInv = []; let modoRepoActivo = false;
+let editingInvIdx = -1; let currentTexto = "";
+let currentEditType = "";
+let comensalSel = "";
+let cantTemp = 1;
+let flgNuevoInv = false;
 
-// --- FUNCIONES CORE ---
+function getImg(n) { return `img/${n.replace(/ /g, '_').toUpperCase()}.jpg`; }
+
 function renderSocios() {
-    document.getElementById('pantalla-socios').innerHTML = ["FRAN", "SANTI", "SANTOS", "JESÚS", "MANU", "JR", "MIGUEL", "NUÑEZ", "SILVA", "LUIS", "ROSADO"].map(s => {
-        const d = tickets[s] || [];
-        const c = d.filter(i => i.n && !i.esComida).reduce((acc, i) => acc + i.cant, 0);
-        return `<div class="btn-socio ${c>0?'activo':''}" onclick="abrirTPV('${s}')">${s} ${c>0?`<span>(${c})</span>`:''}</div>`;
-    }).join('') + '<div class="nav-reponedor" onclick="abrirReposicion()">🛠️ REPONEDOR</div>';
+    modoRepoActivo = false;
+    const cont = document.getElementById('pantalla-socios');
+    cont.innerHTML = '';
+    ["FRAN", "SANTI", "SANTOS", "JESÚS", "MANU", "JR", "MIGUEL", "NUÑEZ", "SILVA", "LUIS", "ROSADO"].forEach(s => {
+        const data = tickets[s] || [];
+        const cant = data.filter(i => i.n && !i.esComida).reduce((acc, i) => acc + i.cant, 0);
+        const claseActivo = cant > 0 ? "activo" : "";
+        cont.innerHTML += `<div class="btn-socio ${claseActivo}" onclick="abrirTPV('${s}')">${s} ${cant > 0 ? `<span style="position:absolute; top:-8px; right:-8px; background:var(--danger); color:white; border-radius:50%; width:30px; height:30px; display:flex; align-items:center; justify-content:center; border:2px solid white; font-size:14px;">${cant}</span>` : ''}</div>`;
+    });
+    cont.innerHTML += '<div class="nav-reponedor" onclick="abrirReposicion()">🛠️ REPONEDOR</div>';
 }
 
-function abrirTPV(n) { 
-    socioActivo = n; 
-    let d = tickets[n] || []; 
-    carrito = d.filter(i => i.n && !i.esHistorial); 
-    historial = d.filter(i => i.esHistorial); 
-    let cG = d.find(i => i.esComida); 
-    listInv = cG ? cG.datos : []; 
-    document.getElementById('pantalla-socios').style.display = 'none'; 
-    document.getElementById('interfaz-tpv').style.display = 'grid'; 
-    document.getElementById('nombre-socio').innerText = n; 
-    renderTabs(); renderProds(); actualizarTicket(); 
+function abrirTPV(n) { socioActivo = n; let data = tickets[n] || []; carrito = data.filter(i => i.n && !i.esHistorial); historial = data.filter(i => i.esHistorial); let comidaG = data.find(i => i.esComida); listInv = comidaG ? comidaG.datos : []; comensalSel = ""; document.getElementById('pantalla-socios').style.display = 'none'; document.getElementById('interfaz-tpv').style.display = 'grid'; document.getElementById('nombre-socio').innerText = n; renderTabs(); renderProds(); actualizarTicket(); }
+function renderTabs() { const cont = document.getElementById('tab-container'); cont.innerHTML = Object.keys(CATEGORIAS).map(c => `<button style="padding:12px; flex:1; border:none; border-radius:10px; font-weight:bold; font-size:0.85em; background:${c===catActiva?'var(--accent)':'#cbd5e0'}; color:${c===catActiva?'white':'black'}" onclick="catActiva='${c}'; renderTabs(); renderProds()">${c}</button>`).join(''); }
+function renderProds() { document.getElementById('grid-prods').innerHTML = CATEGORIAS[catActiva].map(n => { const esE = (catActiva === "ESPIRITUOSOS"); const stockTxt = esE ? (stockActual[n]/700).toFixed(1)+' Bot.' : stockActual[n]+' uds'; return `<div class="card" onclick="abrirTecladoProd('${n}')"><img src="${getImg(n)}" onerror="this.style.opacity='0.1'"><b>${n}</b><span style="color:var(--success); font-weight:bold; font-size:1em;">${PRECIOS[n].toFixed(2)}€</span><small style="color:#666; font-size:0.7em;">Stk: ${stockTxt}</small></div>`; }).join(''); }
+
+function verTiquetDetallado() {
+    const cont = document.getElementById('cont-tiquet-papel');
+    const totalBarHist = historial.reduce((acc, i) => acc + (i.p * i.cant), 0);
+    const totalExterno = listInv.reduce((acc, i) => acc + i.g, 0);
+    const canonTotal = listInv.reduce((acc, i) => acc + (i.a * 1), 0);
+    const baseRepartoHistorial = totalBarHist + totalExterno;
+    const totalCoef = listInv.reduce((acc, i) => acc + (i.a * 1) + (i.k * 0.5), 0);
+    const precioU = totalCoef > 0 ? baseRepartoHistorial / totalCoef : 0;
+    const hoy = new Date().toLocaleDateString();
+    const hayHistorial = historial.length > 0;
+
+    let h = `<div style="text-align:center; font-weight:bold; border-bottom:2px solid #000; margin-bottom:10px;">TIQUE SHOKO - ${socioActivo} - ${hoy}</div>`;
+    
+    if (!hayHistorial) {
+        h += `<b>--- CONSUMO PRODUCTOS SHOKO (PRIMERA CUENTA) ---</b><br>`;
+        carrito.forEach(i => h += `<div class="tiquet-linea"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}</span></div>`);
+    } else {
+        h += `<b>--- CONSUMO PRODUCTOS SHOKO (PRIMERA CUENTA) ---</b><br>`;
+        historial.forEach(i => {
+            if(i.p > 0) h += `<div class="tiquet-linea"><span style="color:#555;">${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}</span></div>`;
+        });
+        if (carrito.length > 0) {
+            h += `<br><b>--- CONSUMO PRODUCTOS SHOKO (SEGUNDA CUENTA) ---</b><br>`;
+            carrito.forEach(i => h += `<div class="tiquet-linea"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}</span></div>`);
+        }
+    }
+
+    h += `<br><b>--- COSTES FIJOS ---</b><br>`;
+    h += `<div class="tiquet-linea"><span>Cuota mayores de 13 años</span><span>${canonTotal.toFixed(2)}</span></div>`;
+    h += `<br><b>--- GASTOS COMIDA ---</b><br>`;
+    h += `<div class="tiquet-linea"><span>Total gastos en ingredientes</span><span>${totalExterno.toFixed(2)}</span></div>`;
+    
+    const totalCuentaSocio = carrito.reduce((acc, i)=>acc+(i.p*i.cant),0) + totalBarHist + canonTotal;
+    h += `<br><div class="tiquet-linea" style="font-weight:bold; font-size:1.2em;"><span>TOTAL TIQUE SHOKO</span><span>${totalCuentaSocio.toFixed(2)}€</span></div><br>`;
+    
+    h += `<b>--- DESGLOSE REPARTO ---</b><br>`;
+    listInv.forEach(inv => {
+        const nombreLimpio = inv.n || socioActivo;
+        const puntos = (inv.a * 1) + (inv.k * 0.5);
+        const parteHistorial = (puntos * precioU) + (inv.a * 1);
+        const consumoIndividualActual = carrito.filter(item => item.n.includes(`(${nombreLimpio})`)).reduce((acc, item) => acc + (item.p * item.cant), 0);
+        const totalDebe = parteHistorial + consumoIndividualActual;
+        const bal = totalDebe - inv.g;
+        let leyendaEstado = "";
+        if (nombreLimpio === socioActivo) {
+            leyendaEstado = `PAGAR A SHOKO: ${totalCuentaSocio.toFixed(2)}€`;
+        } else {
+            if (bal > 0) leyendaEstado = `PAGAR A ${socioActivo}: ${bal.toFixed(2)}€`;
+            else leyendaEstado = `RECIBIR DE ${socioActivo}: ${Math.abs(bal).toFixed(2)}€`;
+        }
+        h += `<div style="border-bottom:1px solid #eee; margin-bottom:5px; padding-bottom:2px;">
+                <div class="tiquet-linea"><b>${nombreLimpio}</b> <span>${totalDebe.toFixed(2)}€</span></div>
+                <div style="font-size:0.7em; color:#666; display:flex; justify-content:space-between;">
+                    <span>1ª cta: ${parteHistorial.toFixed(2)} + 2ª cta: ${consumoIndividualActual.toFixed(2)}</span>
+                    <span style="color:${(nombreLimpio === socioActivo || bal > 0) ? 'red' : 'green'}; font-weight:bold;">${leyendaEstado}</span>
+                </div>
+              </div>`;
+    });
+    cont.innerHTML = h;
+    document.getElementById('modal-tiquet-final').style.display = 'flex';
 }
 
-function renderTabs() { 
-    document.getElementById('tab-container').innerHTML = Object.keys(CATEGORIAS).map(c => `<button style="background:${c===catActiva?'var(--accent)':'#ccc'}; flex:1; padding:10px; border:none;" onclick="catActiva='${c}'; renderTabs(); renderProds()">${c}</button>`).join(''); 
+function abrirModalReparto() { if (listInv.length === 0) listInv = [{n: socioActivo, a: 1, k: 0, g: 0}]; renderInv(); document.getElementById('modal-reparto').style.display = 'flex'; }
+function addInv() { if(historial.length > 0) return; listInv.push({n: "", a: 0, k: 0, g: 0}); renderInv(); }
+function renderInv() { const cont = document.getElementById('invitados-cont'); const bloq = historial.length > 0; cont.innerHTML = `<div style="display:grid; grid-template-columns: 1fr 60px 60px 80px 40px; gap:8px; font-weight:bold; font-size:0.8em; margin-bottom:8px; color:#555;"><span>Nombre</span><span>>13</span><span><13</span><span>Gasto</span><span></span></div>`; listInv.forEach((inv, i) => { cont.innerHTML += `<div class="fila-inv"><div onclick="${bloq ? '' : `abrirTecladoTexto(${i})`}" style="text-align:left; overflow:hidden; opacity:${bloq?0.6:1}">${inv.n || '...'}</div><div onclick="${bloq ? '' : `abrirTecladoNumComida(${i}, 'adulto')`}" style="opacity:${bloq?0.6:1}">${inv.a}</div><div onclick="${bloq ? '' : `abrirTecladoNumComida(${i}, 'nino')`}" style="opacity:${bloq?0.6:1}">${inv.k}</div><div onclick="${bloq ? '' : `abrirTecladoNumComida(${i}, 'gasto')`}" style="opacity:${bloq?0.6:1}">${inv.g.toFixed(2)}€</div><button onclick="${bloq ? '' : `listInv.splice(${i},1); renderInv(); guardarTicketParcial();`}" style="color:red; border:none; background:none; font-size:1.8em; display:${bloq?'none':'block'}">×</button></div>`; }); }
+function cierreParcial() { if(carrito.length === 0 && historial.length === 0) { if(listInv.length > 0) historial.push({n: "SESIÓN ACTIVA", cant: 0, p: 0, esHistorial: true}); else return; } carrito.forEach(i => { const exH = historial.find(h => h.n === i.n); if(exH) exH.cant += i.cant; else historial.push({...i, esHistorial: true}); }); carrito = []; guardarTicketParcial(); actualizarTicket(); }
+function guardarTicketParcial() { let d = [...carrito, ...historial]; if(listInv.length > 0) d.push({ esComida: true, datos: listInv }); tickets[socioActivo] = d; localStorage.setItem('v29_tickets', JSON.stringify(tickets)); actualizarTicket(); }
+
+function actualizarTicket() { 
+    let tS = 0; 
+    let html = ""; 
+    carrito.forEach(i => { 
+        tS += i.p * i.cant; 
+        html += `<div class="item-tiquet" onclick="abrirEdicionTicket('${i.n}')"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}€</span></div>`; 
+    }); 
+    historial.forEach(i => { 
+        if(i.p > 0) { 
+            tS += i.p * i.cant; 
+            html += `<div class="item-tiquet item-historial"><span>(Hist) ${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}€</span></div>`; 
+        } 
+    }); 
+    const canonTotal = listInv.reduce((acc, i) => acc + (i.a * 1), 0); 
+    if(canonTotal > 0) html += `<div class="item-tiquet" style="border:1px dashed #fff;"><span>Canon Comida (${canonTotal})</span><span>${canonTotal.toFixed(2)}€</span></div>`; 
+    document.getElementById('ticket-lista').innerHTML = html; 
+    document.getElementById('total-txt').innerText = (tS + canonTotal).toFixed(2) + "€"; 
+
+    const btnCierre = document.getElementById('btn-cierre-parcial');
+    btnCierre.disabled = (historial.length > 0);
 }
 
-function renderProds() { 
-    document.getElementById('grid-prods').innerHTML = CATEGORIAS[catActiva].map(n => `<div class="card" onclick="abrirTecladoProd('${n}')"><b>${n}</b><br>${PRECIOS[n].toFixed(2)}€</div>`).join(''); 
-}
-
-function actualizarTicket() {
-    let t = 0; let h = "";
-    carrito.forEach(i => { t += i.p * i.cant; h += `<div class="item-tiquet" onclick="abrirEdicionTicket('${i.n}')"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}€</span></div>`; });
-    historial.forEach(i => { if(i.p > 0) { t += i.p * i.cant; h += `<div class="item-tiquet item-historial"><span>(H) ${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}€</span></div>`; } });
-    const canon = listInv.reduce((acc, i) => acc + (i.a * 1), 0);
-    document.getElementById('ticket-lista').innerHTML = h + (canon > 0 ? `<div>Canon: ${canon}€</div>` : "");
-    document.getElementById('total-txt').innerText = (t + canon).toFixed(2) + "€";
-}
-
-// --- LÓGICA DE CORREO Y CIERRE ---
-
+// 4. FUNCIÓN DE ENVÍO DE CORREO REINCORPORADA
 function enviarCorreo(htmlTiquet) {
     const emailDestino = EMAILS_SOCIOS[socioActivo] || "mguardiz@gmail.com";
     const params = {
@@ -174,79 +265,140 @@ function enviarCorreo(htmlTiquet) {
         message_html: htmlTiquet,
         subject: `TIQUE SHOKO - ${socioActivo}`
     };
-
-    console.log("Enviando...", params);
-
-    emailjs.send(SERVICE_ID, TEMPLATE_ID, params)
-        .then(() => {
-            alert("✅ CORREO ENVIADO con éxito a " + emailDestino);
-        })
-        .catch((err) => {
-            alert("❌ ERROR AL ENVIAR: " + JSON.stringify(err));
-        });
+    emailjs.send("service_zchbl2f", "template_qqn30c5", params)
+        .then(() => alert(`✅ Correo enviado con éxito a ${emailDestino}`))
+        .catch((error) => console.error("Error al enviar:", error));
 }
 
-function cerrarVenta() {
-    if(!confirm("¿Confirmar pago y enviar tiquet?")) return;
+function cerrarVenta() { 
+    if(!confirm("¿CERRAR TICKET TOTAL?")) return; 
+    verTiquetDetallado(); 
+    const contenidoTiquet = document.getElementById('cont-tiquet-papel').innerHTML;
     
-    // Deshabilitar botón para evitar doble clic
-    document.getElementById('btn-final-enviar').disabled = true;
-    document.getElementById('btn-final-enviar').innerText = "ENVIANDO...";
+    // Ejecutar envío
+    enviarCorreo(contenidoTiquet);
 
-    verTiquetDetallado();
-    const contenido = document.getElementById('cont-tiquet-papel').innerHTML;
-    
-    enviarCorreo(contenido);
-
-    // Limpieza de datos
     [...carrito, ...historial].forEach(i => { 
-        if(i.n && i.p > 0) {
-            const base = i.n.split(" (")[0];
-            stockActual[base] -= (CATEGORIAS["ESPIRITUOSOS"].includes(base) ? i.cant*30 : i.cant);
-        }
-    });
-    localStorage.setItem('v29_stock', JSON.stringify(stockActual));
-    delete tickets[socioActivo];
-    localStorage.setItem('v29_tickets', JSON.stringify(tickets));
-    
-    setTimeout(() => location.reload(), 3000);
+        if(i.n && !i.n.includes("DESCORCHE") && i.p > 0) { 
+            const base = i.n.split(" (")[0]; 
+            stockActual[base] -= (CATEGORIAS["ESPIRITUOSOS"].includes(base) ? i.cant*ML_COPA : i.cant); 
+        } 
+    }); 
+    localStorage.setItem('v29_stock', JSON.stringify(stockActual)); 
+    delete tickets[socioActivo]; 
+    localStorage.setItem('v29_tickets', JSON.stringify(tickets)); 
+    setTimeout(() => location.reload(), 2000); 
 }
 
-// --- FUNCIONES AUXILIARES (MODALES, ETC) ---
-function verTiquetDetallado() {
-    const cont = document.getElementById('cont-tiquet-papel');
-    let h = `<h3>TIQUE SHOKO - ${socioActivo}</h3>`;
-    carrito.forEach(i => h += `<div class="tiquet-linea"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}</span></div>`);
-    cont.innerHTML = h;
-    document.getElementById('modal-tiquet-final').style.display = 'flex';
-}
+function abrirReposicion() { modoRepoActivo = true; document.getElementById('pantalla-socios').style.display = 'none'; document.getElementById('pantalla-reposicion').style.display = 'flex'; mostrarMenuCats(); }
+function mostrarMenuCats() { document.getElementById('repo-menu-cats').style.display = 'grid'; document.getElementById('repo-menu-items').style.display = 'none'; document.getElementById('repo-menu-cats').innerHTML = Object.keys(CATEGORIAS).map(cat => `<button style="background:var(--primary); color:white; padding:30px 10px; border-radius:15px; border:none; font-size:1.4em; font-weight:bold;" onclick="mostrarProductosRepo('${cat}')">${cat}</button>`).join(''); }
+function mostrarProductosRepo(cat) { catActiva = cat; document.getElementById('repo-menu-cats').style.display = 'none'; document.getElementById('repo-menu-items').style.display = 'block'; const cont = document.getElementById('repo-grid-productos'); cont.innerHTML = CATEGORIAS[cat].filter(n => STOCK_IDEAL[n]).map(n => { const esE = (cat === "ESPIRITUOSOS"); return `<div class="card" onclick="abrirEdicionRepo('${n}')"><img src="${getImg(n)}" onerror="this.style.opacity='0.1'"><b>${n}</b><div style="font-weight:bold; color:var(--primary); font-size:0.8em;">${esE ? (stockActual[n]/700).toFixed(1)+' Bot.' : stockActual[n]+' uds'}</div></div>`; }).join(''); }
+function abrirEdicionRepo(n) { prodTemp = n; inputVal = ""; document.getElementById('edit-nombre').innerText = n; document.getElementById('txt-actual').innerText = "Stock: " + stockActual[n]; document.getElementById('edit-input-display').innerText = "0"; document.getElementById('btn-eliminar-fila').style.display = 'none'; document.getElementById('modal-edit').style.display = 'flex'; }
+function abrirTecladoNumComida(idx, tipo) { editingInvIdx = idx; currentEditType = tipo; inputVal = ""; const titulos = { 'adulto': 'Adultos', 'nino': 'Niños', 'gasto': 'Gasto €' }; document.getElementById('titulo-prod-modal').innerText = titulos[tipo]; document.getElementById('input-cantidad').innerText = "0"; document.getElementById('modal-cantidad').style.display = 'flex'; }
+function abrirTecladoTexto(idx) { editingInvIdx = idx; currentTexto = listInv[idx].n; document.getElementById('display-texto').innerText = currentTexto; document.getElementById('modal-teclado-texto').style.display = 'flex'; renderTecladoTexto(); }
+function renderTecladoTexto() { const cont = document.getElementById('grid-teclado-texto'); const teclas = "1234567890QWERTYUIOPASDFGHJKLÑZXCVBNM ".split(""); cont.innerHTML = teclas.map(l => `<button class="tecla-t" onclick="addLetra('${l}')">${l===' '?'_':l}</button>`).join(''); cont.innerHTML += `<button class="tecla-t" style="background:var(--warning);" onclick="addLetra('BACK')">DEL</button>`; }
+function addLetra(l) { if(l === 'BACK') currentTexto = currentTexto.slice(0, -1); else if(currentTexto.length < 15) currentTexto += l; document.getElementById('display-texto').innerText = currentTexto; }
+function confirmarTexto() { listInv[editingInvIdx].n = currentTexto; document.getElementById('modal-teclado-texto').style.display = 'none'; if (flgNuevoInv) { flgNuevoInv = false; finalizarApunte(currentTexto); } else { renderInv(); } }
+function resetearComida() { if(confirm("¿Borrar comida?")) { listInv = []; guardarTicketParcial(); cerrarTPVCompletamente(); } }
 function abrirTecladoProd(n) { prodTemp = n; currentEditType = 'prod'; inputVal = ""; document.getElementById('titulo-prod-modal').innerText = n; document.getElementById('input-cantidad').innerText = "1"; document.getElementById('modal-cantidad').style.display = 'flex'; }
-function presionarNum(v) { inputVal += v; document.getElementById('input-cantidad').innerText = inputVal; }
-function confirmar() {
-    const val = parseFloat(inputVal) || 1;
-    carrito.push({n: prodTemp, cant: val, p: PRECIOS[prodTemp]});
-    document.getElementById('modal-cantidad').style.display = 'none';
+function presionarNum(v) { if(v === '.' && inputVal.includes('.')) return; inputVal += v; document.getElementById('input-cantidad').innerText = inputVal || "0"; }
+
+function confirmar() { 
+    const valStr = document.getElementById('input-cantidad').innerText; 
+    const valorNum = parseFloat(valStr) || 0; 
+    if (currentEditType === 'prod') { 
+        cantTemp = parseFloat(valStr) || 1;
+        document.getElementById('modal-cantidad').style.display = 'none';
+        if (listInv.length > 0) abrirSelectorComensal();
+        else finalizarApunte(""); 
+    } else if (currentEditType === 'adulto') { 
+        listInv[editingInvIdx].a = parseInt(valorNum) || 0; renderInv(); document.getElementById('modal-cantidad').style.display = 'none';
+    } else if (currentEditType === 'nino') { 
+        listInv[editingInvIdx].k = valorNum || 0; renderInv(); document.getElementById('modal-cantidad').style.display = 'none';
+    } else if (currentEditType === 'gasto') { 
+        listInv[editingInvIdx].g = valorNum || 0; renderInv(); document.getElementById('modal-cantidad').style.display = 'none';
+    } 
+    guardarTicketParcial(); 
+}
+
+function abrirSelectorComensal() {
+    const cont = document.getElementById('grid-comensales-modal');
+    cont.innerHTML = "";
+    listInv.forEach(inv => {
+        const nombre = inv.n || socioActivo;
+        cont.innerHTML += `<button class="btn-comensal-modal" onclick="finalizarApunte('${nombre}')">${nombre}</button>`;
+    });
+    cont.innerHTML += `<button class="btn-comensal-modal" style="background:#f8fafc; border-style:dashed; color:var(--accent);" onclick="abrirNuevoInvitadoDirecto()">+ NUEVO INVITADO</button>`;
+    document.getElementById('modal-asignar-comensal').style.display = 'flex';
+}
+
+function abrirNuevoInvitadoDirecto() {
+    document.getElementById('modal-asignar-comensal').style.display = 'none';
+    flgNuevoInv = true;
+    listInv.push({n: "", a: 0, k: 0, g: 0});
+    abrirTecladoTexto(listInv.length - 1);
+}
+
+function finalizarApunte(com) {
+    const nFinal = com ? `${prodTemp} (${com})` : prodTemp;
+    const ex = carrito.find(i => i.n === nFinal);
+    if(ex) ex.cant += cantTemp; 
+    else carrito.push({n: nFinal, cant: cantTemp, p: PRECIOS[prodTemp], esLicor: CATEGORIAS["ESPIRITUOSOS"].includes(prodTemp)});
+    document.getElementById('modal-asignar-comensal').style.display = 'none';
     guardarTicketParcial();
 }
-function cierreParcial() { 
-    carrito.forEach(i => { historial.push({...i, esHistorial: true}); }); 
-    carrito = []; guardarTicketParcial(); 
-}
-function guardarTicketParcial() { 
-    tickets[socioActivo] = [...carrito, ...historial]; 
-    if(listInv.length > 0) tickets[socioActivo].push({esComida: true, datos: listInv});
-    localStorage.setItem('v29_tickets', JSON.stringify(tickets)); 
-    actualizarTicket(); 
-}
-function abrirModalReparto() { listInv = [{n: socioActivo, a: 1, k: 0, g: 0}]; guardarTicketParcial(); alert("Comida activada"); }
 
-// Inicialización de teclados
-function crearTeclado(id, func) {
-    const cont = document.getElementById(id);
-    for(let i=1; i<=9; i++) cont.innerHTML += `<button class="tecla" onclick="${func}('${i}')">${i}</button>`;
-    cont.innerHTML += `<button class="tecla" onclick="confirmar()" style="background:green;color:white;grid-column:span 3">ACEPTAR</button>`;
+function abrirEdicionTicket(n) { prodTemp = n; inputVal = ""; const item = carrito.find(i => i.n === n); document.getElementById('edit-nombre').innerText = n; document.getElementById('txt-actual').innerText = "Cant: " + item.cant; document.getElementById('edit-input-display').innerText = "0"; document.getElementById('btn-eliminar-fila').style.display = 'block'; document.getElementById('modal-edit').style.display = 'flex'; }
+function presionarNumEdit(v) { if(v === '.' && inputVal.includes('.')) return; inputVal += v; document.getElementById('edit-input-display').innerText = inputVal; }
+
+function aplicarEdicion(signo) { 
+    const val = parseFloat(inputVal) || 0; 
+    if (modoRepoActivo) { 
+        const esE = CATEGORIAS["ESPIRITUOSOS"].includes(prodTemp); 
+        stockActual[prodTemp] += ((esE ? val * 700 : val) * signo); 
+        localStorage.setItem('v29_stock', JSON.stringify(stockActual)); 
+        mostrarProductosRepo(catActiva); 
+    } else { 
+        const item = carrito.find(i => i.n === prodTemp); 
+        if (item) { 
+            item.cant += (val * signo); 
+            if (item.cant <= 0) carrito = carrito.filter(i => i.n !== prodTemp); 
+        } 
+    } 
+    guardarTicketParcial(); 
+    document.getElementById('modal-edit').style.display = 'none'; 
 }
+
+function eliminarFilaEdicion() { carrito = carrito.filter(i => i.n !== prodTemp); guardarTicketParcial(); document.getElementById('modal-edit').style.display = 'none'; }
+
+function generarListaCompra() { 
+    let h = ""; 
+    Object.keys(STOCK_IDEAL).forEach(n => { 
+        const f = STOCK_IDEAL[n] - stockActual[n]; 
+        if(f > 0) {
+            const esE = CATEGORIAS["ESPIRITUOSOS"].includes(n);
+            const cantidadTxt = esE ? (f/700).toFixed(1) + ' Bot.' : f + ' uds';
+            h += `<div style="padding:10px; border-bottom:1px solid #eee; display:flex; justify-content:space-between;"><span>${n}</span><b style="color:var(--danger);">${cantidadTxt}</b></div>`; 
+        }
+    }); 
+    document.getElementById('cuerpo-compra').innerHTML = h || "<p style='text-align:center;'>✅ Stock completo</p>"; 
+    document.getElementById('modal-compra').style.display = 'flex'; 
+}
+
+function cerrarTPVCompletamente() { document.getElementById('modal-reparto').style.display = 'none'; }
+
+function crearTeclado(id, func) { 
+    const cont = document.getElementById(id); 
+    cont.innerHTML = ""; 
+    for(let i=1; i<=9; i++) cont.innerHTML += `<button class="tecla" onclick="${func}('${i}')">${i}</button>`; 
+    cont.innerHTML += `<button class="tecla" onclick="${func}('.')">.</button>`; 
+    cont.innerHTML += `<button class="tecla" onclick="${func}('0')">0</button>`; 
+    cont.innerHTML += `<button class="tecla" style="background:#ccc;" onclick="inputVal=''; document.getElementById('${id==='teclado-nums'?'input-cantidad':'edit-input-display'}').innerText='0'">C</button>`; 
+    if (id === 'teclado-nums') cont.innerHTML += `<button class="tecla" style="background:var(--success);color:white; grid-column: span 3; padding: 25px;" onclick="confirmar()">ACEPTAR</button>`; 
+}
+
 crearTeclado('teclado-nums', 'presionarNum');
+crearTeclado('teclado-edit', 'presionarNumEdit');
 renderSocios();
 </script>
 </body>
