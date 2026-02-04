@@ -246,7 +246,7 @@ function cerrarVenta() {
     // GENERACIÓN DE HTML FIEL AL DESGLOSE DE PANTALLA
     let h = `<div style="font-family: Arial, sans-serif; color: #333; max-width: 450px; border: 1px solid #ddd; padding: 20px; border-radius: 10px;">`;
     
-    h += `<div style="text-align:center; font-weight:bold; border-bottom:2px solid #000; margin-bottom:15px; padding-bottom:10px; font-size:18px;">TIQUE SHOKO</div>`;
+    h += `<div style="text-align:center; font-weight:bold; border-bottom:2px solid #000; margin-bottom:14px; padding-bottom:10px; font-size:18px;">TIQUE SHOKO</div>`;
     h += `<div style="text-align:center; margin-bottom:20px;">Socio: <b>${socioActivo}</b> | Fecha: ${hoy}</div>`;
 
     // CONSUMO PRIMERA CUENTA (Historial)
@@ -261,7 +261,7 @@ function cerrarVenta() {
     if (carrito.length > 0) {
         h += `<br><div style="background:#f9f9f9; padding:5px; font-weight:bold; border-bottom:1px solid #ccc; margin-bottom:8px;">CONSUMO PRODUCTOS SHOKO (SEGUNDA CUENTA)</div>`;
         carrito.forEach(i => {
-            h += `<div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}€</span></div>`;
+            h += `<div style="display:flex; justify-content:space-between; margin-bottom:4px;"><span>${i.cant}x ${i.n}: </span><span>${(i.p*i.cant).toFixed(2)}€</span></div>`;
         });
     }
 
@@ -274,7 +274,7 @@ function cerrarVenta() {
     h += `<div style="display:flex; justify-content:space-between;"><span>Total gastos ingredientes</span><span>${totalExterno.toFixed(2)}€</span></div>`;
 
     // TOTAL TIQUET
-    h += `<br><div style="display:flex; justify-content:space-between; font-weight:bold; font-size:12px; border-top:2px solid #000; padding-top:10px; margin-top:10px;"><span>TOTAL TIQUE SHOKO:  ttt</span><span>${totalCuentaSocio.toFixed(2)}€</span></div>`;
+    h += `<br><div style="display:flex; justify-content:space-between; font-weight:bold; font-size:14px; border-top:2px solid #000; padding-top:10px; margin-top:10px;"><span>TOTAL TIQUE SHOKO: </span><span>${totalCuentaSocio.toFixed(2)}€</span></div>`;
 
     // DESGLOSE REPARTO
     if(listInv.length > 0) {
@@ -347,6 +347,7 @@ renderSocios();
 </script>
 </body>
 </html>
+
 
 
 
