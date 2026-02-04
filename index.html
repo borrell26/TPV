@@ -81,20 +81,16 @@
     <div class="sidebar">
         <h2 id="nombre-socio" style="margin:0; font-size:1.8em; text-align:center;">Socio</h2>
         <div class="lista" id="ticket-lista"></div>
-        
         <div class="total-container">
             <span class="tiquet-label">TIQUE SHOKO</span>
             <div class="total" id="total-txt">0.00€</div>
         </div>
-
         <div class="botonera-inferior">
             <div class="fila-botones">
                 <button class="btn-side" style="background:var(--accent);" onclick="abrirModalReparto()">🍽️ COMIDA</button>
                 <button class="btn-side" style="background:var(--warning); color:#000;" onclick="verTiquetDetallado()">👁️ VER TIQUE</button>
             </div>
-            
             <button id="btn-cierre-parcial" class="btn-side" style="background:var(--success);" onclick="cierreParcial()">📦 CIERRE PARCIAL</button>
-            
             <div class="fila-botones">
                 <button class="btn-side" style="background:#7f8c8d;" onclick="alert('Función limpieza seleccionada')">🧹 LIMPIEZA</button>
                 <button class="btn-side" style="background:#4a5568;" onclick="location.reload()">🔙 ATRÁS</button>
@@ -129,7 +125,6 @@
 <script>
 const ML_COPA = 30;
 const EMAILS_SOCIOS = { "MIGUEL": "mguardiz@gmail.com", "SANTI": "sbborrell@gmail.com" };
-
 const PRECIOS = { "MAHOU 25cl.": 0.90, "ALHAMBRA 33cl.": 1.50, "BUDWEISSER 33cl.": 1.50, "MAHOU SIN 25cl.": 0.90, "COCA COLA": 1.00, "COCA COLA ZERO": 1.00, "FANTA NARANJA": 1.00, "FANTA LIMÓN": 1.00, "SPRITE": 1.00, "ACUARIUS NARANJA": 1.00, "ACUARIUS LIMÓN": 1.00, "NESTEÁ LIMÓN": 1.00, "TÓNICA SCHWEPPES": 1.00, "TÓNICA SCHWEPPES ZERO": 1.00, "CASERA BLANCA 0,5L": 0.50, "AGUA": 0.50, "VIÑAS DEL VERO": 9.00, "BERONIA CRIANZA": 9.00, "BERONIA RESERVA": 16.00, "TIO PEPE 50cl.": 6.00, "MANZANILLA 50CL.": 6.00, "TINTO BÁSICO 70cl.": 2.00, "CROFT TWIST": 6.00, "DESCORCHE VINO": 2.00, "BARCELÓ": 2.00, "WHITE LABEL": 2.00, "RIVES": 2.00, "PINK RIVES": 2.00, "RIVES EXÓTICA": 2.00, "DESCORCHE COPA": 3.00, "ATÚN ENCEBOLLADO": 8.00, "ATÚN FRITADA": 8.00, "PATATAS FRITAS": 0.60 };
 const CATEGORIAS = { "CERVEZAS": ["MAHOU 25cl.", "ALHAMBRA 33cl.", "BUDWEISSER 33cl.", "MAHOU SIN 25cl."], "REFRESCOS": ["COCA COLA", "COCA COLA ZERO", "FANTA NARANJA", "FANTA LIMÓN", "SPRITE", "ACUARIUS NARANJA", "ACUARIUS LIMÓN", "NESTEÁ LIMÓN", "TÓNICA SCHWEPPES", "TÓNICA SCHWEPPES ZERO", "CASERA BLANCA 0,5L", "AGUA"], "VINOS": ["VIÑAS DEL VERO", "BERONIA CRIANZA", "BERONIA RESERVA", "TIO PEPE 50cl.", "MANZANILLA 50CL.", "TINTO BÁSICO 70cl.", "CROFT TWIST", "DESCORCHE VINO"], "ESPIRITUOSOS": ["BARCELÓ", "WHITE LABEL", "RIVES", "PINK RIVES", "RIVES EXÓTICA", "DESCORCHE COPA"], "OTROS": ["ATÚN ENCEBOLLADO", "ATÚN FRITADA", "PATATAS FRITAS"] };
 const STOCK_IDEAL = { "MAHOU 25cl.": 180, "ALHAMBRA 33cl.": 12, "BUDWEISSER 33cl.": 12, "MAHOU SIN 25cl.": 60, "COCA COLA": 60, "COCA COLA ZERO": 60, "FANTA NARANJA": 60, "FANTA LIMÓN": 60, "SPRITE": 60, "ACUARIUS NARANJA": 60, "ACUARIUS LIMÓN": 60, "NESTEÁ LIMÓN": 60, "TÓNICA SCHWEPPES": 60, "TÓNICA SCHWEPPES ZERO": 60, "CASERA BLANCA 0,5L": 60, "AGUA": 60, "VIÑAS DEL VERO": 6, "BERONIA CRIANZA": 6, "BERONIA RESERVA": 6, "TIO PEPE 50cl.": 6, "MANZANILLA 50CL.": 6, "TINTO BÁSICO 70cl.": 6, "CROFT TWIST": 6, "BARCELÓ": 3000, "WHITE LABEL": 3000, "RIVES": 3000, "PINK RIVES": 3000, "RIVES EXÓTICA": 3000, "ATÚN ENCEBOLLADO": 8, "ATÚN FRITADA": 8, "PATATAS FRITAS": 20 };
@@ -190,15 +185,10 @@ function verTiquetDetallado() {
             carrito.forEach(i => h += `<div class="tiquet-linea"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}</span></div>`);
         }
     }
-
-    h += `<br><b>--- COSTES FIJOS ---</b><br>`;
-    h += `<div class="tiquet-linea"><span>Cuota mayores de 13 años</span><span>${canonTotal.toFixed(2)}</span></div>`;
-    h += `<br><b>--- GASTOS COMIDA ---</b><br>`;
-    h += `<div class="tiquet-linea"><span>Total gastos en ingredientes</span><span>${totalExterno.toFixed(2)}</span></div>`;
-    
+    h += `<br><b>--- COSTES FIJOS ---</b><br><div class="tiquet-linea"><span>Cuota mayores de 13 años</span><span>${canonTotal.toFixed(2)}</span></div>`;
+    h += `<br><b>--- GASTOS COMIDA ---</b><br><div class="tiquet-linea"><span>Total gastos en ingredientes</span><span>${totalExterno.toFixed(2)}</span></div>`;
     const totalCuentaSocio = carrito.reduce((acc, i)=>acc+(i.p*i.cant),0) + totalBarHist + canonTotal;
     h += `<br><div class="tiquet-linea" style="font-weight:bold; font-size:1.2em;"><span>TOTAL TIQUE SHOKO</span><span>${totalCuentaSocio.toFixed(2)}€</span></div><br>`;
-    
     h += `<b>--- DESGLOSE REPARTO ---</b><br>`;
     listInv.forEach(inv => {
         const nombreLimpio = inv.n || socioActivo;
@@ -208,19 +198,10 @@ function verTiquetDetallado() {
         const totalDebe = parteHistorial + consumoIndividualActual;
         const bal = totalDebe - inv.g;
         let leyendaEstado = "";
-        if (nombreLimpio === socioActivo) {
-            leyendaEstado = `PAGAR A SHOKO: ${totalCuentaSocio.toFixed(2)}€`;
-        } else {
-            if (bal > 0) leyendaEstado = `PAGAR A ${socioActivo}: ${bal.toFixed(2)}€`;
-            else leyendaEstado = `RECIBIR DE ${socioActivo}: ${Math.abs(bal).toFixed(2)}€`;
-        }
-        h += `<div style="border-bottom:1px solid #eee; margin-bottom:5px; padding-bottom:2px;">
-                <div class="tiquet-linea"><b>${nombreLimpio}</b> <span>${totalDebe.toFixed(2)}€</span></div>
-                <div style="font-size:0.7em; color:#666; display:flex; justify-content:space-between;">
-                    <span>1ª cta: ${parteHistorial.toFixed(2)} + 2ª cta: ${consumoIndividualActual.toFixed(2)}</span>
-                    <span style="color:${(nombreLimpio === socioActivo || bal > 0) ? 'red' : 'green'}; font-weight:bold;">${leyendaEstado}</span>
-                </div>
-              </div>`;
+        if (nombreLimpio === socioActivo) leyendaEstado = `PAGAR A SHOKO: ${totalCuentaSocio.toFixed(2)}€`;
+        else if (bal > 0) leyendaEstado = `PAGAR A ${socioActivo}: ${bal.toFixed(2)}€`;
+        else leyendaEstado = `RECIBIR DE ${socioActivo}: ${Math.abs(bal).toFixed(2)}€`;
+        h += `<div style="border-bottom:1px solid #eee; margin-bottom:5px; padding-bottom:2px;"><div class="tiquet-linea"><b>${nombreLimpio}</b> <span>${totalDebe.toFixed(2)}€</span></div><div style="font-size:0.7em; color:#666; display:flex; justify-content:space-between;"><span>1ª: ${parteHistorial.toFixed(2)} + 2ª: ${consumoIndividualActual.toFixed(2)}</span><span style="color:${(nombreLimpio === socioActivo || bal > 0) ? 'red' : 'green'}; font-weight:bold;">${leyendaEstado}</span></div></div>`;
     });
     cont.innerHTML = h;
     document.getElementById('modal-tiquet-final').style.display = 'flex';
@@ -233,36 +214,19 @@ function cierreParcial() { if(carrito.length === 0 && historial.length === 0) { 
 function guardarTicketParcial() { let d = [...carrito, ...historial]; if(listInv.length > 0) d.push({ esComida: true, datos: listInv }); tickets[socioActivo] = d; localStorage.setItem('v29_tickets', JSON.stringify(tickets)); actualizarTicket(); }
 
 function actualizarTicket() { 
-    let tS = 0; 
-    let html = ""; 
-    carrito.forEach(i => { 
-        tS += i.p * i.cant; 
-        html += `<div class="item-tiquet" onclick="abrirEdicionTicket('${i.n}')"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}€</span></div>`; 
-    }); 
-    historial.forEach(i => { 
-        if(i.p > 0) { 
-            tS += i.p * i.cant; 
-            html += `<div class="item-tiquet item-historial"><span>(Hist) ${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}€</span></div>`; 
-        } 
-    }); 
+    let tS = 0; let html = ""; 
+    carrito.forEach(i => { tS += i.p * i.cant; html += `<div class="item-tiquet" onclick="abrirEdicionTicket('${i.n}')"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}€</span></div>`; }); 
+    historial.forEach(i => { if(i.p > 0) { tS += i.p * i.cant; html += `<div class="item-tiquet item-historial"><span>(Hist) ${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}€</span></div>`; } }); 
     const canonTotal = listInv.reduce((acc, i) => acc + (i.a * 1), 0); 
     if(canonTotal > 0) html += `<div class="item-tiquet" style="border:1px dashed #fff;"><span>Canon Comida (${canonTotal})</span><span>${canonTotal.toFixed(2)}€</span></div>`; 
     document.getElementById('ticket-lista').innerHTML = html; 
     document.getElementById('total-txt').innerText = (tS + canonTotal).toFixed(2) + "€"; 
-
-    const btnCierre = document.getElementById('btn-cierre-parcial');
-    btnCierre.disabled = (historial.length > 0);
+    document.getElementById('btn-cierre-parcial').disabled = (historial.length > 0);
 }
 
-// CAMBIO ESTRICTO: AHORA ENVÍA EXACTAMENTE EL DESGLOSE DE CUENTA COMPLETO
-function enviarCorreo(htmlTiquet) {
+function enviarCorreo(textoTiquet) {
     const emailDestino = EMAILS_SOCIOS[socioActivo] || "mguardiz@gmail.com";
-    const params = {
-        to_email: emailDestino,
-        to_name: socioActivo,
-        message_html: htmlTiquet, // Este HTML ahora contiene el desglose visual exacto
-        subject: `TIQUE SHOKO - ${socioActivo}`
-    };
+    const params = { to_email: emailDestino, to_name: socioActivo, message_html: textoTiquet, subject: `TIQUE SHOKO - ${socioActivo}` };
     emailjs.send("service_zchbl2f", "template_qqn30c5", params)
         .then(() => alert(`✅ Correo enviado con éxito a ${emailDestino}`))
         .catch((error) => console.error("Error al enviar:", error));
@@ -271,56 +235,77 @@ function enviarCorreo(htmlTiquet) {
 function cerrarVenta() { 
     if(!confirm("¿CERRAR TICKET TOTAL?")) return; 
     
-    // GENERACIÓN DE TEXTO PLANO LIMPIO PARA EL CUERPO DEL MENSAJE
-    let t = `Aquí tienes el desglose de tu tiquet en Shoko correspondiente a la sesión de hoy:\n\n`;
-    t += `DETALLES DEL CONSUMO: Tiquet de ${socioActivo}\n`;
+    const hoy = new Date().toLocaleDateString();
     
-    // 1. Productos (Historial + Carrito)
+    // GENERACIÓN DE HTML FORMATEADO PARA EL EMAIL
+    let html = `
+    <div style="font-family: 'Courier New', monospace; max-width: 400px; background: #fff; padding: 20px; border: 1px solid #eee; color: #000;">
+        <div style="text-align:center; font-weight:bold; border-bottom:2px solid #000; margin-bottom:10px; padding-bottom:10px;">
+            TIQUE SHOKO - ${socioActivo} - ${hoy}
+        </div>`;
+
+    // 1. Consumo Bar
+    html += `<div style="font-weight:bold; margin-top:10px; border-bottom:1px solid #ccc;">--- CONSUMO PRODUCTOS SHOKO ---</div><br>`;
     const items = [...historial, ...carrito].filter(i => i.p > 0);
     items.forEach(i => { 
-        t += `- ${i.cant}x ${i.n}: ${(i.p*i.cant).toFixed(2)}€\n`; 
+        html += `<div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+            <span>${i.cant}x ${i.n}</span>
+            <span>${(i.p*i.cant).toFixed(2)}</span>
+        </div>`;
     });
-    
+
     // 2. Costes Fijos
     const canonTotal = listInv.reduce((acc, i) => acc + (i.a * 1), 0);
     const totalBar = items.reduce((acc, i) => acc + (i.p * i.cant), 0);
     if(canonTotal > 0) {
-        t += `- Cuota mayores de 13 años: ${canonTotal.toFixed(2)}€\n`;
+        html += `<br><div style="font-weight:bold; border-bottom:1px solid #ccc;">--- COSTES FIJOS ---</div>`;
+        html += `<div style="display:flex; justify-content:space-between; margin-top:5px;">
+            <span>Cuota mayores de 13 años</span>
+            <span>${canonTotal.toFixed(2)}</span>
+        </div>`;
     }
-    
-    t += `\nTOTAL TIQUE SHOKO: ${(totalBar + canonTotal).toFixed(2)}€\n\n`;
-    
-    // 3. Desglose de Reparto (si hay comida)
+
+    // 3. Total
+    html += `<br><div style="display:flex; justify-content:space-between; font-weight:bold; font-size:1.2em; border-top:2px solid #000; padding-top:10px;">
+        <span>TOTAL TIQUE SHOKO</span>
+        <span>${(totalBar + canonTotal).toFixed(2)}€</span>
+    </div>`;
+
+    // 4. Desglose Reparto (Si existe)
     if(listInv.length > 0) {
-        t += `--- DESGLOSE REPARTO ---\n`;
+        html += `<br><br><div style="font-weight:bold; border-bottom:1px solid #ccc;">--- DESGLOSE REPARTO ---</div>`;
+        const totalBarHistorial = historial.reduce((acc, i) => acc + (i.p * i.cant), 0);
         const totalExterno = listInv.reduce((acc, i) => acc + i.g, 0);
         const totalCoef = listInv.reduce((acc, i) => acc + (i.a * 1) + (i.k * 0.5), 0);
-        const precioU = totalCoef > 0 ? (totalBar + totalExterno) / totalCoef : 0;
+        const precioU = totalCoef > 0 ? (totalBarHistorial + totalExterno) / totalCoef : 0;
         
         listInv.forEach(inv => {
             const nL = inv.n || socioActivo;
             const pts = (inv.a * 1) + (inv.k * 0.5);
             const p1 = (pts * precioU) + (inv.a * 1);
             const p2 = carrito.filter(it => it.n.includes(`(${nL})`)).reduce((acc, it) => acc + (it.p * it.cant), 0);
-            const pHist = historial.filter(it => it.n.includes(`(${nL})`)).reduce((acc, it) => acc + (it.p * it.cant), 0);
-            const totalDebe = p1 + p2 + pHist;
+            const totalDebe = p1 + p2;
             const bal = totalDebe - inv.g;
             
-            t += `${nL}: ${totalDebe.toFixed(2)}€ `;
-            if(nL === socioActivo) {
-                t += `(TOTAL A PAGAR A SHOKO: ${(totalBar + canonTotal).toFixed(2)}€)\n`;
-            } else {
-                t += (bal > 0 ? `(PAGAR A ${socioActivo}: ${bal.toFixed(2)}€)\n` : `(RECIBIR DE ${socioActivo}: ${Math.abs(bal).toFixed(2)}€)\n`);
-            }
+            let color = (nL === socioActivo || bal > 0) ? "#e74c3c" : "#27ae60";
+            let txtReparto = nL === socioActivo ? `PAGAR A SHOKO: ${(totalBar + canonTotal).toFixed(2)}€` : 
+                             (bal > 0 ? `PAGAR A ${socioActivo}: ${bal.toFixed(2)}€` : `RECIBIR DE ${socioActivo}: ${Math.abs(bal).toFixed(2)}€`);
+
+            html += `<div style="border-bottom:1px solid #eee; padding: 5px 0;">
+                <div style="display:flex; justify-content:space-between; font-weight:bold;">
+                    <span>${nL}</span><span>${totalDebe.toFixed(2)}€</span>
+                </div>
+                <div style="font-size:0.8em; color:${color}; font-weight:bold; text-align:right;">${txtReparto}</div>
+            </div>`;
         });
     }
-    
-    t += `\nEste es un mensaje automático generado por el sistema TPV.`;
 
-    // Envío del texto limpio
-    enviarCorreo(t);
+    html += `<br><div style="font-size:0.7em; color:#888; text-align:center;">Este es un mensaje automático generado por el sistema TPV.</div>
+    </div>`;
 
-    // Lógica de descontar stock y limpiar localstorage
+    enviarCorreo(html);
+
+    // Lógica interna (Stock y limpieza)
     [...carrito, ...historial].forEach(i => { 
         if(i.n && !i.n.includes("DESCORCHE") && i.p > 0) { 
             const base = i.n.split(" (")[0]; 
@@ -330,7 +315,6 @@ function cerrarVenta() {
     localStorage.setItem('v29_stock', JSON.stringify(stockActual)); 
     delete tickets[socioActivo]; 
     localStorage.setItem('v29_tickets', JSON.stringify(tickets)); 
-    
     setTimeout(() => location.reload(), 2000); 
 }
 
@@ -346,105 +330,20 @@ function confirmarTexto() { listInv[editingInvIdx].n = currentTexto; document.ge
 function resetearComida() { if(confirm("¿Borrar comida?")) { listInv = []; guardarTicketParcial(); cerrarTPVCompletamente(); } }
 function abrirTecladoProd(n) { prodTemp = n; currentEditType = 'prod'; inputVal = ""; document.getElementById('titulo-prod-modal').innerText = n; document.getElementById('input-cantidad').innerText = "1"; document.getElementById('modal-cantidad').style.display = 'flex'; }
 function presionarNum(v) { if(v === '.' && inputVal.includes('.')) return; inputVal += v; document.getElementById('input-cantidad').innerText = inputVal || "0"; }
-
-function confirmar() { 
-    const valStr = document.getElementById('input-cantidad').innerText; 
-    const valorNum = parseFloat(valStr) || 0; 
-    if (currentEditType === 'prod') { 
-        cantTemp = parseFloat(valStr) || 1;
-        document.getElementById('modal-cantidad').style.display = 'none';
-        if (listInv.length > 0) abrirSelectorComensal();
-        else finalizarApunte(""); 
-    } else if (currentEditType === 'adulto') { 
-        listInv[editingInvIdx].a = parseInt(valorNum) || 0; renderInv(); document.getElementById('modal-cantidad').style.display = 'none';
-    } else if (currentEditType === 'nino') { 
-        listInv[editingInvIdx].k = valorNum || 0; renderInv(); document.getElementById('modal-cantidad').style.display = 'none';
-    } else if (currentEditType === 'gasto') { 
-        listInv[editingInvIdx].g = valorNum || 0; renderInv(); document.getElementById('modal-cantidad').style.display = 'none';
-    } 
-    guardarTicketParcial(); 
-}
-
-function abrirSelectorComensal() {
-    const cont = document.getElementById('grid-comensales-modal');
-    cont.innerHTML = "";
-    listInv.forEach(inv => {
-        const nombre = inv.n || socioActivo;
-        cont.innerHTML += `<button class="btn-comensal-modal" onclick="finalizarApunte('${nombre}')">${nombre}</button>`;
-    });
-    cont.innerHTML += `<button class="btn-comensal-modal" style="background:#f8fafc; border-style:dashed; color:var(--accent);" onclick="abrirNuevoInvitadoDirecto()">+ NUEVO INVITADO</button>`;
-    document.getElementById('modal-asignar-comensal').style.display = 'flex';
-}
-
-function abrirNuevoInvitadoDirecto() {
-    document.getElementById('modal-asignar-comensal').style.display = 'none';
-    flgNuevoInv = true;
-    listInv.push({n: "", a: 0, k: 0, g: 0});
-    abrirTecladoTexto(listInv.length - 1);
-}
-
-function finalizarApunte(com) {
-    const nFinal = com ? `${prodTemp} (${com})` : prodTemp;
-    const ex = carrito.find(i => i.n === nFinal);
-    if(ex) ex.cant += cantTemp; 
-    else carrito.push({n: nFinal, cant: cantTemp, p: PRECIOS[prodTemp], esLicor: CATEGORIAS["ESPIRITUOSOS"].includes(prodTemp)});
-    document.getElementById('modal-asignar-comensal').style.display = 'none';
-    guardarTicketParcial();
-}
-
+function confirmar() { const valStr = document.getElementById('input-cantidad').innerText; const valorNum = parseFloat(valStr) || 0; if (currentEditType === 'prod') { cantTemp = parseFloat(valStr) || 1; document.getElementById('modal-cantidad').style.display = 'none'; if (listInv.length > 0) abrirSelectorComensal(); else finalizarApunte(""); } else if (currentEditType === 'adulto') { listInv[editingInvIdx].a = parseInt(valorNum) || 0; renderInv(); document.getElementById('modal-cantidad').style.display = 'none'; } else if (currentEditType === 'nino') { listInv[editingInvIdx].k = valorNum || 0; renderInv(); document.getElementById('modal-cantidad').style.display = 'none'; } else if (currentEditType === 'gasto') { listInv[editingInvIdx].g = valorNum || 0; renderInv(); document.getElementById('modal-cantidad').style.display = 'none'; } guardarTicketParcial(); }
+function abrirSelectorComensal() { const cont = document.getElementById('grid-comensales-modal'); cont.innerHTML = ""; listInv.forEach(inv => { const nombre = inv.n || socioActivo; cont.innerHTML += `<button class="btn-comensal-modal" onclick="finalizarApunte('${nombre}')">${nombre}</button>`; }); cont.innerHTML += `<button class="btn-comensal-modal" style="background:#f8fafc; border-style:dashed; color:var(--accent);" onclick="abrirNuevoInvitadoDirecto()">+ NUEVO INVITADO</button>`; document.getElementById('modal-asignar-comensal').style.display = 'flex'; }
+function abrirNuevoInvitadoDirecto() { document.getElementById('modal-asignar-comensal').style.display = 'none'; flgNuevoInv = true; listInv.push({n: "", a: 0, k: 0, g: 0}); abrirTecladoTexto(listInv.length - 1); }
+function finalizarApunte(com) { const nFinal = com ? `${prodTemp} (${com})` : prodTemp; const ex = carrito.find(i => i.n === nFinal); if(ex) ex.cant += cantTemp; else carrito.push({n: nFinal, cant: cantTemp, p: PRECIOS[prodTemp], esLicor: CATEGORIAS["ESPIRITUOSOS"].includes(prodTemp)}); document.getElementById('modal-asignar-comensal').style.display = 'none'; guardarTicketParcial(); }
 function abrirEdicionTicket(n) { prodTemp = n; inputVal = ""; const item = carrito.find(i => i.n === n); document.getElementById('edit-nombre').innerText = n; document.getElementById('txt-actual').innerText = "Cant: " + item.cant; document.getElementById('edit-input-display').innerText = "0"; document.getElementById('btn-eliminar-fila').style.display = 'block'; document.getElementById('modal-edit').style.display = 'flex'; }
 function presionarNumEdit(v) { if(v === '.' && inputVal.includes('.')) return; inputVal += v; document.getElementById('edit-input-display').innerText = inputVal; }
-
-function aplicarEdicion(signo) { 
-    const val = parseFloat(inputVal) || 0; 
-    if (modoRepoActivo) { 
-        const esE = CATEGORIAS["ESPIRITUOSOS"].includes(prodTemp); 
-        stockActual[prodTemp] += ((esE ? val * 700 : val) * signo); 
-        localStorage.setItem('v29_stock', JSON.stringify(stockActual)); 
-        mostrarProductosRepo(catActiva); 
-    } else { 
-        const item = carrito.find(i => i.n === prodTemp); 
-        if (item) { 
-            item.cant += (val * signo); 
-            if (item.cant <= 0) carrito = carrito.filter(i => i.n !== prodTemp); 
-        } 
-    } 
-    guardarTicketParcial(); 
-    document.getElementById('modal-edit').style.display = 'none'; 
-}
-
+function aplicarEdicion(signo) { const val = parseFloat(inputVal) || 0; if (modoRepoActivo) { const esE = CATEGORIAS["ESPIRITUOSOS"].includes(prodTemp); stockActual[prodTemp] += ((esE ? val * 700 : val) * signo); localStorage.setItem('v29_stock', JSON.stringify(stockActual)); mostrarProductosRepo(catActiva); } else { const item = carrito.find(i => i.n === prodTemp); if (item) { item.cant += (val * signo); if (item.cant <= 0) carrito = carrito.filter(i => i.n !== prodTemp); } } guardarTicketParcial(); document.getElementById('modal-edit').style.display = 'none'; }
 function eliminarFilaEdicion() { carrito = carrito.filter(i => i.n !== prodTemp); guardarTicketParcial(); document.getElementById('modal-edit').style.display = 'none'; }
-
-function generarListaCompra() { 
-    let h = ""; 
-    Object.keys(STOCK_IDEAL).forEach(n => { 
-        const f = STOCK_IDEAL[n] - stockActual[n]; 
-        if(f > 0) {
-            const esE = CATEGORIAS["ESPIRITUOSOS"].includes(n);
-            const cantidadTxt = esE ? (f/700).toFixed(1) + ' Bot.' : f + ' uds';
-            h += `<div style="padding:10px; border-bottom:1px solid #eee; display:flex; justify-content:space-between;"><span>${n}</span><b style="color:var(--danger);">${cantidadTxt}</b></div>`; 
-        }
-    }); 
-    document.getElementById('cuerpo-compra').innerHTML = h || "<p style='text-align:center;'>✅ Stock completo</p>"; 
-    document.getElementById('modal-compra').style.display = 'flex'; 
-}
-
+function generarListaCompra() { let h = ""; Object.keys(STOCK_IDEAL).forEach(n => { const f = STOCK_IDEAL[n] - stockActual[n]; if(f > 0) { const esE = CATEGORIAS["ESPIRITUOSOS"].includes(n); const cantidadTxt = esE ? (f/700).toFixed(1) + ' Bot.' : f + ' uds'; h += `<div style="padding:10px; border-bottom:1px solid #eee; display:flex; justify-content:space-between;"><span>${n}</span><b style="color:var(--danger);">${cantidadTxt}</b></div>`; } }); document.getElementById('cuerpo-compra').innerHTML = h || "<p style='text-align:center;'>✅ Stock completo</p>"; document.getElementById('modal-compra').style.display = 'flex'; }
 function cerrarTPVCompletamente() { document.getElementById('modal-reparto').style.display = 'none'; }
-
-function crearTeclado(id, func) { 
-    const cont = document.getElementById(id); 
-    cont.innerHTML = ""; 
-    for(let i=1; i<=9; i++) cont.innerHTML += `<button class="tecla" onclick="${func}('${i}')">${i}</button>`; 
-    cont.innerHTML += `<button class="tecla" onclick="${func}('.')">.</button>`; 
-    cont.innerHTML += `<button class="tecla" onclick="${func}('0')">0</button>`; 
-    cont.innerHTML += `<button class="tecla" style="background:#ccc;" onclick="inputVal=''; document.getElementById('${id==='teclado-nums'?'input-cantidad':'edit-input-display'}').innerText='0'">C</button>`; 
-    if (id === 'teclado-nums') cont.innerHTML += `<button class="tecla" style="background:var(--success);color:white; grid-column: span 3; padding: 25px;" onclick="confirmar()">ACEPTAR</button>`; 
-}
-
+function crearTeclado(id, func) { const cont = document.getElementById(id); cont.innerHTML = ""; for(let i=1; i<=9; i++) cont.innerHTML += `<button class="tecla" onclick="${func}('${i}')">${i}</button>`; cont.innerHTML += `<button class="tecla" onclick="${func}('.')">.</button>`; cont.innerHTML += `<button class="tecla" onclick="${func}('0')">0</button>`; cont.innerHTML += `<button class="tecla" style="background:#ccc;" onclick="inputVal=''; document.getElementById('${id==='teclado-nums'?'input-cantidad':'edit-input-display'}').innerText='0'">C</button>`; if (id === 'teclado-nums') cont.innerHTML += `<button class="tecla" style="background:var(--success);color:white; grid-column: span 3; padding: 25px;" onclick="confirmar()">ACEPTAR</button>`; }
 crearTeclado('teclado-nums', 'presionarNum');
 crearTeclado('teclado-edit', 'presionarNumEdit');
 renderSocios();
 </script>
 </body>
 </html>
-
