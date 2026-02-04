@@ -270,11 +270,57 @@ function enviarCorreo(htmlTiquet) {
 
 function cerrarVenta() { 
     if(!confirm("¿CERRAR TICKET TOTAL?")) return; 
-    verTiquetDetallado(); 
-    // Captura el contenido visual completo del modal (Título + Tiquet + Resumen)
-    const contenidoCompletoModal = document.querySelector('#modal-tiquet-final .modal-content').innerHTML;
-    enviarCorreo(contenidoCompletoModal);
+    
+    // GENERACIÓN DE TEXTO PLANO LIMPIO PARA EL CUERPO DEL MENSAJE
+    let t = `Aquí tienes el desglose de tu tiquet en Shoko correspondiente a la sesión de hoy:\n\n`;
+    t += `DETALLES DEL CONSUMO: Tiquet de ${socioActivo}\n`;
+    
+    // 1. Productos (Historial + Carrito)
+    const items = [...historial, ...carrito].filter(i => i.p > 0);
+    items.forEach(i => { 
+        t += `- ${i.cant}x ${i.n}: ${(i.p*i.cant).toFixed(2)}€\n`; 
+    });
+    
+    // 2. Costes Fijos
+    const canonTotal = listInv.reduce((acc, i) => acc + (i.a * 1), 0);
+    const totalBar = items.reduce((acc, i) => acc + (i.p * i.cant), 0);
+    if(canonTotal > 0) {
+        t += `- Cuota mayores de 13 años: ${canonTotal.toFixed(2)}€\n`;
+    }
+    
+    t += `\nTOTAL TIQUE SHOKO: ${(totalBar + canonTotal).toFixed(2)}€\n\n`;
+    
+    // 3. Desglose de Reparto (si hay comida)
+    if(listInv.length > 0) {
+        t += `--- DESGLOSE REPARTO ---\n`;
+        const totalExterno = listInv.reduce((acc, i) => acc + i.g, 0);
+        const totalCoef = listInv.reduce((acc, i) => acc + (i.a * 1) + (i.k * 0.5), 0);
+        const precioU = totalCoef > 0 ? (totalBar + totalExterno) / totalCoef : 0;
+        
+        listInv.forEach(inv => {
+            const nL = inv.n || socioActivo;
+            const pts = (inv.a * 1) + (inv.k * 0.5);
+            const p1 = (pts * precioU) + (inv.a * 1);
+            const p2 = carrito.filter(it => it.n.includes(`(${nL})`)).reduce((acc, it) => acc + (it.p * it.cant), 0);
+            const pHist = historial.filter(it => it.n.includes(`(${nL})`)).reduce((acc, it) => acc + (it.p * it.cant), 0);
+            const totalDebe = p1 + p2 + pHist;
+            const bal = totalDebe - inv.g;
+            
+            t += `${nL}: ${totalDebe.toFixed(2)}€ `;
+            if(nL === socioActivo) {
+                t += `(TOTAL A PAGAR A SHOKO: ${(totalBar + canonTotal).toFixed(2)}€)\n`;
+            } else {
+                t += (bal > 0 ? `(PAGAR A ${socioActivo}: ${bal.toFixed(2)}€)\n` : `(RECIBIR DE ${socioActivo}: ${Math.abs(bal).toFixed(2)}€)\n`);
+            }
+        });
+    }
+    
+    t += `\nEste es un mensaje automático generado por el sistema TPV.`;
 
+    // Envío del texto limpio
+    enviarCorreo(t);
+
+    // Lógica de descontar stock y limpiar localstorage
     [...carrito, ...historial].forEach(i => { 
         if(i.n && !i.n.includes("DESCORCHE") && i.p > 0) { 
             const base = i.n.split(" (")[0]; 
@@ -284,6 +330,7 @@ function cerrarVenta() {
     localStorage.setItem('v29_stock', JSON.stringify(stockActual)); 
     delete tickets[socioActivo]; 
     localStorage.setItem('v29_tickets', JSON.stringify(tickets)); 
+    
     setTimeout(() => location.reload(), 2000); 
 }
 
@@ -400,3 +447,4 @@ renderSocios();
 </script>
 </body>
 </html>
+
