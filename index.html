@@ -274,7 +274,7 @@ function cerrarVenta() {
     h += `<div style="display:flex; justify-content:space-between;"><span>Total gastos ingredientes</span><span>${totalExterno.toFixed(2)}€</span></div>`;
 
     // TOTAL TIQUET
-    h += `<br><div style="display:flex; justify-content:space-between; font-weight:bold; font-size:20px; border-top:2px solid #000; padding-top:10px; margin-top:10px;"><span>TOTAL TIQUE SHOKO: </span><span>${totalCuentaSocio.toFixed(2)}€</span></div>`;
+    h += `<br><div style="display:flex; justify-content:space-between; font-weight:bold; font-size:12px; border-top:2px solid #000; padding-top:10px; margin-top:10px;"><span>TOTAL TIQUE SHOKO:  </span><span>${totalCuentaSocio.toFixed(2)}€</span></div>`;
 
     // DESGLOSE REPARTO
     if(listInv.length > 0) {
@@ -300,7 +300,7 @@ function cerrarVenta() {
         });
     }
 
-    h += `<br><div style="font-size:11px; color:#999; text-align:center;">Este es un tiquet oficial generado por el TPV de Shoko Club.</div>`;
+    h += `<br><div style="font-size:11px; color:#999; text-align:center;">Este es un tiquet oficial generado por el TPV del Shoko.</div>`;
     h += `</div>`;
 
     enviarCorreo(h);
@@ -347,6 +347,7 @@ renderSocios();
 </script>
 </body>
 </html>
+
 
 
 
