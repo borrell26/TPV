@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TPV Shoko - MASTER 2</title>
+    <title>TPV Shoko - MASTER 3</title>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script type="text/javascript">
         (function() { emailjs.init("lc8woRfpiuAUn_9QM"); })(); 
@@ -36,7 +36,6 @@
         .btn-side { border: none; border-radius: 12px; font-weight: bold; cursor: pointer; padding: 15px; color: white; flex: 1; font-size: 0.9em; }
         button:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(0.5); }
 
-        /* CAMBIOS DE CAPAS (Z-INDEX) PARA EL TECLADO */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; }
         #modal-teclado-texto, #modal-cantidad, #modal-asignar-comensal { z-index: 2000; } 
         
@@ -255,12 +254,13 @@ function actualizarTicket() {
     btnCierre.disabled = (historial.length > 0);
 }
 
+// CAMBIO ESTRICTO: AHORA ENVÍA EXACTAMENTE EL DESGLOSE DE CUENTA COMPLETO
 function enviarCorreo(htmlTiquet) {
     const emailDestino = EMAILS_SOCIOS[socioActivo] || "mguardiz@gmail.com";
     const params = {
         to_email: emailDestino,
         to_name: socioActivo,
-        message_html: htmlTiquet,
+        message_html: htmlTiquet, // Este HTML ahora contiene el desglose visual exacto
         subject: `TIQUE SHOKO - ${socioActivo}`
     };
     emailjs.send("service_zchbl2f", "template_qqn30c5", params)
@@ -271,8 +271,9 @@ function enviarCorreo(htmlTiquet) {
 function cerrarVenta() { 
     if(!confirm("¿CERRAR TICKET TOTAL?")) return; 
     verTiquetDetallado(); 
-    const contenidoTiquet = document.getElementById('cont-tiquet-papel').innerHTML;
-    enviarCorreo(contenidoTiquet);
+    // Captura el contenido visual completo del modal (Título + Tiquet + Resumen)
+    const contenidoCompletoModal = document.querySelector('#modal-tiquet-final .modal-content').innerHTML;
+    enviarCorreo(contenidoCompletoModal);
 
     [...carrito, ...historial].forEach(i => { 
         if(i.n && !i.n.includes("DESCORCHE") && i.p > 0) { 
