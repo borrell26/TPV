@@ -6,7 +6,6 @@
     <title>TPV Shoko - P1 MASTER</title>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
-        /* Estilos originales de P1 */
         :root { --primary: #2c3e50; --success: #27ae60; --accent: #3498db; --bg: #f4f7f6; --danger: #e74c3c; --warning: #f39c12; --white: #ffffff; --gray: #95a5a6; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); height: 100vh; overflow: hidden; }
         #pantalla-socios { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; padding: 20px; overflow-y: auto; height: 100vh; box-sizing: border-box; align-content: start; }
@@ -94,7 +93,6 @@ function abrirTPV(n) { socioActivo = n; let d = tickets[n] || []; carrito = d.fi
 function renderTabs() { document.getElementById('tab-container').innerHTML = Object.keys(CATEGORIAS).map(c => `<button style="padding:15px; flex:1; border:none; border-radius:10px; font-weight:bold; background:${c===catActiva?'var(--accent)':'#cbd5e0'}; color:${c===catActiva?'white':'black'}" onclick="catActiva='${c}'; renderTabs(); renderProds()">${c}</button>`).join(''); }
 function renderProds() { document.getElementById('grid-prods').innerHTML = CATEGORIAS[catActiva].map(n => `<div class="card" style="background:white; padding:20px; text-align:center; border-radius:12px; cursor:pointer;" onclick="abrirTecladoProd('${n}')"><b>${n}</b><br><span style="color:var(--success); font-weight:bold;">${PRECIOS[n].toFixed(2)}€</span></div>`).join(''); }
 
-// FUNCIÓN VER TIQUET: RECUPERADA DE P1 CON TU ÚLTIMA MODIFICACIÓN DE FECHA
 function verTiquetDetallado() {
     const cont = document.getElementById('cont-tiquet-papel');
     const totalBarHist = historial.reduce((acc, i) => acc + (i.p * i.cant), 0);
@@ -103,11 +101,10 @@ function verTiquetDetallado() {
     const baseRepartoHistorial = totalBarHist + totalExterno;
     const totalCoef = listInv.reduce((acc, i) => acc + (i.a * 1) + (i.k * 0.5), 0);
     const precioU = totalCoef > 0 ? baseRepartoHistorial / totalCoef : 0;
-    const hoy = new Date().toLocaleDateString(); // <--- TU MODIFICACIÓN
+    const hoy = new Date().toLocaleDateString();
     const hayHistorial = historial.length > 0;
 
-    // EL TÍTULO QUE ME PEDISTE
-    let h = `<div style="text-align:center; font-weight:bold; border-bottom:2px solid #000; margin-bottom:10px;">TIQUE ${socioActivo} (${hoy})</div>`;
+    let h = `<div style="text-align:center; font-weight:bold; border-bottom:2px solid #000; margin-bottom:10px;">TIQUE SHOKO - ${socioActivo} - ${hoy}</div>`;
     
     h += `<b>--- CONSUMO PRODUCTOS SHOKO (PRIMERA CUENTA) ---</b><br>`;
     if (!hayHistorial) {
@@ -120,45 +117,33 @@ function verTiquetDetallado() {
         }
     }
 
-    h += `<br><b>--- COSTES FIJOS ---</b><br>`;
-    h += `<div class="tiquet-linea"><span>Cuota mayores de 13 años</span><span>${canonTotal.toFixed(2)}</span></div>`;
-    h += `<br><b>--- GASTOS COMIDA ---</b><br>`;
-    h += `<div class="tiquet-linea"><span>Total gastos en ingredientes</span><span>${totalExterno.toFixed(2)}</span></div>`;
+    h += `<br><b>--- COSTES FIJOS ---</b><br><div class="tiquet-linea"><span>Cuota mayores de 13 años</span><span>${canonTotal.toFixed(2)}</span></div>`;
+    h += `<br><b>--- GASTOS COMIDA ---</b><br><div class="tiquet-linea"><span>Total gastos en ingredientes</span><span>${totalExterno.toFixed(2)}</span></div>`;
     
     const totalCuentaSocio = (hayHistorial ? carrito.reduce((acc, i)=>acc+(i.p*i.cant),0) : 0) + totalBarHist + canonTotal;
     h += `<br><div class="tiquet-linea" style="font-weight:bold; font-size:1.2em;"><span>TOTAL TIQUE SHOKO</span><span>${totalCuentaSocio.toFixed(2)}€</span></div><br>`;
     
     h += `<b>--- DESGLOSE REPARTO ---</b><br>`;
     listInv.forEach(inv => {
-        const nombreLimpio = inv.n || socioActivo;
-        const puntos = (inv.a * 1) + (inv.k * 0.5);
-        const parteHistorial = (puntos * precioU) + (inv.a * 1);
-        const consumoIndividualActual = carrito.filter(item => item.n.includes(`(${nombreLimpio})`)).reduce((acc, item) => acc + (item.p * item.cant), 0);
-        const totalDebe = parteHistorial + consumoIndividualActual;
-        const bal = totalDebe - inv.g;
-        let ley = "";
-        if (nombreLimpio === socioActivo) ley = `PAGAR A SHOKO: ${totalCuentaSocio.toFixed(2)}€`;
-        else ley = (bal > 0) ? `PAGAR A ${socioActivo}: ${bal.toFixed(2)}€` : `RECIBIR DE ${socioActivo}: ${Math.abs(bal).toFixed(2)}€`;
-
+        const nL = inv.n || socioActivo; const pts = (inv.a * 1) + (inv.k * 0.5); const pH = (pts * precioU) + (inv.a * 1);
+        const cI = carrito.filter(it => it.n.includes(`(${nL})`)).reduce((acc, it) => acc + (it.p * it.cant), 0);
+        const tD = pH + cI; const bal = tD - inv.g;
+        let ley = nL === socioActivo ? `PAGAR A SHOKO: ${totalCuentaSocio.toFixed(2)}€` : (bal > 0 ? `PAGAR A ${socioActivo}: ${bal.toFixed(2)}€` : `RECIBIR DE ${socioActivo}: ${Math.abs(bal).toFixed(2)}€`);
         h += `<div style="border-bottom:1px solid #eee; margin-bottom:5px; padding-bottom:2px;">
-                <div class="tiquet-linea"><b>${nombreLimpio}</b> <span>${totalDebe.toFixed(2)}€</span></div>
+                <div class="tiquet-linea"><b>${nL}</b> <span>${tD.toFixed(2)}€</span></div>
                 <div style="font-size:0.7em; color:#666; display:flex; justify-content:space-between;">
-                    <span>1ª cta: ${parteHistorial.toFixed(2)} + 2ª cta: ${consumoIndividualActual.toFixed(2)}</span>
-                    <span style="color:${(nombreLimpio === socioActivo || bal > 0) ? 'red' : 'green'}; font-weight:bold;">${ley}</span>
+                    <span>1ª cta: ${pH.toFixed(2)} + 2ª cta: ${cI.toFixed(2)}</span>
+                    <span style="color:${(nL === socioActivo || bal > 0) ? 'red' : 'green'}; font-weight:bold;">${ley}</span>
                 </div>
               </div>`;
     });
-    cont.innerHTML = h;
-    document.getElementById('modal-tiquet-final').style.display = 'flex';
+    cont.innerHTML = h; document.getElementById('modal-tiquet-final').style.display = 'flex';
 }
 
-// LÓGICA DE BLOQUEO Y GESTIÓN DE P1
 function abrirModalReparto() {
     if (listInv.length === 0) listInv = [{n: socioActivo, a: 1, k: 0, g: 0}];
-    renderInv();
-    const bloq = historial.length > 0; // REGLA: Bloqueo si hay cierre parcial
+    renderInv(); const bloq = historial.length > 0;
     document.getElementById('titulo-reparto').innerText = bloq ? "Gestión Comida (BLOQUEADA)" : "Gestión Comida";
-    document.getElementById('btn-add-inv').style.display = 'block'; // Siempre permitir añadir invitados para 2ª cuenta
     document.getElementById('modal-reparto').style.display = 'flex';
 }
 
@@ -178,20 +163,17 @@ function renderInv() {
 
 function addInv() { listInv.push({n: "", a: 0, k: 0, g: 0}); renderInv(); }
 function abrirTecladoProd(n) { prodTemp = n; currentEditType = 'prod'; inputVal = ""; document.getElementById('input-cantidad').innerText = "1"; document.getElementById('modal-cantidad').style.display = 'flex'; }
-
 function abrirSelectorComensal() {
     const cont = document.getElementById('grid-comensales-modal'); cont.innerHTML = "";
     listInv.forEach(inv => { const n = inv.n || socioActivo; cont.innerHTML += `<button style="padding:15px; border-radius:10px; border:2px solid var(--primary); font-weight:bold;" onclick="finalizarApunte('${n}')">${n}</button>`; });
     cont.innerHTML += `<button onclick="flgNuevoInv=true; abrirTecladoTexto(listInv.length)" style="grid-column:span 2; padding:10px; background:var(--accent); color:white; border:none; border-radius:10px;">+ NUEVO INVITADO</button>`;
     document.getElementById('modal-asignar-comensal').style.display = 'flex';
 }
-
 function finalizarApunte(com) {
     const nF = com ? `${prodTemp} (${com})` : prodTemp; const ex = carrito.find(i => i.n === nF);
     if(ex) ex.cant += cantTemp; else carrito.push({n: nF, cant: cantTemp, p: PRECIOS[prodTemp]});
     document.getElementById('modal-asignar-comensal').style.display = 'none'; guardarTicketParcial();
 }
-
 function confirmar() {
     const val = parseFloat(document.getElementById('input-cantidad').innerText) || 0;
     if (currentEditType === 'prod') { cantTemp = val; document.getElementById('modal-cantidad').style.display = 'none'; if(listInv.length > 0) abrirSelectorComensal(); else finalizarApunte(""); }
@@ -200,7 +182,6 @@ function confirmar() {
     else if (currentEditType === 'gasto') listInv[editingInvIdx].g = val;
     document.getElementById('modal-cantidad').style.display = 'none'; renderInv(); guardarTicketParcial();
 }
-
 function abrirTecladoTexto(idx) { editingInvIdx = idx; currentTexto = ""; document.getElementById('display-texto').innerText = ""; document.getElementById('modal-teclado-texto').style.display = 'flex'; renderTecladoTexto(); }
 function renderTecladoTexto() { const cont = document.getElementById('grid-teclado-texto'); cont.innerHTML = "1234567890QWERTYUIOPASDFGHJKLÑZXCVBNM ".split("").map(l => `<button style="padding:10px;" onclick="addLetra('${l}')">${l===' '?'_':l}</button>`).join(""); }
 function addLetra(l) { currentTexto += l; document.getElementById('display-texto').innerText = currentTexto; }
@@ -209,32 +190,27 @@ function confirmarTexto() {
     else { listInv[editingInvIdx].n = currentTexto; }
     document.getElementById('modal-teclado-texto').style.display = 'none'; renderInv(); 
 }
-
 function cierreParcial() { if(!confirm("¿Cerrar ronda actual?")) return; carrito.forEach(i => { const ex = historial.find(h => h.n === i.n); if(ex) ex.cant += i.cant; else historial.push({...i, esHistorial: true}); }); carrito = []; guardarTicketParcial(); actualizarTicket(); }
 function guardarTicketParcial() { let d = [...carrito, ...historial]; if(listInv.length > 0) d.push({ esComida: true, datos: listInv }); tickets[socioActivo] = d; localStorage.setItem('v29_tickets', JSON.stringify(tickets)); actualizarTicket(); }
 function actualizarTicket() {
-    let t = 0; let h = ""; 
-    carrito.forEach(i => { t += i.p*i.cant; h += `<div class="item-tiquet"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}€</span></div>`; });
+    let t = 0; let h = ""; carrito.forEach(i => { t += i.p*i.cant; h += `<div class="item-tiquet"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}€</span></div>`; });
     historial.forEach(i => { t += i.p*i.cant; h += `<div class="item-tiquet item-historial"><span>(Hist) ${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}€</span></div>`; });
     const c = listInv.reduce((acc, i) => acc + (i.a * 1), 0);
     document.getElementById('ticket-lista').innerHTML = h; document.getElementById('total-txt').innerText = (t + c).toFixed(2) + "€";
     document.getElementById('btn-cierre-parcial').disabled = (historial.length > 0);
     if(historial.length > 0) document.getElementById('btn-cierre-parcial').style.opacity = "0.3";
 }
-
 function cerrarVenta() {
-    if(!confirm("¿Confirmar cierre final y enviar mail?")) return;
+    if(!confirm("¿Confirmar cierre final?")) return;
     const btn = document.getElementById('btn-cierre-final'); btn.disabled = true; btn.innerText = "Enviando...";
     emailjs.send("TU_SERVICE_ID", "TU_TEMPLATE_ID", {
         to_name: socioActivo, to_email: EMAILS_SOCIOS[socioActivo] || "admin@shoko.com",
         message: document.getElementById('cont-tiquet-papel').innerText, total_price: document.getElementById('total-txt').innerText
-    }).then(() => { alert("Enviado con éxito"); delete tickets[socioActivo]; localStorage.setItem('v29_tickets', JSON.stringify(tickets)); location.reload(); }, (e) => { alert("Error"); btn.disabled = false; });
+    }).then(() => { alert("Enviado"); delete tickets[socioActivo]; localStorage.setItem('v29_tickets', JSON.stringify(tickets)); location.reload(); }, (e) => { alert("Error"); btn.disabled = false; });
 }
-
 function presionarNum(v) { inputVal += v; document.getElementById('input-cantidad').innerText = inputVal; }
 function crearTeclado(id, func) { const cont = document.getElementById(id); for(let i=1; i<=9; i++) cont.innerHTML += `<button class="tecla" onclick="${func}('${i}')">${i}</button>`; cont.innerHTML += `<button class="tecla" onclick="${func}('.')">.</button><button class="tecla" onclick="${func}('0')">0</button><button class="tecla" onclick="inputVal=''; document.getElementById('input-cantidad').innerText='0'">C</button>`; cont.innerHTML += `<button class="tecla" style="grid-column:span 3; background:var(--success); color:white;" onclick="confirmar()">ACEPTAR</button>`; }
 function abrirTecladoNumComida(idx, tipo) { editingInvIdx = idx; currentEditType = tipo; inputVal = ""; document.getElementById('input-cantidad').innerText = "0"; document.getElementById('modal-cantidad').style.display = 'flex'; }
-
 crearTeclado('teclado-nums', 'presionarNum'); renderSocios();
 </script>
 </body>
