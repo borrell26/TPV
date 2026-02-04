@@ -308,6 +308,7 @@ function finalizarApunte(com) {
 }
 
 function enviarCorreo(htmlTiquet) {
+    // Definimos el correo destino basado en el socio o el de Miguel por defecto
     const emailDestino = EMAILS_SOCIOS[socioActivo] || "mguardiz@gmail.com";
     
     const params = {
@@ -317,10 +318,17 @@ function enviarCorreo(htmlTiquet) {
         subject: `TIQUE SHOKO - ${socioActivo}`
     };
 
-    // CAMBIO: Usando tu Service ID y Template ID
+    console.log("Intentando enviar correo con estos parámetros:", params);
+
     emailjs.send("service_zchbl2f", "template_qqn30c5", params)
-        .then(() => alert(`Correo enviado a ${emailDestino}`))
-        .catch((error) => console.error("Error al enviar:", error));
+        .then((response) => {
+            console.log("ÉXITO!", response.status, response.text);
+            alert(`✅ Correo enviado con éxito a ${emailDestino}`);
+        })
+        .catch((error) => {
+            console.error("ERROR DETALLADO:", error);
+            alert(`❌ Error al enviar: ${JSON.stringify(error)}`);
+        });
 }
 
 function cerrarVenta() { 
@@ -418,3 +426,4 @@ renderSocios();
 </script>
 </body>
 </html>
+
