@@ -237,43 +237,35 @@ function cerrarVenta() {
     
     const hoy = new Date().toLocaleDateString();
     
-    // GENERACIÓN DE HTML FORMATEADO PARA EL EMAIL
-    let html = `
-    <div style="font-family: 'Courier New', monospace; max-width: 400px; background: #fff; padding: 20px; border: 1px solid #eee; color: #000;">
-        <div style="text-align:center; font-weight:bold; border-bottom:2px solid #000; margin-bottom:10px; padding-bottom:10px;">
-            TIQUE SHOKO - ${socioActivo} - ${hoy}
-        </div>`;
+    // GENERACIÓN DE TEXTO FORMATEADO (SIMULANDO TIQUET FÍSICO)
+    let t = `----------------------------------------\n`;
+    t += `      TIQUE SHOKO - ${socioActivo}\n`;
+    t += `      FECHA: ${hoy}\n`;
+    t += `----------------------------------------\n\n`;
 
-    // 1. Consumo Bar
-    html += `<div style="font-weight:bold; margin-top:10px; border-bottom:1px solid #ccc;">--- CONSUMO PRODUCTOS SHOKO ---</div><br>`;
+    t += `CONSUMO PRODUCTOS SHOKO:\n`;
     const items = [...historial, ...carrito].filter(i => i.p > 0);
     items.forEach(i => { 
-        html += `<div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-            <span>${i.cant}x ${i.n}</span>
-            <span>${(i.p*i.cant).toFixed(2)}</span>
-        </div>`;
+        let linea = `- ${i.cant}x ${i.n}`;
+        let precio = `${(i.p*i.cant).toFixed(2)}€`;
+        // Rellenar con espacios para alinear a la derecha
+        t += linea.padEnd(32) + precio.padStart(8) + `\n`;
     });
 
-    // 2. Costes Fijos
     const canonTotal = listInv.reduce((acc, i) => acc + (i.a * 1), 0);
     const totalBar = items.reduce((acc, i) => acc + (i.p * i.cant), 0);
+    
     if(canonTotal > 0) {
-        html += `<br><div style="font-weight:bold; border-bottom:1px solid #ccc;">--- COSTES FIJOS ---</div>`;
-        html += `<div style="display:flex; justify-content:space-between; margin-top:5px;">
-            <span>Cuota mayores de 13 años</span>
-            <span>${canonTotal.toFixed(2)}</span>
-        </div>`;
+        t += `\nCOSTES FIJOS:\n`;
+        t += `Cuota mayores 13 años`.padEnd(32) + `${canonTotal.toFixed(2)}€`.padStart(8) + `\n`;
     }
 
-    // 3. Total
-    html += `<br><div style="display:flex; justify-content:space-between; font-weight:bold; font-size:1.2em; border-top:2px solid #000; padding-top:10px;">
-        <span>TOTAL TIQUE SHOKO</span>
-        <span>${(totalBar + canonTotal).toFixed(2)}€</span>
-    </div>`;
+    t += `\n----------------------------------------\n`;
+    t += `TOTAL TIQUE SHOKO`.padEnd(30) + `${(totalBar + canonTotal).toFixed(2)}€`.padStart(10) + `\n`;
+    t += `----------------------------------------\n\n`;
 
-    // 4. Desglose Reparto (Si existe)
     if(listInv.length > 0) {
-        html += `<br><br><div style="font-weight:bold; border-bottom:1px solid #ccc;">--- DESGLOSE REPARTO ---</div>`;
+        t += `--- DESGLOSE REPARTO ---\n`;
         const totalBarHistorial = historial.reduce((acc, i) => acc + (i.p * i.cant), 0);
         const totalExterno = listInv.reduce((acc, i) => acc + i.g, 0);
         const totalCoef = listInv.reduce((acc, i) => acc + (i.a * 1) + (i.k * 0.5), 0);
@@ -287,25 +279,23 @@ function cerrarVenta() {
             const totalDebe = p1 + p2;
             const bal = totalDebe - inv.g;
             
-            let color = (nL === socioActivo || bal > 0) ? "#e74c3c" : "#27ae60";
-            let txtReparto = nL === socioActivo ? `PAGAR A SHOKO: ${(totalBar + canonTotal).toFixed(2)}€` : 
-                             (bal > 0 ? `PAGAR A ${socioActivo}: ${bal.toFixed(2)}€` : `RECIBIR DE ${socioActivo}: ${Math.abs(bal).toFixed(2)}€`);
-
-            html += `<div style="border-bottom:1px solid #eee; padding: 5px 0;">
-                <div style="display:flex; justify-content:space-between; font-weight:bold;">
-                    <span>${nL}</span><span>${totalDebe.toFixed(2)}€</span>
-                </div>
-                <div style="font-size:0.8em; color:${color}; font-weight:bold; text-align:right;">${txtReparto}</div>
-            </div>`;
+            t += `> ${nL.toUpperCase()}: ${totalDebe.toFixed(2)}€\n`;
+            
+            if(nL === socioActivo) {
+                t += `  (PAGAR A SHOKO: ${(totalBar + canonTotal).toFixed(2)}€)\n`;
+            } else {
+                t += (bal > 0 ? `  (PAGAR A ${socioActivo}: ${bal.toFixed(2)}€)\n` : `  (RECIBIR DE ${socioActivo}: ${Math.abs(bal).toFixed(2)}€)\n`);
+            }
+            t += `\n`;
         });
     }
+    
+    t += `----------------------------------------\n`;
+    t += `Mensaje automático sistema TPV Shoko.\n`;
 
-    html += `<br><div style="font-size:0.7em; color:#888; text-align:center;">Este es un mensaje automático generado por el sistema TPV.</div>
-    </div>`;
+    enviarCorreo(t);
 
-    enviarCorreo(html);
-
-    // Lógica interna (Stock y limpieza)
+    // Lógica de Stock y Limpieza
     [...carrito, ...historial].forEach(i => { 
         if(i.n && !i.n.includes("DESCORCHE") && i.p > 0) { 
             const base = i.n.split(" (")[0]; 
@@ -347,3 +337,4 @@ renderSocios();
 </script>
 </body>
 </html>
+
