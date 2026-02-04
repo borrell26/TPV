@@ -253,7 +253,7 @@ function cerrarVenta() {
     if (historial.length > 0) {
         h += `<div style="background:#f9f9f9; padding:5px; font-weight:bold; border-bottom:1px solid #ccc; margin-bottom:8px;">CONSUMO PRODUCTOS SHOKO (PRIMERA CUENTA)</div>`;
         historial.forEach(i => {
-            if(i.p > 0) h += `<div style="display:flex; justify-content:space-between; margin-bottom:4px; color:#555;"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}€</span></div>`;
+            if(i.p > 0) h += `<div style="display:flex; justify-content:space-between; margin-bottom:4px; color:#555;"><span>${i.cant}x ${i.n}: </span><span>${(i.p*i.cant).toFixed(2)}€</span></div>`;
         });
     }
 
@@ -347,6 +347,7 @@ renderSocios();
 </script>
 </body>
 </html>
+
 
 
 
