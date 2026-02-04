@@ -246,7 +246,7 @@ function cerrarVenta() {
     // GENERACIÓN DE HTML FIEL AL DESGLOSE DE PANTALLA
     let h = `<div style="font-family: Arial, sans-serif; color: #333; max-width: 450px; border: 1px solid #ddd; padding: 20px; border-radius: 10px;">`;
     
-    h += `<div style="text-align:center; font-weight:bold; border-bottom:2px solid #000; margin-bottom:14px; padding-bottom:10px; font-size:18px;">TIQUE SHOKO</div>`;
+   
     h += `<div style="text-align:center; margin-bottom:20px;">Socio: <b>${socioActivo}</b> | Fecha: ${hoy}</div>`;
 
     // CONSUMO PRIMERA CUENTA (Historial)
@@ -321,7 +321,7 @@ if(listInv.length > 0) {
 
     }
 
-    h += `<br><div style="font-size:11px; color:#999; text-align:center;">Este es un tiquet oficial generado por el TPV del Shoko.</div>`;
+    h += `<br><div style="font-size:9px; color:#999; text-align:center;">Este es un tique oficial generado por el TPV del Shoko.</div>`;
     h += `</div>`;
 
     enviarCorreo(h);
@@ -368,6 +368,7 @@ renderSocios();
 </script>
 </body>
 </html>
+
 
 
 
