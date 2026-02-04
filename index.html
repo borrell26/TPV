@@ -3,30 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TPV Shoko - P1 MASTER TOTAL</title>
+    <title>TPV Shoko - P1 MASTER</title>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
+        /* Estilos originales de P1 */
         :root { --primary: #2c3e50; --success: #27ae60; --accent: #3498db; --bg: #f4f7f6; --danger: #e74c3c; --warning: #f39c12; --white: #ffffff; --gray: #95a5a6; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); height: 100vh; overflow: hidden; }
         #pantalla-socios { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; padding: 20px; overflow-y: auto; height: 100vh; box-sizing: border-box; align-content: start; }
         #interfaz-tpv { display: none; grid-template-columns: 1fr 350px; height: 100vh; }
-        .btn-socio { background: var(--white); border: 2px solid var(--primary); border-radius: 15px; padding: 35px 10px; font-weight: bold; font-size: 1.4em; cursor: pointer; text-align: center; position: relative; }
+        .btn-socio { background: var(--white); border: 2px solid var(--primary); border-radius: 15px; padding: 35px 10px; font-weight: bold; font-size: 1.4em; cursor: pointer; text-align: center; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .btn-socio.activo { background: #ffeaa7; border-color: var(--warning); }
         .sidebar { background: var(--primary); color: var(--white); display: flex; flex-direction: column; padding: 15px; overflow: hidden; }
         .lista { flex: 1; overflow-y: auto; margin: 10px 0; }
         .item-tiquet { display: flex; justify-content: space-between; padding: 6px 10px; background: rgba(255,255,255,0.1); margin-bottom: 3px; border-radius: 6px; cursor: pointer; font-size: 0.9em; }
-        .item-historial { background: rgba(255,255,255,0.05); color: #bdc3c7; cursor: default; }
+        .item-historial { background: rgba(255,255,255,0.05); color: #bdc3c7; font-size: 0.8em; cursor: default; }
         .total-container { border-top: 2px solid rgba(255,255,255,0.2); padding: 10px 0; display: flex; justify-content: space-between; align-items: center; }
         .btn-side { border: none; border-radius: 12px; font-weight: bold; cursor: pointer; padding: 15px; color: white; flex: 1; font-size: 0.9em; margin-bottom: 5px; }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; }
         .modal-content { background: var(--white); padding: 20px; border-radius: 20px; width: 90%; max-width: 650px; text-align: center; max-height: 98vh; overflow-y: auto; }
         .tiquet-papel { background: #fff; color: #000; padding: 20px; font-family: 'Courier New', monospace; text-align: left; border: 1px solid #ccc; font-size: 0.85em; }
         .tiquet-linea { display: flex; justify-content: space-between; margin-bottom: 3px; border-bottom: 1px dotted #ccc; }
-        .grid-teclado { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
-        .tecla { background: #edf2f7; border: none; padding: 20px; font-size: 1.5em; border-radius: 12px; font-weight: bold; cursor: pointer; }
         .fila-inv { display: grid; grid-template-columns: 1fr 60px 60px 80px 40px; gap: 8px; margin-bottom: 10px; }
-        .fila-inv div { background: #f8fafc; border: 1px solid #cbd5e0; border-radius: 8px; padding: 12px; font-weight: bold; }
-        .bloqueado { opacity: 0.5; pointer-events: none; }
+        .fila-inv div { background: #f8fafc; border: 1px solid #cbd5e0; border-radius: 8px; padding: 12px 2px; text-align: center; font-weight: bold; }
+        .tecla { background: #edf2f7; border: none; padding: 20px; font-size: 1.5em; border-radius: 12px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -41,7 +40,7 @@
     <div class="sidebar">
         <h2 id="nombre-socio" style="margin:0; text-align:center;">Socio</h2>
         <div class="lista" id="ticket-lista"></div>
-        <div class="total-container"><b>TIQUE SHOKO</b><div id="total-txt" style="font-weight:bold;">0.00€</div></div>
+        <div class="total-container"><b>TIQUET SHOKO</b><div id="total-txt" style="font-weight:bold;">0.00€</div></div>
         <button class="btn-side" style="background:var(--accent);" onclick="abrirModalReparto()">🍽️ COMIDA</button>
         <button class="btn-side" style="background:var(--warning); color:#000;" onclick="verTiquetDetallado()">👁️ VER TIQUE</button>
         <button id="btn-cierre-parcial" class="btn-side" style="background:var(--success);" onclick="cierreParcial()">📦 CIERRE PARCIAL</button>
@@ -68,8 +67,8 @@
 </div>
 
 <div id="modal-cantidad" class="modal"><div class="modal-content" style="width: 400px;"><h3 id="titulo-prod-modal"></h3><div id="input-cantidad" style="font-size:4em; font-weight:bold; color: var(--accent);">0</div><div class="grid-teclado" id="teclado-nums"></div><button class="btn-side" style="background:#ccc; color:black; width:100%;" onclick="document.getElementById('modal-cantidad').style.display='none'">CANCELAR</button></div></div>
+<div id="modal-asignar-comensal" class="modal"><div class="modal-content"><h3>¿A quién asignar?</h3><div id="grid-comensales-modal" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"></div><button class="btn-side" style="background:#ccc; color:black; width:100%; margin-top:10px;" onclick="document.getElementById('modal-asignar-comensal').style.display='none'">CANCELAR</button></div></div>
 <div id="modal-teclado-texto" class="modal"><div class="modal-content"><h3>Nombre</h3><div id="display-texto" style="font-size:2em; font-weight:bold; background:#eee; padding:15px; border-radius:10px; margin-bottom:10px;"></div><div class="teclado-texto" style="display:grid; grid-template-columns:repeat(10,1fr); gap:5px;" id="grid-teclado-texto"></div><button class="btn-side" style="background:var(--success); width:100%; margin-top:20px;" onclick="confirmarTexto()">ACEPTAR</button></div></div>
-<div id="modal-asignar-comensal" class="modal"><div class="modal-content"><h3>¿Asignar a quién?</h3><div id="grid-comensales-modal" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"></div><button class="btn-side" style="background:#ccc; color:black; width:100%; margin-top:10px;" onclick="document.getElementById('modal-asignar-comensal').style.display='none'">CANCELAR</button></div></div>
 
 <script>
 (function(){ emailjs.init("TU_PUBLIC_KEY"); })();
@@ -92,22 +91,26 @@ function renderSocios() {
 }
 
 function abrirTPV(n) { socioActivo = n; let d = tickets[n] || []; carrito = d.filter(i => i.n && !i.esHistorial); historial = d.filter(i => i.esHistorial); let c = d.find(i => i.esComida); listInv = c ? c.datos : []; document.getElementById('pantalla-socios').style.display='none'; document.getElementById('interfaz-tpv').style.display='grid'; document.getElementById('nombre-socio').innerText = n; renderTabs(); renderProds(); actualizarTicket(); }
-
 function renderTabs() { document.getElementById('tab-container').innerHTML = Object.keys(CATEGORIAS).map(c => `<button style="padding:15px; flex:1; border:none; border-radius:10px; font-weight:bold; background:${c===catActiva?'var(--accent)':'#cbd5e0'}; color:${c===catActiva?'white':'black'}" onclick="catActiva='${c}'; renderTabs(); renderProds()">${c}</button>`).join(''); }
 function renderProds() { document.getElementById('grid-prods').innerHTML = CATEGORIAS[catActiva].map(n => `<div class="card" style="background:white; padding:20px; text-align:center; border-radius:12px; cursor:pointer;" onclick="abrirTecladoProd('${n}')"><b>${n}</b><br><span style="color:var(--success); font-weight:bold;">${PRECIOS[n].toFixed(2)}€</span></div>`).join(''); }
 
+// FUNCIÓN VER TIQUET: RECUPERADA DE P1 CON TU ÚLTIMA MODIFICACIÓN DE FECHA
 function verTiquetDetallado() {
     const cont = document.getElementById('cont-tiquet-papel');
     const totalBarHist = historial.reduce((acc, i) => acc + (i.p * i.cant), 0);
     const totalExterno = listInv.reduce((acc, i) => acc + i.g, 0);
     const canonTotal = listInv.reduce((acc, i) => acc + (i.a * 1), 0);
+    const baseRepartoHistorial = totalBarHist + totalExterno;
     const totalCoef = listInv.reduce((acc, i) => acc + (i.a * 1) + (i.k * 0.5), 0);
-    const precioU = totalCoef > 0 ? (totalBarHist + totalExterno) / totalCoef : 0;
-    const hoy = new Date().toLocaleDateString();
+    const precioU = totalCoef > 0 ? baseRepartoHistorial / totalCoef : 0;
+    const hoy = new Date().toLocaleDateString(); // <--- TU MODIFICACIÓN
+    const hayHistorial = historial.length > 0;
 
-    let h = `<div style="text-align:center; font-weight:bold; border-bottom:2px solid #000; margin-bottom:10px;">TIQUE SHOKO - ${socioActivo} - ${hoy}</div>`;
+    // EL TÍTULO QUE ME PEDISTE
+    let h = `<div style="text-align:center; font-weight:bold; border-bottom:2px solid #000; margin-bottom:10px;">TIQUE ${socioActivo} (${hoy})</div>`;
+    
     h += `<b>--- CONSUMO PRODUCTOS SHOKO (PRIMERA CUENTA) ---</b><br>`;
-    if (historial.length === 0) {
+    if (!hayHistorial) {
         carrito.forEach(i => h += `<div class="tiquet-linea"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}</span></div>`);
     } else {
         historial.forEach(i => h += `<div class="tiquet-linea"><span style="color:#555;">${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}</span></div>`);
@@ -116,50 +119,69 @@ function verTiquetDetallado() {
             carrito.forEach(i => h += `<div class="tiquet-linea"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}</span></div>`);
         }
     }
-    h += `<br><b>--- COSTES FIJOS ---</b><br><div class="tiquet-linea"><span>Cuota mayores de 13 años</span><span>${canonTotal.toFixed(2)}</span></div>`;
-    h += `<br><b>--- GASTOS COMIDA ---</b><br><div class="tiquet-linea"><span>Ingredientes</span><span>${totalExterno.toFixed(2)}</span></div>`;
-    const tCta = (historial.length > 0 ? carrito.reduce((acc, i)=>acc+(i.p*i.cant),0) : 0) + totalBarHist + canonTotal;
-    h += `<br><div class="tiquet-linea" style="font-weight:bold; font-size:1.2em;"><span>TOTAL TIQUE SHOKO</span><span>${tCta.toFixed(2)}€</span></div><br>`;
+
+    h += `<br><b>--- COSTES FIJOS ---</b><br>`;
+    h += `<div class="tiquet-linea"><span>Cuota mayores de 13 años</span><span>${canonTotal.toFixed(2)}</span></div>`;
+    h += `<br><b>--- GASTOS COMIDA ---</b><br>`;
+    h += `<div class="tiquet-linea"><span>Total gastos en ingredientes</span><span>${totalExterno.toFixed(2)}</span></div>`;
+    
+    const totalCuentaSocio = (hayHistorial ? carrito.reduce((acc, i)=>acc+(i.p*i.cant),0) : 0) + totalBarHist + canonTotal;
+    h += `<br><div class="tiquet-linea" style="font-weight:bold; font-size:1.2em;"><span>TOTAL TIQUE SHOKO</span><span>${totalCuentaSocio.toFixed(2)}€</span></div><br>`;
+    
     h += `<b>--- DESGLOSE REPARTO ---</b><br>`;
     listInv.forEach(inv => {
-        const n = inv.n || socioActivo; const pts = (inv.a * 1) + (inv.k * 0.5); const pH = (pts * precioU) + (inv.a * 1);
-        const cI = carrito.filter(it => it.n.includes(`(${n})`)).reduce((acc, it) => acc + (it.p * it.cant), 0);
-        const tD = pH + cI; const bal = tD - inv.g;
-        let ley = n === socioActivo ? `PAGAR A SHOKO: ${tCta.toFixed(2)}€` : (bal > 0 ? `PAGA A ${socioActivo}: ${bal.toFixed(2)}€` : `RECIBE DE ${socioActivo}: ${Math.abs(bal).toFixed(2)}€`);
-        h += `<div style="border-bottom:1px solid #eee; margin-bottom:5px;"><b>${n}</b>: ${tD.toFixed(2)}€ <br><small>${ley}</small></div>`;
+        const nombreLimpio = inv.n || socioActivo;
+        const puntos = (inv.a * 1) + (inv.k * 0.5);
+        const parteHistorial = (puntos * precioU) + (inv.a * 1);
+        const consumoIndividualActual = carrito.filter(item => item.n.includes(`(${nombreLimpio})`)).reduce((acc, item) => acc + (item.p * item.cant), 0);
+        const totalDebe = parteHistorial + consumoIndividualActual;
+        const bal = totalDebe - inv.g;
+        let ley = "";
+        if (nombreLimpio === socioActivo) ley = `PAGAR A SHOKO: ${totalCuentaSocio.toFixed(2)}€`;
+        else ley = (bal > 0) ? `PAGAR A ${socioActivo}: ${bal.toFixed(2)}€` : `RECIBIR DE ${socioActivo}: ${Math.abs(bal).toFixed(2)}€`;
+
+        h += `<div style="border-bottom:1px solid #eee; margin-bottom:5px; padding-bottom:2px;">
+                <div class="tiquet-linea"><b>${nombreLimpio}</b> <span>${totalDebe.toFixed(2)}€</span></div>
+                <div style="font-size:0.7em; color:#666; display:flex; justify-content:space-between;">
+                    <span>1ª cta: ${parteHistorial.toFixed(2)} + 2ª cta: ${consumoIndividualActual.toFixed(2)}</span>
+                    <span style="color:${(nombreLimpio === socioActivo || bal > 0) ? 'red' : 'green'}; font-weight:bold;">${ley}</span>
+                </div>
+              </div>`;
     });
-    cont.innerHTML = h; document.getElementById('modal-tiquet-final').style.display='flex';
+    cont.innerHTML = h;
+    document.getElementById('modal-tiquet-final').style.display = 'flex';
 }
 
+// LÓGICA DE BLOQUEO Y GESTIÓN DE P1
 function abrirModalReparto() {
     if (listInv.length === 0) listInv = [{n: socioActivo, a: 1, k: 0, g: 0}];
     renderInv();
-    const bloq = historial.length > 0;
+    const bloq = historial.length > 0; // REGLA: Bloqueo si hay cierre parcial
     document.getElementById('titulo-reparto').innerText = bloq ? "Gestión Comida (BLOQUEADA)" : "Gestión Comida";
+    document.getElementById('btn-add-inv').style.display = 'block'; // Siempre permitir añadir invitados para 2ª cuenta
     document.getElementById('modal-reparto').style.display = 'flex';
 }
 
 function renderInv() {
     const cont = document.getElementById('invitados-cont'); const bloq = historial.length > 0;
-    cont.innerHTML = `<div class="fila-inv" style="font-weight:bold; font-size:0.7em;"><span>Nombre</span><span>>13</span><span><13</span><span>Gasto</span><span></span></div>`;
+    cont.innerHTML = `<div class="fila-inv" style="font-weight:bold; font-size:0.75em;"><span>Nombre</span><span>>13</span><span><13</span><span>Gasto</span><span></span></div>`;
     listInv.forEach((v, i) => {
         cont.innerHTML += `<div class="fila-inv">
             <div onclick="${bloq?'':`abrirTecladoTexto(${i})`}">${v.n||'...'}</div>
             <div onclick="${bloq?'':`abrirTecladoNumComida(${i},'adulto')`}">${v.a}</div>
             <div onclick="${bloq?'':`abrirTecladoNumComida(${i},'nino')`}">${v.k}</div>
             <div onclick="${bloq?'':`abrirTecladoNumComida(${i},'gasto')`}">${v.g.toFixed(2)}€</div>
-            <button onclick="${bloq?'':`listInv.splice(${i},1); renderInv(); guardarTicketParcial();`}" style="color:red; border:none; background:none; font-size:1.5em;">×</button>
+            <button onclick="${bloq?'':`listInv.splice(${i},1); renderInv(); guardarTicketParcial();`}" style="color:red; border:none; background:none;">×</button>
         </div>`;
     });
 }
 
 function addInv() { listInv.push({n: "", a: 0, k: 0, g: 0}); renderInv(); }
-
 function abrirTecladoProd(n) { prodTemp = n; currentEditType = 'prod'; inputVal = ""; document.getElementById('input-cantidad').innerText = "1"; document.getElementById('modal-cantidad').style.display = 'flex'; }
 
 function abrirSelectorComensal() {
     const cont = document.getElementById('grid-comensales-modal'); cont.innerHTML = "";
-    listInv.forEach(inv => { const n = inv.n || socioActivo; cont.innerHTML += `<button class="btn-comensal-modal" onclick="finalizarApunte('${n}')" style="padding:15px; border-radius:10px; border:2px solid var(--primary); font-weight:bold;">${n}</button>`; });
+    listInv.forEach(inv => { const n = inv.n || socioActivo; cont.innerHTML += `<button style="padding:15px; border-radius:10px; border:2px solid var(--primary); font-weight:bold;" onclick="finalizarApunte('${n}')">${n}</button>`; });
     cont.innerHTML += `<button onclick="flgNuevoInv=true; abrirTecladoTexto(listInv.length)" style="grid-column:span 2; padding:10px; background:var(--accent); color:white; border:none; border-radius:10px;">+ NUEVO INVITADO</button>`;
     document.getElementById('modal-asignar-comensal').style.display = 'flex';
 }
@@ -191,7 +213,8 @@ function confirmarTexto() {
 function cierreParcial() { if(!confirm("¿Cerrar ronda actual?")) return; carrito.forEach(i => { const ex = historial.find(h => h.n === i.n); if(ex) ex.cant += i.cant; else historial.push({...i, esHistorial: true}); }); carrito = []; guardarTicketParcial(); actualizarTicket(); }
 function guardarTicketParcial() { let d = [...carrito, ...historial]; if(listInv.length > 0) d.push({ esComida: true, datos: listInv }); tickets[socioActivo] = d; localStorage.setItem('v29_tickets', JSON.stringify(tickets)); actualizarTicket(); }
 function actualizarTicket() {
-    let t = 0; let h = ""; carrito.forEach(i => { t += i.p*i.cant; h += `<div class="item-tiquet"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}€</span></div>`; });
+    let t = 0; let h = ""; 
+    carrito.forEach(i => { t += i.p*i.cant; h += `<div class="item-tiquet"><span>${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}€</span></div>`; });
     historial.forEach(i => { t += i.p*i.cant; h += `<div class="item-tiquet item-historial"><span>(Hist) ${i.cant}x ${i.n}</span><span>${(i.p*i.cant).toFixed(2)}€</span></div>`; });
     const c = listInv.reduce((acc, i) => acc + (i.a * 1), 0);
     document.getElementById('ticket-lista').innerHTML = h; document.getElementById('total-txt').innerText = (t + c).toFixed(2) + "€";
