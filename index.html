@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>TPV Shoko - P1 Correcto</title>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() { emailjs.init("lc8woRfpiuAUn_9QM"); })(); 
+    </script>
     <style>
         :root { --primary: #2c3e50; --success: #27ae60; --accent: #3498db; --bg: #f4f7f6; --danger: #e74c3c; --warning: #f39c12; --white: #ffffff; --gray: #95a5a6; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); height: 100vh; overflow: hidden; }
@@ -124,6 +128,12 @@
 
 <script>
 const ML_COPA = 30;
+// NUEVO: Direcciones de email de socios
+const EMAILS_SOCIOS = { 
+    "MIGUEL": "mguardiz@gmail.com", 
+    "SANTI": "sbborrell@gmail.com" 
+};
+
 const PRECIOS = { "MAHOU 25cl.": 0.90, "ALHAMBRA 33cl.": 1.50, "BUDWEISSER 33cl.": 1.50, "MAHOU SIN 25cl.": 0.90, "COCA COLA": 1.00, "COCA COLA ZERO": 1.00, "FANTA NARANJA": 1.00, "FANTA LIMÓN": 1.00, "SPRITE": 1.00, "ACUARIUS NARANJA": 1.00, "ACUARIUS LIMÓN": 1.00, "NESTEÁ LIMÓN": 1.00, "TÓNICA SCHWEPPES": 1.00, "TÓNICA SCHWEPPES ZERO": 1.00, "CASERA BLANCA 0,5L": 0.50, "AGUA": 0.50, "VIÑAS DEL VERO": 9.00, "BERONIA CRIANZA": 9.00, "BERONIA RESERVA": 16.00, "TIO PEPE 50cl.": 6.00, "MANZANILLA 50CL.": 6.00, "TINTO BÁSICO 70cl.": 2.00, "CROFT TWIST": 6.00, "DESCORCHE VINO": 2.00, "BARCELÓ": 2.00, "WHITE LABEL": 2.00, "RIVES": 2.00, "PINK RIVES": 2.00, "RIVES EXÓTICA": 2.00, "DESCORCHE COPA": 3.00, "ATÚN ENCEBOLLADO": 8.00, "ATÚN FRITADA": 8.00, "PATATAS FRITAS": 0.60 };
 const CATEGORIAS = { "CERVEZAS": ["MAHOU 25cl.", "ALHAMBRA 33cl.", "BUDWEISSER 33cl.", "MAHOU SIN 25cl."], "REFRESCOS": ["COCA COLA", "COCA COLA ZERO", "FANTA NARANJA", "FANTA LIMÓN", "SPRITE", "ACUARIUS NARANJA", "ACUARIUS LIMÓN", "NESTEÁ LIMÓN", "TÓNICA SCHWEPPES", "TÓNICA SCHWEPPES ZERO", "CASERA BLANCA 0,5L", "AGUA"], "VINOS": ["VIÑAS DEL VERO", "BERONIA CRIANZA", "BERONIA RESERVA", "TIO PEPE 50cl.", "MANZANILLA 50CL.", "TINTO BÁSICO 70cl.", "CROFT TWIST", "DESCORCHE VINO"], "ESPIRITUOSOS": ["BARCELÓ", "WHITE LABEL", "RIVES", "PINK RIVES", "RIVES EXÓTICA", "DESCORCHE COPA"], "OTROS": ["ATÚN ENCEBOLLADO", "ATÚN FRITADA", "PATATAS FRITAS"] };
 const STOCK_IDEAL = { "MAHOU 25cl.": 180, "ALHAMBRA 33cl.": 12, "BUDWEISSER 33cl.": 12, "MAHOU SIN 25cl.": 60, "COCA COLA": 60, "COCA COLA ZERO": 60, "FANTA NARANJA": 60, "FANTA LIMÓN": 60, "SPRITE": 60, "ACUARIUS NARANJA": 60, "ACUARIUS LIMÓN": 60, "NESTEÁ LIMÓN": 60, "TÓNICA SCHWEPPES": 60, "TÓNICA SCHWEPPES ZERO": 60, "CASERA BLANCA 0,5L": 60, "AGUA": 60, "VIÑAS DEL VERO": 6, "BERONIA CRIANZA": 6, "BERONIA RESERVA": 6, "TIO PEPE 50cl.": 6, "MANZANILLA 50CL.": 6, "TINTO BÁSICO 70cl.": 6, "CROFT TWIST": 6, "BARCELÓ": 3000, "WHITE LABEL": 3000, "RIVES": 3000, "PINK RIVES": 3000, "RIVES EXÓTICA": 3000, "ATÚN ENCEBOLLADO": 8, "ATÚN FRITADA": 8, "PATATAS FRITAS": 20 };
@@ -297,7 +307,41 @@ function finalizarApunte(com) {
     guardarTicketParcial();
 }
 
-function cerrarVenta() { if(!confirm("¿CERRAR TICKET TOTAL?")) return; [...carrito, ...historial].forEach(i => { if(i.n && !i.n.includes("DESCORCHE") && i.p > 0) { const base = i.n.split(" (")[0]; stockActual[base] -= (i.esLicor ? i.cant*ML_COPA : i.cant); } }); localStorage.setItem('v29_stock', JSON.stringify(stockActual)); delete tickets[socioActivo]; localStorage.setItem('v29_tickets', JSON.stringify(tickets)); location.reload(); }
+function enviarCorreo(htmlTiquet) {
+    const emailDestino = EMAILS_SOCIOS[socioActivo] || "mguardiz@gmail.com";
+    
+    const params = {
+        to_email: emailDestino,
+        to_name: socioActivo,
+        message_html: htmlTiquet,
+        subject: `TIQUE SHOKO - ${socioActivo}`
+    };
+
+    // CAMBIO: Usando tu Service ID y Template ID
+    emailjs.send("service_zchbl2f", "template_qqn30c5", params)
+        .then(() => alert(`Correo enviado a ${emailDestino}`))
+        .catch((error) => console.error("Error al enviar:", error));
+}
+
+function cerrarVenta() { 
+    if(!confirm("¿CERRAR TICKET TOTAL?")) return; 
+    
+    verTiquetDetallado(); 
+    const contenidoTiquet = document.getElementById('cont-tiquet-papel').innerHTML;
+    enviarCorreo(contenidoTiquet);
+
+    [...carrito, ...historial].forEach(i => { 
+        if(i.n && !i.n.includes("DESCORCHE") && i.p > 0) { 
+            const base = i.n.split(" (")[0]; 
+            stockActual[base] -= (i.esLicor ? i.cant*ML_COPA : i.cant); 
+        } 
+    }); 
+    localStorage.setItem('v29_stock', JSON.stringify(stockActual)); 
+    delete tickets[socioActivo]; 
+    localStorage.setItem('v29_tickets', JSON.stringify(tickets)); 
+    location.reload(); 
+}
+
 function abrirReposicion() { modoRepoActivo = true; document.getElementById('pantalla-socios').style.display = 'none'; document.getElementById('pantalla-reposicion').style.display = 'flex'; mostrarMenuCats(); }
 function mostrarMenuCats() { document.getElementById('repo-menu-cats').style.display = 'grid'; document.getElementById('repo-menu-items').style.display = 'none'; document.getElementById('repo-menu-cats').innerHTML = Object.keys(CATEGORIAS).map(cat => `<button style="background:var(--primary); color:white; padding:30px 10px; border-radius:15px; border:none; font-size:1.4em; font-weight:bold;" onclick="mostrarProductosRepo('${cat}')">${cat}</button>`).join(''); }
 function mostrarProductosRepo(cat) { catActiva = cat; document.getElementById('repo-menu-cats').style.display = 'none'; document.getElementById('repo-menu-items').style.display = 'block'; const cont = document.getElementById('repo-grid-productos'); cont.innerHTML = CATEGORIAS[cat].filter(n => STOCK_IDEAL[n]).map(n => { const esE = (cat === "ESPIRITUOSOS"); return `<div class="card" onclick="abrirEdicionRepo('${n}')"><img src="${getImg(n)}" onerror="this.style.opacity='0.1'"><b>${n}</b><div style="font-weight:bold; color:var(--primary); font-size:0.8em;">${esE ? (stockActual[n]/700).toFixed(1)+' Bot.' : stockActual[n]+' uds'}</div></div>`; }).join(''); }
@@ -321,7 +365,25 @@ function abrirTecladoProd(n) { prodTemp = n; currentEditType = 'prod'; inputVal 
 function presionarNum(v) { if(v === '.' && inputVal.includes('.')) return; inputVal += v; document.getElementById('input-cantidad').innerText = inputVal || "0"; }
 function abrirEdicionTicket(n) { prodTemp = n; inputVal = ""; const item = carrito.find(i => i.n === n); document.getElementById('edit-nombre').innerText = n; document.getElementById('txt-actual').innerText = "Cant: " + item.cant; document.getElementById('edit-input-display').innerText = "0"; document.getElementById('btn-eliminar-fila').style.display = 'block'; document.getElementById('modal-edit').style.display = 'flex'; }
 function presionarNumEdit(v) { if(v === '.' && inputVal.includes('.')) return; inputVal += v; document.getElementById('edit-input-display').innerText = inputVal; }
-function aplicarEdicion(signo) { const val = parseFloat(inputVal) || 0; if (modoRepoActivo) { const esE = CATEGORIAS["ESPIRITUOSOS"].includes(prodTemp); stockActual[prodTemp] += ((esE ? val * 700 : val) * signo); localStorage.setItem('v29_stock', JSON.stringify(stockActual)); mostrarProductosRepo(catActiva); } else { const item = carrito.find(i => i.n === prodTemp); if (item) { item.cant += (val * signo); if (item.cant <= 0) carrito = carrito.filter(i => i.n !== prodTemp); } } guardarTicketParcial(); document.getElementById('modal-edit').style.display = 'none'; }
+
+function aplicarEdicion(signo) { 
+    const val = parseFloat(inputVal) || 0; 
+    if (modoRepoActivo) { 
+        const esE = CATEGORIAS["ESPIRITUOSOS"].includes(prodTemp); 
+        stockActual[prodTemp] += ((esE ? val * 700 : val) * signo); 
+        localStorage.setItem('v29_stock', JSON.stringify(stockActual)); 
+        mostrarProductosRepo(catActiva); 
+    } else { 
+        const item = carrito.find(i => i.n === prodTemp); 
+        if (item) { 
+            item.cant += (val * signo); 
+            if (item.cant <= 0) carrito = carrito.filter(i => i.n !== prodTemp); 
+        } 
+    } 
+    guardarTicketParcial(); 
+    document.getElementById('modal-edit').style.display = 'none'; 
+}
+
 function eliminarFilaEdicion() { carrito = carrito.filter(i => i.n !== prodTemp); guardarTicketParcial(); document.getElementById('modal-edit').style.display = 'none'; }
 
 function generarListaCompra() { 
