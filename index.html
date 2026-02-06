@@ -136,7 +136,22 @@
 
 <div id="modal-teclado-texto" class="modal"><div class="modal-content" style="width: 95%; max-width: 900px;"><h3 id="titulo-teclado">Nombre</h3><div id="display-texto" style="font-size:2.5em; font-weight:bold; background:#f8fafc; padding:15px; border-radius:15px; margin-bottom:10px; min-height:1.2em; border:2px solid #ccc;"></div><div class="teclado-texto" id="grid-teclado-texto"></div><div style="display:flex; gap:10px; margin-top:20px;"><button class="btn-accion" style="background:var(--success);" onclick="confirmarTexto()">ACEPTAR</button><button class="btn-accion" style="background:var(--danger);" onclick="document.getElementById('modal-teclado-texto').style.display='none'">CANCELAR</button></div></div></div>
 <div id="modal-cantidad" class="modal"><div class="modal-content" style="width: 400px;"><h3 id="titulo-prod-modal"></h3><div id="input-cantidad" style="font-size:4em; font-weight:bold; margin-bottom:10px; color: var(--accent);">0</div><div class="grid-teclado" id="teclado-nums"></div><button class="btn-cancelar" onclick="document.getElementById('modal-cantidad').style.display='none'">CANCELAR</button></div></div>
-<div id="modal-edit" class="modal"><div class="modal-content"><h3 id="edit-nombre"></h3><p id="txt-actual"></p><div id="edit-input-display" style="font-size:4em; font-weight:bold; color:var(--accent); margin:10px 0;">0</div><div style="display:flex; gap:10px;"><button class="btn-accion" style="background:var(--danger);" onclick="aplicarEdicion(-1)">-</button><button class="btn-accion" style="background:var(--success);" onclick="aplicarEdicion(1)">+</button></div><div class="grid-teclado" id="teclado-edit"></div><button id="btn-eliminar-fila" style="width:100%; padding:15px; background:var(--danger); color:white; border:none; border-radius:12px; margin-top:15px;" onclick="eliminarFilaEdicion()">ELIMINAR LÍNEA</button><button class="btn-cancelar" onclick="document.getElementById('modal-edit').style.display='none'">VOLVER</button></div></div>
+
+<div id="modal-edit" class="modal">
+    <div class="modal-content" style="width: 280px; padding: 15px;">
+        <h3 id="edit-nombre" style="font-size: 1.1em;"></h3>
+        <p id="txt-actual" style="margin: 5px 0; font-size: 1.1em; font-weight: bold; color: #444; text-align: center;"></p>
+        <div id="edit-input-display" style="font-size: 2.5em; font-weight:bold; color:var(--accent); margin:5px 0;">0</div>
+        <div style="display:flex; gap:10px; margin-bottom: 10px;">
+            <button class="btn-accion" style="background:var(--danger); padding: 10px;" onclick="aplicarEdicion(-1)">-</button>
+            <button class="btn-accion" style="background:var(--success); padding: 10px;" onclick="aplicarEdicion(1)">+</button>
+        </div>
+        <div class="grid-teclado" id="teclado-edit"></div>
+        <button id="btn-eliminar-fila" style="width:100%; padding:10px; background:var(--danger); color:white; border:none; border-radius:12px; margin-top:10px; font-size: 0.8em;" onclick="eliminarFilaEdicion()">ELIMINAR LÍNEA</button>
+        <button class="btn-cancelar" style="margin-top: 5px;" onclick="document.getElementById('modal-edit').style.display='none'">VOLVER</button>
+    </div>
+</div>
+
 <div id="modal-reparto" class="modal"><div class="modal-content" style="width: 95%; max-width: 750px;"><h2>Gestión Comida</h2><div id="invitados-cont"></div><button id="btn-add-inv" onclick="addInv()" style="width:100%; padding:15px; margin: 10px 0; background:#f0f0f0; border:2px dashed #ccc; border-radius:12px; font-weight:bold;">+ Añadir Comensal</button><div style="display:flex; flex-direction:column; gap:10px; margin-top:15px;"><button class="btn-accion" style="background:var(--primary);" onclick="cerrarTPVCompletamente()">VOLVER AL TICKET</button><button class="btn-cancelar" style="background:var(--danger); color:white;" onclick="resetearComida()" id="btn-reset-comida">BORRAR TODO</button></div></div></div>
 <div id="modal-asignar-comensal" class="modal"><div class="modal-content"><h3>¿A quién asignar consumición?</h3><div id="grid-comensales-modal" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:15px;"></div><button class="btn-cancelar" onclick="document.getElementById('modal-asignar-comensal').style.display='none'">CANCELAR</button></div></div>
 
@@ -164,11 +179,9 @@ function renderSocios() {
     modoRepoActivo = false;
     const cont = document.getElementById('pantalla-socios');
     cont.innerHTML = '';
-    
-    // 1. Aseguramos que el contenedor tenga posición relativa para poder mover el botón a su esquina
     cont.style.position = 'relative';
 
-    // 2. Dibujamos tus socios (tu código original)
+    // 2. Dibujamos tus socios (tu código original se queda igual)
     ["FRAN", "SANTI", "SANTOS", "JESÚS", "MANU", "JR", "MIGUEL", "NUÑEZ", "SILVA", "LUIS", "ROSADO"].forEach(s => {
         const data = tickets[s] || [];
         const cant = data.filter(i => i.n && !i.esComida).reduce((acc, i) => acc + i.cant, 0);
@@ -176,33 +189,23 @@ function renderSocios() {
         cont.innerHTML += `<div class="btn-socio ${claseActivo}" onclick="abrirTPV('${s}')">${s} ${cant > 0 ? `<span style="position:absolute; top:-8px; right:-8px; background:var(--danger); color:white; border-radius:50%; width:30px; height:30px; display:flex; align-items:center; justify-content:center; border:2px solid white; font-size:14px;">${cant}</span>` : ''}</div>`;
     });
 
-    // 3. Botón Reponedor
-    cont.innerHTML += '<div class="nav-reponedor" onclick="abrirReposicion()">🛠️ REPONEDOR</div>';
-
-    // 4. EL BOTÓN ABAJO A LA DERECHA (Solo vive aquí dentro)
+   // 3 y 4. CONTENEDOR DE BOTONES (HISTORIAL Y REPONEDOR - VERSIÓN GRANDE)
     cont.innerHTML += `
-        <button onclick="mostrarHistorialTiquets()" 
-            style="position: absolute; 
-                   bottom: 20px; 
-                   right: 20px; 
-                   width: 80px; 
-                   height: 80px; 
-                   border-radius: 50%; 
-                   background: var(--primary); 
-                   color: white; 
-                   border: 3px solid white; 
-                   box-shadow: 0 4px 15px rgba(0,0,0,0.3); 
-                   cursor: pointer; 
-                   display: flex; 
-                   flex-direction: column; 
-                   align-items: center; 
-                   justify-content: center; 
-                   font-size: 0.7em; 
-                   font-weight: bold;
-                   z-index: 10;">
-            <span style="font-size: 2em; margin-bottom: 2px;">📂</span>
-            HISTORIAL
-        </button>`;
+        <div style="position: absolute; bottom: 25px; right: 25px; display: flex; gap: 20px; z-index: 10;">
+            
+            <button onclick="abrirReposicion()" 
+                style="width: 110px; height: 110px; border-radius: 25px; background: #546e7a; color: white; border: 4px solid white; box-shadow: 0 6px 20px rgba(0,0,0,0.4); cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.85em; font-weight: bold; transition: transform 0.1s;">
+                <span style="font-size: 2.5em; margin-bottom: 5px;">🛠️</span>
+                REPONEDOR
+            </button>
+
+            <button onclick="mostrarHistorialTiquets()" 
+                style="width: 110px; height: 110px; border-radius: 25px; background: var(--primary); color: white; border: 4px solid white; box-shadow: 0 6px 20px rgba(0,0,0,0.4); cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.85em; font-weight: bold; transition: transform 0.1s;">
+                <span style="font-size: 2.5em; margin-bottom: 5px;">📂</span>
+                HISTORIAL
+            </button>
+
+        </div>`;
 }
 function abrirTPV(n) { 
     socioActivo = n; 
@@ -228,10 +231,19 @@ function renderProds() {
         const esE = (catActiva === "ESPIRITUOSOS"); 
         const stockTxt = esE ? (stockActual[n]/700).toFixed(1)+' Bot.' : stockActual[n]+' uds'; 
         
-        // Si es limpieza, no mostramos el texto de stock
-        const htmlStock = (n === "LIMPIEZA") ? '' : `<small style="color:#666; font-size:0.7em;">Quedan: ${stockTxt}</small>`;
+        // 1. Ocultamos stock para LIMPIEZA y DESCORCHES
+        const htmlStock = (n === "LIMPIEZA" || n.includes("DESCORCHE")) ? '' : `<small style="color:#666; font-size:0.7em;">Quedan: ${stockTxt}</small>`;
 
-        return `<div class="card" onclick="abrirTecladoProd('${n}')"><img src="${getImg(n)}" onerror="this.style.opacity='0.1'"><b>${n}</b><span style="color:var(--success); font-weight:bold; font-size:1em;">${PRECIOS[n].toFixed(2)}€</span>${htmlStock}</div>`; 
+        // 2. Acortamos el nombre si es DESCORCHE
+        const nombreAMostrar = n.includes("DESCORCHE") ? "DESCORCHE" : n;
+
+        // 3. ¡ESTA ES LA CLAVE!: Todos llaman a abrirTecladoProd('${n}')
+        return `<div class="card" onclick="abrirTecladoProd('${n}')">
+                    <img src="${getImg(n)}" onerror="this.style.opacity='0.1'">
+                    <b>${nombreAMostrar}</b>
+                    <span style="color:var(--success); font-weight:bold; font-size:1em;">${PRECIOS[n].toFixed(2)}€</span>
+                    ${htmlStock}
+                </div>`; 
     }).join(''); 
 }
 function verTiquetDetallado() {
@@ -570,13 +582,7 @@ function abrirTecladoProd(n) {
     currentEditType = 'prod'; 
     inputVal = ""; 
     document.getElementById('titulo-prod-modal').innerText = n; 
-    
-    // Si es Limpieza, siempre cantidad 1 directamente (opcional, para agilizar)
-    if(n === "LIMPIEZA") {
-        inputVal = "1";
-        confirmar(); // Salta directamente a confirmar
-        return;
-    }
+  
 
     document.getElementById('input-cantidad').innerText = "1"; 
     document.getElementById('modal-cantidad').style.display = 'flex'; 
@@ -627,7 +633,7 @@ function finalizarApunte(com) {
     document.getElementById('modal-asignar-comensal').style.display = 'none'; 
     guardarTicketParcial(); 
 }
-function abrirEdicionTicket(n) { prodTemp = n; inputVal = ""; const item = carrito.find(i => i.n === n); document.getElementById('edit-nombre').innerText = n; document.getElementById('txt-actual').innerText = "Cant: " + item.cant; document.getElementById('edit-input-display').innerText = "0"; document.getElementById('btn-eliminar-fila').style.display = 'block'; document.getElementById('modal-edit').style.display = 'flex'; }
+function abrirEdicionTicket(n) { prodTemp = n; inputVal = ""; const item = carrito.find(i => i.n === n); document.getElementById('edit-nombre').innerText = n; document.getElementById('txt-actual').innerText = "Cantidad actual: " + item.cant; document.getElementById('edit-input-display').innerText = "0"; document.getElementById('btn-eliminar-fila').style.display = 'block'; document.getElementById('modal-edit').style.display = 'flex'; }
 function presionarNum(v) { 
     // Forzamos a que inputVal sea tratado como cadena
     if (typeof inputVal !== 'string') inputVal = "";
