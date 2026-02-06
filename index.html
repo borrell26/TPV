@@ -200,6 +200,23 @@ function renderSocios() {
             pointer-events: none;
             filter: grayscale(100%); /* Opcional: hace que el logo sea blanco y negro para que sea más elegante */
         ">`;
+// --- RELOJ Y FECHA ABAJO A LA IZQUIERDA ---
+    cont.innerHTML += `
+        <div id="reloj-pantalla" style="
+            position: absolute;
+            bottom: 25px;
+            left: 25px;
+            color: white;
+            font-family: Arial, sans-serif;
+            z-index: 10;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        ">
+            <div id="hora-txt" style="font-size: 2.5em; font-weight: bold; line-height: 1;"></div>
+            <div id="fecha-txt" style="font-size: 1.1em; opacity: 0.8; margin-top: 5px;"></div>
+        </div>`;
+
+    // Llamamos a la función que actualiza la hora inmediatamente
+    actualizarReloj();
 
     // 2. Dibujamos tus socios
     ["FRAN", "SANTI", "SANTOS", "JESÚS", "MANU", "JR", "MIGUEL", "NUÑEZ", "SILVA", "LUIS", "ROSADO"].forEach(s => {
@@ -252,6 +269,34 @@ function abrirTPV(n) {
     renderProds(); 
     actualizarTicket(); 
 }
+function actualizarReloj() {
+    const ahora = new Date();
+    
+    // Formatear la hora (ej: 12:15)
+    const horas = String(ahora.getHours()).padStart(2, '0');
+    const minutos = String(ahora.getMinutes()).padStart(2, '0');
+    
+    // Formatear la fecha
+    const opciones = { weekday: 'long', day: 'numeric', month: 'long' };
+    let fechaLarga = ahora.toLocaleDateString('es-ES', opciones);
+
+    // PASAR A MINÚSCULAS:
+    // Esto convertirá "Viernes, 6 de Febrero" en "viernes, 6 de febrero"
+    fechaLarga = fechaLarga.toLowerCase();
+
+    // Inyectar en el HTML
+    const divHora = document.getElementById('hora-txt');
+    const divFecha = document.getElementById('fecha-txt');
+
+    if (divHora && divFecha) {
+        divHora.innerText = `${horas}:${minutos}`;
+        divFecha.innerText = fechaLarga;
+    }
+}
+
+// Hacemos que el reloj se actualice cada 1 segundo automáticamente
+setInterval(actualizarReloj, 1000);
+
 function renderTabs() { const cont = document.getElementById('tab-container'); cont.innerHTML = Object.keys(CATEGORIAS).map(c => `<button style="padding:12px; flex:1; border:none; border-radius:10px; font-weight:bold; font-size:0.85em; background:${c===catActiva?'var(--accent)':'#cbd5e0'}; color:${c===catActiva?'white':'black'}" onclick="catActiva='${c}'; renderTabs(); renderProds()">${c}</button>`).join(''); }
 function renderProds() { 
     document.getElementById('grid-prods').innerHTML = CATEGORIAS[catActiva].map(n => { 
