@@ -301,15 +301,21 @@ function renderTabs() { const cont = document.getElementById('tab-container'); c
 function renderProds() { 
     document.getElementById('grid-prods').innerHTML = CATEGORIAS[catActiva].map(n => { 
         const esE = (catActiva === "ESPIRITUOSOS"); 
-        const stockTxt = esE ? (stockActual[n]/700).toFixed(1)+' Bot.' : stockActual[n]+' uds'; 
         
-        // 1. Ocultamos stock para LIMPIEZA y DESCORCHES
+        // Cálculo exacto sin redondear
+        let stockTxt;
+        const s = stockActual[n] || 0;
+        if (esE) {
+            const b = Math.floor(s / 700);
+            const m = s % 700;
+            stockTxt = b + " Bot. + " + m + "ml";
+        } else {
+            stockTxt = s + ' uds';
+        }
+        
         const htmlStock = (n === "LIMPIEZA" || n.includes("DESCORCHE")) ? '' : `<small style="color:#666; font-size:0.7em;">Quedan: ${stockTxt}</small>`;
-
-        // 2. Acortamos el nombre si es DESCORCHE
         const nombreAMostrar = n.includes("DESCORCHE") ? "DESCORCHE" : n;
 
-        // 3. ¡ESTA ES LA CLAVE!: Todos llaman a abrirTecladoProd('${n}')
         return `<div class="card" onclick="abrirTecladoProd('${n}')">
                     <img src="${getImg(n)}" onerror="this.style.opacity='0.1'">
                     <b>${nombreAMostrar}</b>
@@ -613,7 +619,12 @@ const fila = (izq, der, bold = false, color = "#333", size = "12px") => {
     setTimeout(() => location.reload(), 2000); 
 }
 function abrirReposicion() { modoRepoActivo = true; document.getElementById('pantalla-socios').style.display = 'none'; document.getElementById('pantalla-reposicion').style.display = 'flex'; mostrarMenuCats(); }
+
+
+
 function mostrarMenuCats() { document.getElementById('repo-menu-cats').style.display = 'grid'; document.getElementById('repo-menu-items').style.display = 'none'; document.getElementById('repo-menu-cats').innerHTML = Object.keys(CATEGORIAS).filter(cat => cat !== "LIMPIEZA").map(cat => `<button style="background:var(--primary); color:white; padding:30px 10px; border-radius:15px; border:none; font-size:1.4em; font-weight:bold;" onclick="mostrarProductosRepo('${cat}')">${cat}</button>`).join(''); }
+
+
 function mostrarProductosRepo(cat) { 
     catActiva = cat; 
     document.getElementById('repo-menu-cats').style.display = 'none'; 
@@ -634,18 +645,62 @@ function mostrarProductosRepo(cat) {
 
     cont.innerHTML = CATEGORIAS[cat].filter(n => STOCK_IDEAL[n]).map(n => { 
         const esE = (cat === "ESPIRITUOSOS"); 
-        // Stock real = Stock en almacén - lo que se está consumiendo ahora mismo
         const stockRealTime = stockActual[n] - (retenido[n] || 0);
+
+        // SOLO CAMBIAMOS ESTA VARIABLE DE TEXTO
+        let textoFinal;
+        if (esE) {
+            const bots = Math.floor(stockRealTime / 700);
+            const ml = stockRealTime % 700;
+            textoFinal = bots + ' Bot. + ' + ml + 'ml';
+        } else {
+            textoFinal = stockRealTime + ' uds';
+        }
+
         return `<div class="card" onclick="abrirEdicionRepo('${n}')">
             <img src="${getImg(n)}" onerror="this.style.opacity='0.1'">
             <b>${n}</b>
             <div style="font-weight:bold; color:var(--primary); font-size:0.8em;">
-                En Stock: ${esE ? (stockRealTime/700).toFixed(1)+' Bot.' : stockRealTime+' uds'}
+                En Stock: ${textoFinal}
             </div>
         </div>`; 
-    }).join(''); 
+    }).join('');
 }
-function abrirEdicionRepo(n) { prodTemp = n; inputVal = ""; document.getElementById('edit-nombre').innerText = n; document.getElementById('txt-actual').innerText = "Stock: " + stockActual[n]; document.getElementById('edit-input-display').innerText = "0"; document.getElementById('btn-eliminar-fila').style.display = 'none'; document.getElementById('modal-edit').style.display = 'flex'; }
+function abrirEdicionRepo(n) { 
+    prodTemp = n; 
+    inputVal = ""; 
+    document.getElementById('edit-nombre').innerText = n; 
+    
+    // --- NUEVO: Calculamos lo retenido igual que en la otra función ---
+    let totalRetenido = 0;
+    Object.values(tickets).forEach(tiquetSocio => {
+        tiquetSocio.forEach(item => {
+            if (item.n && item.n.split(" (")[0] === n && !item.n.includes("DESCORCHE") && item.p > 0) {
+                const factor = CATEGORIAS["ESPIRITUOSOS"].includes(n) ? ML_COPA : 1;
+                totalRetenido += (item.cant * factor);
+            }
+        });
+    });
+
+    // Ahora restamos lo retenido del stock real para que coincida con el botón
+    const s = (stockActual[n] || 0) - totalRetenido;
+    const esE = CATEGORIAS["ESPIRITUOSOS"] && CATEGORIAS["ESPIRITUOSOS"].includes(n);
+    
+    let textoMostrar;
+    if (esE) {
+        const b = Math.floor(s / 700);
+        const m = s % 700;
+        textoMostrar = b + " Bot. + " + m + "ml";
+    } else {
+        textoMostrar = s + " uds";
+    }
+
+    document.getElementById('txt-actual').innerText = "Stock actual (libre): " + textoMostrar; 
+    document.getElementById('edit-input-display').innerText = "0"; 
+    document.getElementById('btn-eliminar-fila').style.display = 'none'; 
+    document.getElementById('modal-edit').style.display = 'flex'; 
+}
+
 function abrirTecladoNumComida(idx, tipo) { editingInvIdx = idx; currentEditType = tipo; inputVal = ""; const titulos = { 'adulto': 'Adultos', 'nino': 'Niños', 'gasto': 'Gasto €' }; document.getElementById('titulo-prod-modal').innerText = titulos[tipo]; document.getElementById('input-cantidad').innerText = "0"; document.getElementById('modal-cantidad').style.display = 'flex'; }
 function abrirTecladoTexto(idx) { editingInvIdx = idx; currentTexto = listInv[idx].n; document.getElementById('display-texto').innerText = currentTexto; document.getElementById('modal-teclado-texto').style.display = 'flex'; renderTecladoTexto(); }
 function renderTecladoTexto() { const cont = document.getElementById('grid-teclado-texto'); const teclas = "1234567890QWERTYUIOPASDFGHJKLÑZXCVBNM ".split(""); cont.innerHTML = teclas.map(l => `<button class="tecla-t" onclick="addLetra('${l}')">${l===' '?'_':l}</button>`).join(''); cont.innerHTML += `<button class="tecla-t" style="background:var(--warning);" onclick="addLetra('BACK')">DEL</button>`; }
@@ -788,19 +843,27 @@ function generarListaCompra() {
 
         if(falta > 0) { 
             hayFaltas = true;
-            const esE = CATEGORIAS["ESPIRITUOSOS"].includes(n); 
+            const esE = CATEGORIAS["ESPIRITUOSOS"] && CATEGORIAS["ESPIRITUOSOS"].includes(n); 
             
-            // Formateo de cantidades para que quepan bien
+            // Aquí estaba el error. Declaramos la variable una sola vez:
+            let fTxt; 
             const idealTxt = esE ? (ideal/700).toFixed(1) : ideal;
             const actualTxt = esE ? (actual/700).toFixed(1) : actual;
-            const faltaTxt = esE ? (falta/700).toFixed(1) : falta;
+
+            if(esE) {
+                const bF = Math.floor(falta / 700);
+                const mF = falta % 700;
+                fTxt = bF + " Bot. + " + mF + "ml";
+            } else {
+                fTxt = falta;
+            }
 
             h += `
                 <div style="display: grid; grid-template-columns: 1fr 50px 50px 60px; gap: 5px; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 0.85em; align-items: center; text-align: center;">
                     <div style="text-align: left; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${n}</div>
                     <div style="color: #7f8c8d;">${idealTxt}</div>
                     <div style="color: #3498db;">${actualTxt}</div>
-                    <div style="color: var(--danger); font-weight: bold; background: #fff5f5;">${faltaTxt}</div>
+                    <div style="color: var(--danger); font-weight: bold; background: #fff5f5;">${fTxt}</div>
                 </div>
             `; 
         } 
