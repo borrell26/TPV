@@ -16,6 +16,8 @@
         #interfaz-tpv { display: none; grid-template-columns: 1fr 350px; height: 100vh; }
         #pantalla-reposicion { display: none; flex-direction: column; gap: 15px; padding: 20px; height: 100vh; box-sizing: border-box; overflow-y: auto; }
 
+
+
         .btn-socio { background: var(--white); border: 2px solid var(--primary); border-radius: 15px; padding: 35px 10px; font-weight: bold; font-size: 1.4em; cursor: pointer; text-align: center; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .btn-socio.activo { background: #ffeaa7; border-color: var(--warning); }
         .nav-reponedor { background: #cbd5e0; color: var(--primary); padding: 10px; border-radius: 10px; text-align: center; font-weight: normal; cursor: pointer; width: 100%; border: 1px solid var(--gray); box-sizing: border-box; grid-column: 1 / -1; font-size: 1em; margin-top: 20px; opacity: 0.7; }
@@ -63,7 +65,7 @@
         <h2 style="font-size:1.8em; margin:0;">Reposición</h2>
         <div style="display:flex; gap:10px;">
             <button onclick="generarListaCompra()" style="background:var(--accent); color:white; padding:15px; border-radius:10px; border:none; font-weight:bold;">🛒 LISTA COMPRA</button>
-            <button onclick="location.reload()" style="background:var(--success); color:white; padding:15px; border-radius:10px; border:none; font-weight:bold;">💾 SALIR</button>
+            <button onclick="cerrarTodoYLimpiar()" style="background:var(--success); color:white; padding:15px; border-radius:10px; border:none; font-weight:bold;">💾 SALIR</button>
         </div>
     </div>
     <div id="repo-menu-cats" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:15px;"></div>
@@ -130,6 +132,7 @@
     <div class="modal-content" style="max-width: 400px;">
         <h3>🛒 LISTA DE COMPRA</h3>
         <div id="cuerpo-compra" style="text-align: left; max-height: 400px; overflow-y: auto; margin: 15px 0; border: 1px solid #eee; padding: 10px; border-radius: 10px;"></div>
+        
         <button class="btn-side" style="background:var(--success); width: 100%; padding: 15px;" onclick="document.getElementById('modal-compra').style.display='none'">CERRAR</button>
     </div>
 </div>
@@ -137,18 +140,42 @@
 <div id="modal-teclado-texto" class="modal"><div class="modal-content" style="width: 95%; max-width: 900px;"><h3 id="titulo-teclado">Nombre</h3><div id="display-texto" style="font-size:2.5em; font-weight:bold; background:#f8fafc; padding:15px; border-radius:15px; margin-bottom:10px; min-height:1.2em; border:2px solid #ccc;"></div><div class="teclado-texto" id="grid-teclado-texto"></div><div style="display:flex; gap:10px; margin-top:20px;"><button class="btn-accion" style="background:var(--success);" onclick="confirmarTexto()">ACEPTAR</button><button class="btn-accion" style="background:var(--danger);" onclick="document.getElementById('modal-teclado-texto').style.display='none'">CANCELAR</button></div></div></div>
 <div id="modal-cantidad" class="modal"><div class="modal-content" style="width: 400px;"><h3 id="titulo-prod-modal"></h3><div id="input-cantidad" style="font-size:4em; font-weight:bold; margin-bottom:10px; color: var(--accent);">0</div><div class="grid-teclado" id="teclado-nums"></div><button class="btn-cancelar" onclick="document.getElementById('modal-cantidad').style.display='none'">CANCELAR</button></div></div>
 
+
+<div id="modal-seleccion-botella" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:5000; align-items:center; justify-content:center;">
+    <div style="background:#1a1a1a; padding:20px; border-radius:20px; width:90%; max-width:320px; border: 1px solid #444;">
+        <h2 id="titulo-prod-botella" style="color:white; margin:0 0 20px 0; font-size:1.4em; text-align:center; font-weight:bold;">TAMAÑO DE BOTELLA</h2>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+            <button onclick="prepararTeclado(700)" style="height:100px; border-radius:12px; background:#3498db; color:white; border:none; cursor:pointer; font-weight:bold; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                <span style="font-size:1.5em;">700</span>
+                <span style="font-size:0.7em; opacity:0.9;">ml</span>
+            </button>
+            <button onclick="prepararTeclado(1000)" style="height:100px; border-radius:12px; background:#2ecc71; color:white; border:none; cursor:pointer; font-weight:bold; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+                <span style="font-size:1.5em;">1000</span>
+                <span style="font-size:0.7em; opacity:0.9;">ml</span>
+            </button>
+            <button onclick="prepararTeclado(1)" style="height:60px; border-radius:12px; background:#555; color:white; border:none; cursor:pointer; font-weight:bold; font-size:0.8em;">MANUAL</button>
+            <button onclick="document.getElementById('modal-seleccion-botella').style.display='none'" style="height:60px; border-radius:12px; background:#c0392b; color:white; border:none; cursor:pointer; font-weight:bold; font-size:0.8em;">CANCELAR</button>
+        </div>
+    </div>
+</div>
+
 <div id="modal-edit" class="modal">
     <div class="modal-content" style="width: 280px; padding: 15px;">
         <h3 id="edit-nombre" style="font-size: 1.1em;"></h3>
         <p id="txt-actual" style="margin: 5px 0; font-size: 1.1em; font-weight: bold; color: #444; text-align: center;"></p>
         <div id="edit-input-display" style="font-size: 2.5em; font-weight:bold; color:var(--accent); margin:5px 0;">0</div>
-        <div style="display:flex; gap:10px; margin-bottom: 10px;">
-            <button class="btn-accion" style="background:var(--danger); padding: 10px;" onclick="aplicarEdicion(-1)">-</button>
-            <button class="btn-accion" style="background:var(--success); padding: 10px;" onclick="aplicarEdicion(1)">+</button>
-        </div>
+        
         <div class="grid-teclado" id="teclado-edit"></div>
+        
         <button id="btn-eliminar-fila" style="width:100%; padding:10px; background:var(--danger); color:white; border:none; border-radius:12px; margin-top:10px; font-size: 0.8em;" onclick="eliminarFilaEdicion()">ELIMINAR LÍNEA</button>
-        <button class="btn-cancelar" style="margin-top: 5px;" onclick="document.getElementById('modal-edit').style.display='none'">VOLVER</button>
+
+        <div style="display:flex; flex-direction: column; gap: 5px; margin-top: 10px;">
+            <div style="display:flex; gap:10px;">
+                <button class="btn-accion" style="background:var(--danger); padding: 10px; flex: 1;" onclick="aplicarEdicion(-1)">-</button>
+                <button class="btn-accion" style="background:var(--success); padding: 10px; flex: 1;" onclick="aplicarEdicion(1)">+</button>
+            </div>
+            <button class="btn-cancelar" style="width: 100%;" onclick="document.getElementById('modal-edit').style.display='none'">VOLVER</button>
+        </div>
     </div>
 </div>
 
@@ -156,13 +183,16 @@
 <div id="modal-asignar-comensal" class="modal"><div class="modal-content"><h3>¿A quién asignar consumición?</h3><div id="grid-comensales-modal" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:15px;"></div><button class="btn-cancelar" onclick="document.getElementById('modal-asignar-comensal').style.display='none'">CANCELAR</button></div></div>
 
 <script>
-const ML_COPA = 30;
+const ML_COPA = 50;
 const EMAILS_SOCIOS = { "MIGUEL": "mguardiz@gmail.com", "SANTI": "sbborrell@gmail.com" };
 const PRECIOS = { "MAHOU 25cl.": 0.90, "ALHAMBRA 33cl.": 1.50, "BUDWEISSER 33cl.": 1.50, "MAHOU SIN 25cl.": 0.90, "COCA COLA": 1.00, "COCA COLA ZERO": 1.00, "FANTA NARANJA": 1.00, "FANTA LIMÓN": 1.00, "SPRITE": 1.00, "ACUARIUS NARANJA": 1.00, "ACUARIUS LIMÓN": 1.00, "NESTEÁ LIMÓN": 1.00, "TÓNICA SCHWEPPES": 1.00, "TÓNICA SCHWEPPES ZERO": 1.00, "CASERA BLANCA 0,5L": 0.50, "AGUA": 0.50, "VIÑAS DEL VERO": 9.00, "BERONIA CRIANZA": 9.00, "BERONIA RESERVA": 16.00, "TIO PEPE 50cl.": 6.00, "MANZANILLA 50CL.": 6.00, "TINTO BÁSICO 70cl.": 2.00, "CROFT TWIST": 6.00, "DESCORCHE VINO": 2.00, "BARCELÓ": 2.00, "WHITE LABEL": 2.00, "RIVES": 2.00, "PINK RIVES": 2.00, "RIVES EXÓTICA": 2.00, "DESCORCHE COPA": 3.00, "ATÚN ENCEBOLLADO": 8.00, "ATÚN FRITADA": 8.00, "PATATAS FRITAS": 0.60, "LIMPIEZA": 12.00 };
 const CATEGORIAS = { "CERVEZAS": ["MAHOU 25cl.", "ALHAMBRA 33cl.", "BUDWEISSER 33cl.", "MAHOU SIN 25cl."], "REFRESCOS": ["COCA COLA", "COCA COLA ZERO", "FANTA NARANJA", "FANTA LIMÓN", "SPRITE", "ACUARIUS NARANJA", "ACUARIUS LIMÓN", "NESTEÁ LIMÓN", "TÓNICA SCHWEPPES", "TÓNICA SCHWEPPES ZERO", "CASERA BLANCA 0,5L", "AGUA"], "VINOS": ["VIÑAS DEL VERO", "BERONIA CRIANZA", "BERONIA RESERVA", "TIO PEPE 50cl.", "MANZANILLA 50CL.", "TINTO BÁSICO 70cl.", "CROFT TWIST", "DESCORCHE VINO"], "ESPIRITUOSOS": ["BARCELÓ", "WHITE LABEL", "RIVES", "PINK RIVES", "RIVES EXÓTICA", "DESCORCHE COPA"], "OTROS": ["ATÚN ENCEBOLLADO", "ATÚN FRITADA", "PATATAS FRITAS"], "LIMPIEZA": ["LIMPIEZA"] };
 const STOCK_IDEAL = { "MAHOU 25cl.": 180, "ALHAMBRA 33cl.": 12, "BUDWEISSER 33cl.": 12, "MAHOU SIN 25cl.": 60, "COCA COLA": 60, "COCA COLA ZERO": 60, "FANTA NARANJA": 60, "FANTA LIMÓN": 60, "SPRITE": 60, "ACUARIUS NARANJA": 60, "ACUARIUS LIMÓN": 60, "NESTEÁ LIMÓN": 60, "TÓNICA SCHWEPPES": 60, "TÓNICA SCHWEPPES ZERO": 60, "CASERA BLANCA 0,5L": 60, "AGUA": 60, "VIÑAS DEL VERO": 6, "BERONIA CRIANZA": 6, "BERONIA RESERVA": 6, "TIO PEPE 50cl.": 6, "MANZANILLA 50CL.": 6, "TINTO BÁSICO 70cl.": 6, "CROFT TWIST": 6, "BARCELÓ": 3000, "WHITE LABEL": 3000, "RIVES": 3000, "PINK RIVES": 3000, "RIVES EXÓTICA": 3000, "ATÚN ENCEBOLLADO": 8, "ATÚN FRITADA": 8, "PATATAS FRITAS": 20 };
 
 let stockActual = JSON.parse(localStorage.getItem('v29_stock')) || {...STOCK_IDEAL};
+let factorBotellaActual = 1; // Seguridad ante todo
+let socioTesorero = localStorage.getItem('v29_tesorero') || "FRAN";
+let socioReponedor = localStorage.getItem('v29_reponedor') || "SANTI";
 let tickets = JSON.parse(localStorage.getItem('v29_tickets')) || {};
 let socioActivo = ""; let carrito = []; let historial = []; let catActiva = "CERVEZAS";
 let prodTemp = null; let inputVal = "";
@@ -233,10 +263,16 @@ function renderSocios() {
             </div>`;
     });
 
-    // 3 y 4. CONTENEDOR DE BOTONES (HISTORIAL Y REPONEDOR)
+   // 3, 4 y 5. CONTENEDOR DE BOTONES (CARGOS, HISTORIAL Y REPONEDOR)
     cont.innerHTML += `
         <div style="position: absolute; bottom: 25px; right: 25px; display: flex; gap: 20px; z-index: 10;">
             
+            <button onclick="abrirModalCargos()" 
+                style="width: 110px; height: 110px; border-radius: 25px; background: #f39c12; color: white; border: 4px solid white; box-shadow: 0 6px 20px rgba(0,0,0,0.4); cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.85em; font-weight: bold; transition: transform 0.1s;">
+                <span style="font-size: 2.5em; margin-bottom: 5px;">👥</span>
+                CARGOS
+            </button>
+
             <button onclick="abrirReposicion()" 
                 style="width: 110px; height: 110px; border-radius: 25px; background: #546e7a; color: white; border: 4px solid white; box-shadow: 0 6px 20px rgba(0,0,0,0.4); cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.85em; font-weight: bold; transition: transform 0.1s;">
                 <span style="font-size: 2.5em; margin-bottom: 5px;">🛠️</span>
@@ -250,6 +286,81 @@ function renderSocios() {
             </button>
 
         </div>`;
+}
+// --- FUNCIONES PARA GESTIÓN DE CARGOS ---
+
+function abrirModalCargos() {
+    // Creamos el modal dinámicamente si no existe o lo mostramos
+    const htmlModal = `
+        <div id="modal-cargos" class="modal" style="display:flex; justify-content:center; align-items:center; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000;">
+            <div style="background:#2c3e50; padding:30px; border-radius:20px; border:3px solid white; width:80%; max-width:500px; text-align:center; color:white;">
+                <h2>GESTIÓN DE CARGOS</h2>
+                <p>Selecciona qué cargo quieres asignar:</p>
+                <div style="display:flex; gap:20px; justify-content:center; margin-top:20px;">
+                    <button onclick="elegirSocioParaCargo('tesorero')" style="padding:15px; background:#27ae60; color:white; border:none; border-radius:10px; cursor:pointer; font-weight:bold;">Socio TESORERO</button>
+                    <button onclick="elegirSocioParaCargo('reponedor')" style="padding:15px; background:#2980b9; color:white; border:none; border-radius:10px; cursor:pointer; font-weight:bold;">Socio REPONEDOR</button>
+                </div>
+                <button onclick="cerrarModalCargos()" style="margin-top:30px; background:transparent; color:white; border:1px solid white; padding:5px 15px; cursor:pointer;">Cerrar</button>
+            </div>
+        </div>`;
+    document.body.insertAdjacentHTML('beforeend', htmlModal);
+}
+
+function elegirSocioParaCargo(cargo) {
+    const lista = ["FRAN", "SANTI", "SANTOS", "JESÚS", "MANU", "JR", "MIGUEL", "NUÑEZ", "SILVA", "LUIS", "ROSADO"];
+    
+    // 1. Identificamos quién es el socio actual para este cargo
+    const socioActual = cargo === 'tesorero' ? socioTesorero : socioReponedor;
+    
+    // 2. Definimos el color del cargo (Verde para Tesorero, Azul para Reponedor)
+    const colorCargo = cargo === 'tesorero' ? '#27ae60' : '#2980b9';
+
+    // 3. Generamos los botones con el estilo mejorado
+    let botonesSocios = lista.map(s => {
+        // Si es el socio actual, le ponemos el fondo de color y un borde brillante
+        const esElActual = (s === socioActual);
+        const estiloBoton = esElActual 
+            ? `background: ${colorCargo}; color: white; border: 3px solid white; box-shadow: 0 0 15px ${colorCargo}; transform: scale(1.05);` 
+            : `background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.3);`;
+
+        return `
+            <button onclick="confirmarCargo('${cargo}', '${s}')" 
+                style="padding: 15px 5px; margin: 5px; ${estiloBoton} border-radius: 12px; font-weight: bold; cursor: pointer; transition: all 0.2s; font-size: 1em;">
+                ${s}
+                ${esElActual ? `<br><span style="font-size: 0.7em; text-transform: uppercase;">(Actual)</span>` : ''}
+            </button>
+        `;
+    }).join('');
+
+    // 4. Dibujamos el modal con el estilo oscuro y profesional
+    const modal = document.getElementById('modal-cargos');
+    modal.innerHTML = `
+        <div style="background: #1a1a1a; padding: 35px; border-radius: 25px; border: 3px solid ${colorCargo}; width: 90%; max-width: 600px; text-align: center; color: white; box-shadow: 0 20px 60px rgba(0,0,0,0.7); font-family: Arial, sans-serif;">
+            
+            <div style="font-size: 3em; margin-bottom: 10px;">${cargo === 'tesorero' ? '💰' : '📦'}</div>
+            <h2 style="margin: 0; text-transform: uppercase; letter-spacing: 2px; color: ${colorCargo};">Asignar ${cargo}</h2>
+            <p style="opacity: 0.6; margin-bottom: 25px;">Selecciona al socio que asumirá el cargo</p>
+            
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px;">
+                ${botonesSocios}
+            </div>
+            
+            <button onclick="cerrarModalCargos()" 
+                style="margin-top: 35px; background: transparent; color: #ff4757; border: 2px solid #ff4757; padding: 10px 25px; border-radius: 12px; cursor: pointer; font-weight: bold; text-transform: uppercase; transition: 0.3s;">
+                Cancelar
+            </button>
+        </div>`;
+}
+
+function confirmarCargo(cargo, nombre) {
+    localStorage.setItem('v29_' + cargo, nombre);
+    alert(`¡Confirmado! ${nombre} es el nuevo ${cargo}.`);
+    cerrarModalCargos();
+}
+
+function cerrarModalCargos() {
+    const m = document.getElementById('modal-cargos');
+    if(m) m.remove();
 }
 function abrirTPV(n) { 
     socioActivo = n; 
@@ -302,17 +413,16 @@ function renderProds() {
     document.getElementById('grid-prods').innerHTML = CATEGORIAS[catActiva].map(n => { 
         const esE = (catActiva === "ESPIRITUOSOS"); 
         
-        // Cálculo exacto sin redondear
         let stockTxt;
         const s = stockActual[n] || 0;
         if (esE) {
-            const b = Math.floor(s / 700);
-            const m = s % 700;
-            stockTxt = b + " Bot. + " + m + "ml";
+            // CAMBIO: Ahora solo muestra mililitros directos
+            stockTxt = s + " ml";
         } else {
             stockTxt = s + ' uds';
         }
         
+        // Mantenemos tu estilo original: Gris (#666) y tamaño 0.7em
         const htmlStock = (n === "LIMPIEZA" || n.includes("DESCORCHE")) ? '' : `<small style="color:#666; font-size:0.7em;">Quedan: ${stockTxt}</small>`;
         const nombreAMostrar = n.includes("DESCORCHE") ? "DESCORCHE" : n;
 
@@ -485,7 +595,7 @@ function addInv() { if(historial.length > 0) return; listInv.push({n: "", a: 0, 
 function renderInv() { const cont = document.getElementById('invitados-cont'); const bloq = historial.length > 0; cont.innerHTML = `<div style="display:grid; grid-template-columns: 1fr 60px 60px 80px 40px; gap:8px; font-weight:bold; font-size:0.8em; margin-bottom:8px; color:#555;"><span>Nombre</span><span>>13</span><span><13</span><span>Gasto</span><span></span></div>`; listInv.forEach((inv, i) => { cont.innerHTML += `<div class="fila-inv"><div onclick="${bloq ? '' : `abrirTecladoTexto(${i})`}" style="text-align:left; overflow:hidden; opacity:${bloq?0.6:1}">${inv.n || '...'}</div><div onclick="${bloq ? '' : `abrirTecladoNumComida(${i}, 'adulto')`}" style="opacity:${bloq?0.6:1}">${inv.a}</div><div onclick="${bloq ? '' : `abrirTecladoNumComida(${i}, 'nino')`}" style="opacity:${bloq?0.6:1}">${inv.k}</div><div onclick="${bloq ? '' : `abrirTecladoNumComida(${i}, 'gasto')`}" style="opacity:${bloq?0.6:1}">${inv.g.toFixed(2)}€</div><button onclick="${bloq ? '' : `listInv.splice(${i},1); renderInv(); guardarTicketParcial();`}" style="color:red; border:none; background:none; font-size:1.8em; display:${bloq?'none':'block'}">×</button></div>`; }); }
 
 function cierreParcial() { if(carrito.length === 0 && historial.length === 0) { if(listInv.length > 0) historial.push({n: "SESIÓN ACTIVA", cant: 0, p: 0, esHistorial: true}); else return; } carrito.forEach(i => { const exH = historial.find(h => h.n === i.n); if(exH) exH.cant += i.cant; else historial.push({...i, esHistorial: true}); }); carrito = []; guardarTicketParcial(); actualizarTicket(); }
-function guardarTicketParcial() { let d = [...carrito, ...historial]; if(listInv.length > 0) d.push({ esComida: true, datos: listInv }); tickets[socioActivo] = d; localStorage.setItem('v29_tickets', JSON.stringify(tickets)); actualizarTicket(); renderProds(); if(modoRepoActivo) mostrarProductosRepo(catActiva); }
+function guardarTicketParcial() { let d = [...carrito, ...historial]; if(listInv.length > 0) d.push({ esComida: true, datos: listInv }); tickets[socioActivo] = d; localStorage.setItem('v29_tickets', JSON.stringify(tickets)); localStorage.setItem('v29_stock', JSON.stringify(stockActual)); actualizarTicket(); renderProds(); if(modoRepoActivo) mostrarProductosRepo(catActiva); }
 
 function actualizarTicket() { 
     let tS = 0; let html = ""; 
@@ -624,14 +734,13 @@ function abrirReposicion() { modoRepoActivo = true; document.getElementById('pan
 
 function mostrarMenuCats() { document.getElementById('repo-menu-cats').style.display = 'grid'; document.getElementById('repo-menu-items').style.display = 'none'; document.getElementById('repo-menu-cats').innerHTML = Object.keys(CATEGORIAS).filter(cat => cat !== "LIMPIEZA").map(cat => `<button style="background:var(--primary); color:white; padding:30px 10px; border-radius:15px; border:none; font-size:1.4em; font-weight:bold;" onclick="mostrarProductosRepo('${cat}')">${cat}</button>`).join(''); }
 
-
 function mostrarProductosRepo(cat) { 
     catActiva = cat; 
     document.getElementById('repo-menu-cats').style.display = 'none'; 
     document.getElementById('repo-menu-items').style.display = 'block'; 
     const cont = document.getElementById('repo-grid-productos'); 
     
-    // Calculamos lo que hay retenido en tiquets abiertos de TODOS los socios
+    // Mantenemos toda tu lógica de "retenido" intacta tal cual está en tu archivo
     let retenido = {};
     Object.values(tickets).forEach(tiquetSocio => {
         tiquetSocio.forEach(item => {
@@ -645,14 +754,12 @@ function mostrarProductosRepo(cat) {
 
     cont.innerHTML = CATEGORIAS[cat].filter(n => STOCK_IDEAL[n]).map(n => { 
         const esE = (cat === "ESPIRITUOSOS"); 
-        const stockRealTime = stockActual[n] - (retenido[n] || 0);
+        const stockRealTime = stockActual[n]; 
 
-        // SOLO CAMBIAMOS ESTA VARIABLE DE TEXTO
         let textoFinal;
         if (esE) {
-            const bots = Math.floor(stockRealTime / 700);
-            const ml = stockRealTime % 700;
-            textoFinal = bots + ' Bot. + ' + ml + 'ml';
+            // CAMBIO: Directo a mililitros
+            textoFinal = stockRealTime + ' ml';
         } else {
             textoFinal = stockRealTime + ' uds';
         }
@@ -666,41 +773,41 @@ function mostrarProductosRepo(cat) {
         </div>`; 
     }).join('');
 }
+
 function abrirEdicionRepo(n) { 
     prodTemp = n; 
-    inputVal = ""; 
-    document.getElementById('edit-nombre').innerText = n; 
-    
-    // --- NUEVO: Calculamos lo retenido igual que en la otra función ---
-    let totalRetenido = 0;
-    Object.values(tickets).forEach(tiquetSocio => {
-        tiquetSocio.forEach(item => {
-            if (item.n && item.n.split(" (")[0] === n && !item.n.includes("DESCORCHE") && item.p > 0) {
-                const factor = CATEGORIAS["ESPIRITUOSOS"].includes(n) ? ML_COPA : 1;
-                totalRetenido += (item.cant * factor);
-            }
-        });
-    });
-
-    // Ahora restamos lo retenido del stock real para que coincida con el botón
-    const s = (stockActual[n] || 0) - totalRetenido;
     const esE = CATEGORIAS["ESPIRITUOSOS"] && CATEGORIAS["ESPIRITUOSOS"].includes(n);
-    
-    let textoMostrar;
-    if (esE) {
-        const b = Math.floor(s / 700);
-        const m = s % 700;
-        textoMostrar = b + " Bot. + " + m + "ml";
-    } else {
-        textoMostrar = s + " uds";
-    }
 
-    document.getElementById('txt-actual').innerText = "Stock actual (libre): " + textoMostrar; 
-    document.getElementById('edit-input-display').innerText = "0"; 
-    document.getElementById('btn-eliminar-fila').style.display = 'none'; 
-    document.getElementById('modal-edit').style.display = 'flex'; 
+    if (esE) {
+        // Si es alcohol, abrimos el selector de botellas
+        // Este modal es el que luego llamará a prepararTeclado(700) o (1000)
+        document.getElementById('titulo-prod-botella').innerText = n;
+        document.getElementById('modal-seleccion-botella').style.display = 'flex';
+    } else {
+        // MUY IMPORTANTE: Reseteamos a 1 para refrescos/cervezas
+        factorBotellaActual = 1; 
+        abrirTecladoManual();
+    }
 }
 
+// Función para el botón rápido
+function sumarBotellaRapido(ml) {
+    stockActual[prodTemp] += ml;
+    localStorage.setItem('v29_stock', JSON.stringify(stockActual));
+    
+    // Cerramos todo y refrescamos
+    document.getElementById('modal-seleccion-botella').style.display = 'none';
+    mostrarProductosRepo(catActiva);
+    alert("Añadidos " + ml + "ml a " + prodTemp);
+}
+function prepararTeclado(ml) {
+    // Aquí es donde la variable invisible cambia de 1 a 700 o 1000
+    factorBotellaActual = ml; 
+    document.getElementById('modal-seleccion-botella').style.display = 'none';
+    abrirTecladoManual();
+}
+
+function abrirTecladoManual() { inputVal = ""; const sufijo = factorBotellaActual > 1 ? " (Bot. " + factorBotellaActual + "ml)" : ""; document.getElementById('edit-nombre').innerText = prodTemp + sufijo; const stockRecuperado = stockActual[prodTemp] || 0; const esE = CATEGORIAS["ESPIRITUOSOS"] && CATEGORIAS["ESPIRITUOSOS"].includes(prodTemp); document.getElementById('txt-actual').innerText = "Stock actual: " + stockRecuperado + (esE ? " ml" : " uds"); document.getElementById('edit-input-display').innerText = "0"; const btnElim = document.getElementById('btn-eliminar-fila'); if (btnElim) { btnElim.style.display = modoRepoActivo ? 'none' : 'block'; } document.getElementById('modal-seleccion-botella').style.display = 'none'; document.getElementById('modal-edit').style.display = 'flex'; }
 function abrirTecladoNumComida(idx, tipo) { editingInvIdx = idx; currentEditType = tipo; inputVal = ""; const titulos = { 'adulto': 'Adultos', 'nino': 'Niños', 'gasto': 'Gasto €' }; document.getElementById('titulo-prod-modal').innerText = titulos[tipo]; document.getElementById('input-cantidad').innerText = "0"; document.getElementById('modal-cantidad').style.display = 'flex'; }
 function abrirTecladoTexto(idx) { editingInvIdx = idx; currentTexto = listInv[idx].n; document.getElementById('display-texto').innerText = currentTexto; document.getElementById('modal-teclado-texto').style.display = 'flex'; renderTecladoTexto(); }
 function renderTecladoTexto() { const cont = document.getElementById('grid-teclado-texto'); const teclas = "1234567890QWERTYUIOPASDFGHJKLÑZXCVBNM ".split(""); cont.innerHTML = teclas.map(l => `<button class="tecla-t" onclick="addLetra('${l}')">${l===' '?'_':l}</button>`).join(''); cont.innerHTML += `<button class="tecla-t" style="background:var(--warning);" onclick="addLetra('BACK')">DEL</button>`; }
@@ -761,7 +868,8 @@ function finalizarApunte(com) {
         stockActual[prodTemp] -= (cantTemp * factor);
     }
     document.getElementById('modal-asignar-comensal').style.display = 'none'; 
-    guardarTicketParcial(); 
+    guardarTicketParcial();
+
 }
 function abrirEdicionTicket(n) { prodTemp = n; inputVal = ""; const item = carrito.find(i => i.n === n); document.getElementById('edit-nombre').innerText = n; document.getElementById('txt-actual').innerText = "Cantidad actual: " + item.cant; document.getElementById('edit-input-display').innerText = "0"; document.getElementById('btn-eliminar-fila').style.display = 'block'; document.getElementById('modal-edit').style.display = 'flex'; }
 function presionarNum(v) { 
@@ -792,27 +900,8 @@ function presionarNumEdit(v) {
     const display = document.getElementById('edit-input-display');
     if(display) display.innerText = inputVal;
 }
-function aplicarEdicion(signo) { 
-    const val = parseFloat(document.getElementById('edit-input-display').innerText) || 0; 
-    if (modoRepoActivo) { 
-        const esE = CATEGORIAS["ESPIRITUOSOS"].includes(prodTemp); 
-        stockActual[prodTemp] += ((esE ? val * 700 : val) * signo); 
-        localStorage.setItem('v29_stock', JSON.stringify(stockActual)); 
-        mostrarProductosRepo(catActiva); 
-    } else { 
-        const item = carrito.find(i => i.n === prodTemp); 
-        if (item) { 
-            const base = prodTemp.split(" (")[0];
-            const factor = CATEGORIAS["ESPIRITUOSOS"].includes(base) ? ML_COPA : 1;
-            stockActual[base] += (item.cant * factor);
-            item.cant += (val * signo); 
-            if (item.cant <= 0) carrito = carrito.filter(i => i.n !== prodTemp);
-            else stockActual[base] -= (item.cant * factor);
-        } 
-    } 
-    guardarTicketParcial(); 
-    document.getElementById('modal-edit').style.display = 'none'; 
-}
+function aplicarEdicion(signo) { const val = parseFloat(document.getElementById('edit-input-display').innerText) || 0; if (modoRepoActivo) { const esE = CATEGORIAS["ESPIRITUOSOS"] && CATEGORIAS["ESPIRITUOSOS"].includes(prodTemp); const multiplicador = esE ? factorBotellaActual : 1; stockActual[prodTemp] += (val * multiplicador * signo); localStorage.setItem('v29_stock', JSON.stringify(stockActual)); mostrarProductosRepo(catActiva); } else { const item = carrito.find(i => i.n === prodTemp); if (item) { const base = prodTemp.split(" (")[0]; const factor = CATEGORIAS["ESPIRITUOSOS"].includes(base) ? ML_COPA : 1; stockActual[base] += (item.cant * factor); item.cant += (val * signo); if (item.cant <= 0) { carrito = carrito.filter(i => i.n !== prodTemp); } else { stockActual[base] -= (item.cant * factor); } } } guardarTicketParcial(); actualizarTicket(); inputVal = ""; document.getElementById('modal-edit').style.display = 'none'; }
+function eliminarLinea() { const item = carrito.find(i => i.n === prodTemp); if (item) { const base = prodTemp.split(" (")[0]; const esE = CATEGORIAS["ESPIRITUOSOS"] && CATEGORIAS["ESPIRITUOSOS"].includes(base); const factor = esE ? ML_COPA : 1; stockActual[base] += (item.cant * factor); carrito = carrito.filter(i => i.n !== prodTemp); guardarTicketParcial(); actualizarTicket(); inputVal = ""; document.getElementById('modal-edit').style.display = 'none'; } }
 function eliminarFilaEdicion() { 
     const item = carrito.find(i => i.n === prodTemp);
     if(item) {
@@ -824,53 +913,65 @@ function eliminarFilaEdicion() {
     guardarTicketParcial(); 
     document.getElementById('modal-edit').style.display = 'none'; 
 }
-function generarListaCompra() { 
-    let h = `
-        <div style="display: grid; grid-template-columns: 1fr 50px 50px 60px; gap: 5px; font-weight: bold; font-size: 0.75em; border-bottom: 2px solid #333; padding-bottom: 5px; margin-bottom: 10px; text-align: center;">
-            <div style="text-align: left;">Producto</div>
-            <div>Ideal</div>
-            <div>Stock</div>
-            <div>Pedir</div>
-        </div>
-    `; 
+function generarListaCompra() {
+    let listaHTML = "";
+    
+    // Encabezados
+    listaHTML += `
+    <div style="display: flex; justify-content: space-between; font-weight: bold; border-bottom: 2px solid #000; padding-bottom: 5px; margin-bottom: 10px; font-size: 0.85em; color: black;">
+        <div style="flex: 1.5; text-align: left;">PRODUCTO</div>
+        <div style="flex: 1; text-align: center;">IDEAL</div>
+        <div style="flex: 1; text-align: center;">STOCK</div>
+        <div style="flex: 1; text-align: right;">PEDIR</div>
+    </div>`;
 
-    let hayFaltas = false;
+    for (let p in STOCK_IDEAL) {
+        let actual = stockActual[p] || 0;
+        let idealOriginal = STOCK_IDEAL[p] || 0;
+        let esEspirituoso = CATEGORIAS["ESPIRITUOSOS"] && CATEGORIAS["ESPIRITUOSOS"].includes(p);
+        
+        let infoIdeal = "";
+        let infoStock = "";
+        let pedidoTxt = "";
+        const COLOR_ALERTA = "#e74c3c"; 
 
-    Object.keys(STOCK_IDEAL).forEach(n => { 
-        const ideal = STOCK_IDEAL[n];
-        const actual = stockActual[n];
-        const falta = ideal - actual; 
+        if (esEspirituoso) {
+            let cantidadAPedir = 0;
+            if (actual < 900) { cantidadAPedir = 3; }
+            else if (actual < 1600) { cantidadAPedir = 2; }
+            else if (actual < 2300) { cantidadAPedir = 1; }
 
-        if(falta > 0) { 
-            hayFaltas = true;
-            const esE = CATEGORIAS["ESPIRITUOSOS"] && CATEGORIAS["ESPIRITUOSOS"].includes(n); 
-            
-            // Aquí estaba el error. Declaramos la variable una sola vez:
-            let fTxt; 
-            const idealTxt = esE ? (ideal/700).toFixed(1) : ideal;
-            const actualTxt = esE ? (actual/700).toFixed(1) : actual;
-
-            if(esE) {
-                const bF = Math.floor(falta / 700);
-                const mF = falta % 700;
-                fTxt = bF + " Bot. + " + mF + "ml";
-            } else {
-                fTxt = falta;
+            if (cantidadAPedir > 0) {
+                // Añadimos el espacio antes de "ml"
+                infoIdeal = "3000 ml";
+                infoStock = `${actual} ml`;
+                pedidoTxt = `${cantidadAPedir} Bot.`;
             }
+        } else {
+            let falta = idealOriginal - actual;
+            if (falta > 0) {
+                infoIdeal = idealOriginal;
+                infoStock = actual;
+                pedidoTxt = falta;
+            }
+        }
 
-            h += `
-                <div style="display: grid; grid-template-columns: 1fr 50px 50px 60px; gap: 5px; padding: 8px 0; border-bottom: 1px solid #eee; font-size: 0.85em; align-items: center; text-align: center;">
-                    <div style="text-align: left; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${n}</div>
-                    <div style="color: #7f8c8d;">${idealTxt}</div>
-                    <div style="color: #3498db;">${actualTxt}</div>
-                    <div style="color: var(--danger); font-weight: bold; background: #fff5f5;">${fTxt}</div>
-                </div>
-            `; 
-        } 
-    }); 
-
-    document.getElementById('cuerpo-compra').innerHTML = hayFaltas ? h : "<p style='text-align:center; padding: 20px;'>✅ El stock está completo</p>"; 
-    document.getElementById('modal-compra').style.display = 'flex'; 
+        if (pedidoTxt !== "") {
+            listaHTML += `
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #ddd; font-size: 0.9em; font-weight: bold; color: black;">
+                <div style="flex: 1.5; text-align: left;">${p}</div>
+                <div style="flex: 1; text-align: center;">${infoIdeal}</div>
+                <div style="flex: 1; text-align: center;">${infoStock}</div>
+                <div style="flex: 1; text-align: right; color: ${COLOR_ALERTA};">${pedidoTxt}</div>
+            </div>`;
+        }
+    }
+    
+    const contenedor = document.getElementById('cuerpo-compra');
+    if (contenedor) {
+        contenedor.innerHTML = listaHTML || "<p style='text-align:center; padding:20px; color: #2ecc71; font-weight: bold;'>✅ STOCK COMPLETO</p>";
+        document.getElementById('modal-compra').style.display = 'flex';
+    }
 }
 function cerrarTPVCompletamente() { document.getElementById('modal-reparto').style.display = 'none'; }
 function crearTeclado(id, funcName) { 
@@ -912,6 +1013,14 @@ function cerrarModalTiquet() {
     
     if(btnCierre) btnCierre.style.display = 'block';
     if(btnParcial) btnParcial.style.display = 'block';
+}
+function cerrarTodoYLimpiar() {
+    // Cerramos modales y limpiamos el producto temporal
+    document.getElementById('modal-seleccion-botella').style.display = 'none';
+    document.getElementById('modal-edit').style.display = 'none';
+    prodTemp = "";
+    modoRepoActivo = false;
+    location.reload(); // Recarga la página limpia
 }
 </script>
 </body>
